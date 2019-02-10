@@ -18,7 +18,14 @@
   },
   "homepage": "https://github.com/mjhilton/FinanceAssistant#readme",
   "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/node": "^10.12.24",
     "typescript": "^3.3.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "commander": "^2.19.0"
+  },
+  "bin": {
+    "fass": "./dist/app.js"
+  }
 }
