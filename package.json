@@ -20,10 +20,13 @@
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "@types/node": "^10.12.24",
+    "@types/puppeteer": "^1.12.1",
     "typescript": "^3.3.3"
   },
   "dependencies": {
-    "commander": "^2.19.0"
+    "commander": "^2.19.0",
+    "puppeteer": "^1.12.2",
+    "ts-node": "^8.0.2"
   },
   "bin": {
     "fass": "./dist/app.js"
