@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mjhilton/FinanceAssistant#readme",
   "devDependencies": {
+    "@types/express": "^4.16.1",
     "typescript": "^3.3.3"
   },
   "dependencies": {
