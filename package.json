@@ -1,0 +1,19 @@
+{
+  "name": "finance-assistant",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mjhilton/FinanceAssistant.git"
+  },
+  "author": "Matt Hilton, Tatham Oddie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mjhilton/FinanceAssistant/issues"
+  },
+  "homepage": "https://github.com/mjhilton/FinanceAssistant#readme"
+}
