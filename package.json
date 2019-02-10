@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/mjhilton/FinanceAssistant/issues"
   },
-  "homepage": "https://github.com/mjhilton/FinanceAssistant#readme"
+  "homepage": "https://github.com/mjhilton/FinanceAssistant#readme",
+  "devDependencies": {
+    "typescript": "^3.3.3"
+  }
 }
