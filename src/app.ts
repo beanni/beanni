@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-import program = require('commander');
+import program from 'commander';
 import tsnode = require('ts-node');
-import fs = require('fs');
 
 program
     .arguments('<institution>')
@@ -10,10 +9,10 @@ program
     .action(function(institution) {
         var institutionName = institution + '.ts';
         var institutionPath = '../institutions/' + institutionName;
-        
+
         console.log("Running institution %s (%s)", institution, institutionPath);
 
-        tsnode.register({ 
+        tsnode.register({
             skipProject: true,
             transpileOnly: true
         });
@@ -21,3 +20,5 @@ program
         require(institutionPath);
     })
     .parse(process.argv);
+
+console.log('No params? Try --help');
