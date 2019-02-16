@@ -29,13 +29,18 @@ export class Core
         this.secretStore = secretStore;
     }
 
-
     async loadConfig() : Promise<FassConfig> {
         const configFileText = fs.readFileSync('./config.yaml', 'utf8');
         let config = <FassConfig>yaml.parse(configFileText);
 
         for (const account of config.accounts) {
             var secretPattern = /^\$secret (.*?)$/;
+
+            var match = secretPattern.exec(account.username);
+            if (match == null) continue;
+            var secretKey = match[1];
+            account.username = await this.secretStore.retrieveSecret(secretKey);;
+
             var match = secretPattern.exec(account.password);
             if (match == null) continue;
             var secretKey = match[1];
