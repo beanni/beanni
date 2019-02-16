@@ -4,16 +4,24 @@ import program from 'commander';
 import tsnode = require('ts-node');
 
 program
-    .arguments('<institution>')
-    .option('-u, --username <username>', 'The user to authenticate as')
-    .option('-p, --password <password>', 'The user\'s password')
-    .action(function(providerName) {
+    .command('init')
+    .action(function(cmd, options) {
+        console.log('Iknitted!');
+    });
+
+program
+    .command('fetch <providerName>')
+    .action(async function(providerName) {
         console.log("Running provider %s", providerName);
         var module = require('./providers/' + providerName);
         var provider = <BankDataProviderInterface>new module[providerName]();
-        var balance = provider.getBalance();
+        var balance = await provider.getBalance();
         console.log(balance);
-    })
-    .parse(process.argv);
+    });
 
-console.log('No params? Try --help');
+program.on('command:*', function () {
+    console.error('Invalid command: %s\nSee --help for a list of available commands.', program.args.join(' '));
+    process.exit(1);
+});
+
+program.parse(process.argv);

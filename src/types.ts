@@ -1,3 +1,3 @@
 export interface BankDataProviderInterface {
-    getBalance() : Number;
+    getBalance() : Promise<Number>;
 }
