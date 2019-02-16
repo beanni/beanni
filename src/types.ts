@@ -6,5 +6,5 @@ export interface FassAccount {
 }
 
 export interface BankDataProviderInterface {
-    getBalance(account : FassAccount) : Promise<Number>;
+    getBalance(account : FassAccount) : Promise<Number | null>;
 }
