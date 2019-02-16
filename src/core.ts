@@ -60,13 +60,13 @@ export class Core
         let config = await this.loadConfig();
         console.log('%s accounts to fetch from', config.accounts.length)
 
-        config.accounts.forEach(async account => {
+        for (const account of config.accounts) {
             console.log('Fetching %s via %s', account.name, account.provider);
             const providerName = account.provider;
             var module = require('./providers/' + providerName);
             var provider = <BankDataProviderInterface>new module[providerName]();
             var balance = await provider.getBalance(account);
             console.log(balance);
-        });
+        }
     }
 }
