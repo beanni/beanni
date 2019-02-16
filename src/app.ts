@@ -1,14 +1,22 @@
 #!/usr/bin/env node
 import { BankDataProviderInterface } from './types';
+import { SecretStore } from './secretStore';
 import { Core } from './core';
 import program from 'commander';
 
-const core = new Core();
+const secretStore = new SecretStore();
+const core = new Core(secretStore);
 
 program
     .command('validate-config')
-    .action(function() {
-        core.validateConfig();
+    .action(async function() {
+        await core.validateConfig();
+    });
+
+program
+    .command('store-secret <key> <secret>')
+    .action(async function(key, secret) {
+        await secretStore.storeSecret(key, secret);
     });
 
 program
