@@ -1,27 +1,20 @@
 #!/usr/bin/env node
 import { BankDataProviderInterface } from './types';
+import { Core } from './core';
 import program from 'commander';
-import tsnode = require('ts-node');
-import fs = require('fs');
-import yaml = require('yaml');
+
+const core = new Core();
 
 program
     .command('validate-config')
     .action(function() {
-        console.log(process.cwd());
-        const configFileText = fs.readFileSync('./config.yaml', 'utf8');
-        let config = yaml.parse(configFileText);
-        console.log(JSON.stringify(config));
+        core.validateConfig();
     });
 
 program
-    .command('fetch <providerName>')
-    .action(async function(providerName) {
-        console.log("Running provider %s", providerName);
-        var module = require('./providers/' + providerName);
-        var provider = <BankDataProviderInterface>new module[providerName]();
-        var balance = await provider.getBalance();
-        console.log(balance);
+    .command('fetch')
+    .action(async function() {
+        await core.fetch();
     });
 
 program.on('command:*', function () {
