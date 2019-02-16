@@ -2,13 +2,12 @@
 
 ## Usage
 
-1. Clone
-1. `npm install`
-1. `npm install -g`
-1. `fass --help`
+1. `npx finance-assistant --help`
 
 ## Development
 
 1. Clone
 1. `npm install`
-1. `npx ts-node .\src\app.ts`
+1. One of:
+    * `npx ts-node .\src\app.ts`
+    * VS Code > `Ctrl+F5`
