@@ -1,16 +1,10 @@
-import { BankDataProviderInterface } from './types';
+import { BankDataProviderInterface, FassAccount } from './types';
 import fs = require('fs');
 import yaml = require('yaml');
 
 interface FassConfig
 {
-    accounts: Array<FassConfigAccount>;
-}
-
-interface FassConfigAccount
-{
-    name: string;
-    provider: string;
+    accounts: Array<FassAccount>;
 }
 
 export class Core
@@ -35,7 +29,7 @@ export class Core
             const providerName = account.provider;
             var module = require('./providers/' + providerName);
             var provider = <BankDataProviderInterface>new module[providerName]();
-            var balance = await provider.getBalance();
+            var balance = await provider.getBalance(account);
             console.log(balance);
         });
     }

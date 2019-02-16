@@ -1,8 +1,8 @@
-import { BankDataProviderInterface } from '../types';
+import { BankDataProviderInterface, FassAccount } from '../types';
 import puppeteer = require('puppeteer');
 
 export class Perpetual implements BankDataProviderInterface {
-    async getBalance(): Promise<Number> {
+    async getBalance(account : FassAccount): Promise<Number> {
         const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto("https://www.perpetual.com.au/loginsecure");

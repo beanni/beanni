@@ -1,3 +1,8 @@
+export interface FassAccount {
+    name: string;
+    provider: string;
+}
+
 export interface BankDataProviderInterface {
-    getBalance() : Promise<Number>;
+    getBalance(account : FassAccount) : Promise<Number>;
 }
