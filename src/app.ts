@@ -2,11 +2,16 @@
 import { BankDataProviderInterface } from './types';
 import program from 'commander';
 import tsnode = require('ts-node');
+import fs = require('fs');
+import yaml = require('yaml');
 
 program
-    .command('init')
-    .action(function(cmd, options) {
-        console.log('Iknitted!');
+    .command('validate-config')
+    .action(function() {
+        console.log(process.cwd());
+        const configFileText = fs.readFileSync('./config.yaml', 'utf8');
+        let config = yaml.parse(configFileText);
+        console.log(JSON.stringify(config));
     });
 
 program
