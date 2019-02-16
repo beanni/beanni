@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { BankDataProviderInterface } from './types';
 import program from 'commander';
 import tsnode = require('ts-node');
 
@@ -6,18 +7,12 @@ program
     .arguments('<institution>')
     .option('-u, --username <username>', 'The user to authenticate as')
     .option('-p, --password <password>', 'The user\'s password')
-    .action(function(institution) {
-        var institutionName = institution + '.ts';
-        var institutionPath = '../institutions/' + institutionName;
-
-        console.log("Running institution %s (%s)", institution, institutionPath);
-
-        tsnode.register({
-            skipProject: true,
-            transpileOnly: true
-        });
-
-        require(institutionPath);
+    .action(function(providerName) {
+        console.log("Running provider %s", providerName);
+        var module = require('./providers/' + providerName);
+        var provider = <BankDataProviderInterface>new module[providerName]();
+        var balance = provider.getBalance();
+        console.log(balance);
     })
     .parse(process.argv);
 
