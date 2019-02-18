@@ -1,12 +1,19 @@
 import { FassExecutionContext } from "./core";
 
-export interface FassAccount {
+export interface FassInstitutionRelationship {
     name: string;
     provider: string;
     username: string;
     password: string;
 }
 
+export interface AccountBalance {
+    accountNumber: string;
+    accountName: string;
+    institution: string;
+    balance: Number;
+}
+
 export interface BankDataProviderInterface {
-    getBalance(account : FassAccount, executionContext : FassExecutionContext) : Promise<Number | null>;
+    getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext) : Promise<Array<AccountBalance>>;
 }

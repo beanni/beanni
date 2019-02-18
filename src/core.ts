@@ -1,11 +1,11 @@
-import { BankDataProviderInterface, FassAccount } from './types';
+import { BankDataProviderInterface, FassInstitutionRelationship, AccountBalance } from './types';
 import fs = require('fs');
 import yaml = require('yaml');
 import { SecretStore } from './secretStore';
 
 interface FassConfig
 {
-    accounts: Array<FassAccount>;
+    relationships: Array<FassInstitutionRelationship>;
 }
 
 export interface FassExecutionContext
@@ -38,18 +38,18 @@ export class Core
         const configFileText = fs.readFileSync('./config.yaml', 'utf8');
         let config = <FassConfig>yaml.parse(configFileText);
 
-        for (const account of config.accounts) {
+        for (const relationship of config.relationships) {
             var secretPattern = /^\$secret (.*?)$/;
 
-            var match = secretPattern.exec(account.username);
+            var match = secretPattern.exec(relationship.username);
             if (match == null) continue;
             var secretKey = match[1];
-            account.username = await this.secretStore.retrieveSecret(secretKey);;
+            relationship.username = await this.secretStore.retrieveSecret(secretKey);;
 
-            var match = secretPattern.exec(account.password);
+            var match = secretPattern.exec(relationship.password);
             if (match == null) continue;
             var secretKey = match[1];
-            account.password = await this.secretStore.retrieveSecret(secretKey);;
+            relationship.password = await this.secretStore.retrieveSecret(secretKey);;
         };
 
         return config;
@@ -62,16 +62,22 @@ export class Core
     }
 
     async fetch(executionContext:FassExecutionContext) {
-        let config = await this.loadConfig();
-        console.log('%s accounts to fetch from', config.accounts.length)
+        const config = await this.loadConfig();
+        console.log('%s relationships to fetch from', config.relationships.length)
 
-        for (const account of config.accounts) {
-            console.log('Fetching %s via %s', account.name, account.provider);
-            const providerName = account.provider;
+        const balances = new Array<AccountBalance>();
+
+        for (const relationship of config.relationships) {
+            console.log('Fetching \'%s\' via \'%s\'', relationship.name, relationship.provider);
+            const providerName = relationship.provider;
             var module = require('./providers/' + providerName);
             var provider = <BankDataProviderInterface>new module[providerName]();
-            var balance = await provider.getBalance(account, executionContext);
-            console.log(balance);
+
+            var relationshipBalances = await provider.getBalances(relationship, executionContext);
+            console.log('Found %s accounts', relationshipBalances.length);
+            relationshipBalances.forEach(b => balances.push(b));
         }
+
+        console.log(balances);
     }
 }
