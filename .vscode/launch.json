@@ -8,11 +8,28 @@
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
-            "args": ["${workspaceFolder}\\src\\app.ts"],
+            "args":
+            [
+                "${workspaceFolder}\\src\\app.ts",
+                "${input:subcommand}"
+            ],
             "runtimeArgs": ["-r", "ts-node/register"],
             "cwd": "${workspaceFolder}",
             "protocol": "inspector",
             "internalConsoleOptions": "openOnSessionStart"
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "subcommand",
+            "description": "Finance Assistant Command",
+            "options": [
+                "--help",
+                "fetch",
+                "validate-config"
+            ],
+            "default": "validate-config"
         }
     ]
 }
