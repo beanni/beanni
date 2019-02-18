@@ -10,16 +10,26 @@ export class Perpetual implements BankDataProviderInterface {
         const page = await browser.newPage();
         await page.goto("https://www.perpetual.com.au/loginsecure");
 
-        await page.waitForSelector('#IDToken1');
-        await page.type('#IDToken1[type=text]', account.username);
-        await page.type('#IDToken2[type=password]', account.password);
+        const loginPageTitle = await page.title();
+        if (loginPageTitle.includes('OpenAM'))
+        {
+            await page.waitForSelector('#IDToken1');
+            await page.type('#IDToken1[type=text]', account.username);
+            await page.type('#IDToken2[type=password]', account.password);
+        }
+        else
+        {
+            await page.waitForSelector('#onlineIDTextBox');
+            await page.type('#onlineIDTextBox', account.username);
+            await page.type('#passwordTextBox', account.password);
+        }
         await page.click('input[type=submit][value=Login]');
 
         await page.waitForSelector('#accountSummaryTbl .total');
         let balanceText = await page.$eval('#accountSummaryTbl .total', el => el.textContent);
 
         await page.goto("https://secure.perpetual.com.au/LogoutCancelSession.aspx");
-        await page.waitForSelector('#IDToken1');
+        await page.waitForSelector('input[type=submit][value=Login]');
 
         await browser.close();
 
