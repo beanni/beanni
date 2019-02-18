@@ -9,5 +9,5 @@
 1. Clone
 1. `npm install`
 1. One of:
-    * `npx ts-node .\src\app.ts`
+    * `npx ts-node .\src\app.ts --help`
     * VS Code > `Ctrl+F5`
