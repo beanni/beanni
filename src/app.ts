@@ -3,6 +3,7 @@ import { BankDataProviderInterface } from './types';
 import { SecretStore } from './secretStore';
 import { Core, FassExecutionContext } from './core';
 import program from 'commander';
+import inquirer from 'inquirer';
 
 const secretStore = new SecretStore();
 const core = new Core(secretStore);
@@ -18,8 +19,22 @@ program
     });
 
 program
-    .command('store-secret <key> <secret>')
-    .action(async function(key, secret) {
+    .command('store-secret <key> [secret]')
+    .action(async function(key:string, secret?:string) {
+        if (secret == null)
+        {
+            var pr:{secret:string} = await inquirer.prompt([
+                {
+                    type: 'password',
+                    name: 'secret',
+                    message: 'Secret:',
+                    validate: (val:string) : boolean => {
+                        return val.length > 0;
+                    }
+                }
+            ]);
+            secret = pr.secret;
+        }
         await secretStore.storeSecret(key, secret);
     });
 

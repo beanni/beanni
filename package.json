@@ -16,6 +16,7 @@
   "homepage": "https://github.com/mjhilton/FinanceAssistant#readme",
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "@types/inquirer": "0.0.43",
     "@types/node": "^10.12.24",
     "@types/puppeteer": "^1.12.1",
     "typescript": "^3.3.3"
@@ -23,6 +24,7 @@
   "dependencies": {
     "@types/yaml": "^1.0.2",
     "commander": "^2.19.0",
+    "inquirer": "^6.2.2",
     "keytar": "^4.4.0",
     "puppeteer": "^1.12.2",
     "ts-node": "^8.0.2",
