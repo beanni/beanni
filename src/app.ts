@@ -13,9 +13,10 @@ program
     .option('-d, --debug');
 
 program
-    .command('validate-config')
+    .command('fetch')
     .action(async function() {
-        await core.validateConfig();
+        const executionContext = parseExecutionContext();
+        await core.fetch(executionContext);
     });
 
 program
@@ -39,10 +40,9 @@ program
     });
 
 program
-    .command('fetch')
+    .command('validate-config')
     .action(async function() {
-        const executionContext = parseExecutionContext();
-        await core.fetch(executionContext);
+        await core.validateConfig();
     });
 
 program.on('command:*', function () {
