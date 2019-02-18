@@ -8,6 +8,11 @@ interface FassConfig
     accounts: Array<FassAccount>;
 }
 
+export interface FassExecutionContext
+{
+    debug: boolean;
+}
+
 // export const YamlSecretTag : yaml.Tag = {
 //     identify: (value:any) => false,
 //     default: true,
@@ -56,7 +61,7 @@ export class Core
         console.log(JSON.stringify(config));
     }
 
-    async fetch() {
+    async fetch(executionContext:FassExecutionContext) {
         let config = await this.loadConfig();
         console.log('%s accounts to fetch from', config.accounts.length)
 
@@ -65,7 +70,7 @@ export class Core
             const providerName = account.provider;
             var module = require('./providers/' + providerName);
             var provider = <BankDataProviderInterface>new module[providerName]();
-            var balance = await provider.getBalance(account);
+            var balance = await provider.getBalance(account, executionContext);
             console.log(balance);
         }
     }

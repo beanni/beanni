@@ -11,7 +11,8 @@
             "args":
             [
                 "${workspaceFolder}\\src\\app.ts",
-                "${input:subcommand}"
+                "${input:subcommand}",
+                "${input:debugFlag}"
             ],
             "runtimeArgs": ["-r", "ts-node/register"],
             "cwd": "${workspaceFolder}",
@@ -30,6 +31,16 @@
                 "validate-config"
             ],
             "default": "validate-config"
+        },
+        {
+            "type": "pickString",
+            "id": "debugFlag",
+            "description": "Debug flag",
+            "options": [
+                "",
+                "--debug"
+            ],
+            "default": ""
         }
     ]
 }

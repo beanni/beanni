@@ -1,3 +1,5 @@
+import { FassExecutionContext } from "./core";
+
 export interface FassAccount {
     name: string;
     provider: string;
@@ -6,5 +8,5 @@ export interface FassAccount {
 }
 
 export interface BankDataProviderInterface {
-    getBalance(account : FassAccount) : Promise<Number | null>;
+    getBalance(account : FassAccount, executionContext : FassExecutionContext) : Promise<Number | null>;
 }
