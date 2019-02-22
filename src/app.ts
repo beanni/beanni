@@ -9,7 +9,7 @@ const secretStore = new SecretStore();
 const core = new Core(secretStore);
 
 program
-    .name('fass')
+    .name('beanie')
     .option('-d, --debug');
 
 program

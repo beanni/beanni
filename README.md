@@ -1,8 +1,10 @@
-# Finance Assistant
+# Beanie
+
+Your friendly local bean-counter.
 
 ## Usage
 
-1. `npx finance-assistant --help`
+1. `npx beanie --help`
 
 ## Development
 
