@@ -5,6 +5,8 @@ Your friendly local bean-counter.
 ## Usage
 
 1. `npx beanie --help`
+1. `npx beanie init`
+1. `npx beanie fetch`
 
 ## Development
 
