@@ -2,6 +2,7 @@ import { BankDataProviderInterface, FassInstitutionRelationship, AccountBalance 
 import fs = require('fs');
 import yaml = require('yaml');
 import { SecretStore } from './secretStore';
+import { DataStore } from './dataStore';
 
 interface FassConfig
 {
@@ -28,9 +29,11 @@ export interface FassExecutionContext
 
 export class Core
 {
+    dataStore: DataStore;
     secretStore: SecretStore;
 
-    constructor(secretStore: SecretStore) {
+    constructor(dataStore: DataStore, secretStore: SecretStore) {
+        this.dataStore = dataStore;
         this.secretStore = secretStore;
     }
 
@@ -61,23 +64,46 @@ export class Core
         console.log(JSON.stringify(config));
     }
 
+    async init(executionContext: FassExecutionContext) {
+        try
+        {
+            await this.dataStore.open();
+        }
+        finally
+        {
+            await this.dataStore.close();
+        }
+    }
+
     async fetch(executionContext:FassExecutionContext) {
         const config = await this.loadConfig();
         console.log('%s relationships to fetch from', config.relationships.length)
 
         const balances = new Array<AccountBalance>();
 
-        for (const relationship of config.relationships) {
-            console.log('Fetching \'%s\' via \'%s\'', relationship.name, relationship.provider);
-            const providerName = relationship.provider;
-            var module = require('./providers/' + providerName);
-            var provider = <BankDataProviderInterface>new module[providerName]();
+        try
+        {
+            await this.dataStore.open();
 
-            var relationshipBalances = await provider.getBalances(relationship, executionContext);
-            console.log('Found %s accounts', relationshipBalances.length);
-            relationshipBalances.forEach(b => balances.push(b));
+            for (const relationship of config.relationships) {
+                console.log('Fetching \'%s\' via \'%s\'', relationship.name, relationship.provider);
+                const providerName = relationship.provider;
+                var module = require('./providers/' + providerName);
+                var provider = <BankDataProviderInterface>new module[providerName]();
+
+                var relationshipBalances = await provider.getBalances(relationship, executionContext);
+                console.log('Found %s accounts', relationshipBalances.length);
+                relationshipBalances.forEach(b => {
+                    balances.push(b);
+                    this.dataStore.addBalance(b);
+                });
+            }
+
+            console.log(balances);
         }
-
-        console.log(balances);
+        finally
+        {
+            await this.dataStore.close();
+        }
     }
 }

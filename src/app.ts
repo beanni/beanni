@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 import { BankDataProviderInterface } from './types';
+import { DataStore } from './dataStore';
 import { SecretStore } from './secretStore';
 import { Core, FassExecutionContext } from './core';
 import program from 'commander';
 import inquirer from 'inquirer';
 
+const dataStore = new DataStore();
 const secretStore = new SecretStore();
-const core = new Core(secretStore);
+const core = new Core(dataStore, secretStore);
 
 program
     .name('beanie')
@@ -17,6 +19,13 @@ program
     .action(async function() {
         const executionContext = parseExecutionContext();
         await core.fetch(executionContext);
+    });
+
+program
+    .command('init')
+    .action(async function() {
+        const executionContext = parseExecutionContext();
+        await core.init(executionContext);
     });
 
 program

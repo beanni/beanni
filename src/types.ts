@@ -11,7 +11,7 @@ export interface AccountBalance {
     accountNumber: string;
     accountName: string;
     institution: string;
-    balance: Number;
+    balance: number;
 }
 
 export interface BankDataProviderInterface {
