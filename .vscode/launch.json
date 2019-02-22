@@ -28,7 +28,6 @@
             "options": [
                 "--help",
                 "fetch",
-                "init",
                 "validate-config"
             ],
             "default": "validate-config"

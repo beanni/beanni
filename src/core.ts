@@ -64,17 +64,6 @@ export class Core
         console.log(JSON.stringify(config));
     }
 
-    async init(executionContext: FassExecutionContext) {
-        try
-        {
-            await this.dataStore.open();
-        }
-        finally
-        {
-            await this.dataStore.close();
-        }
-    }
-
     async fetch(executionContext:FassExecutionContext) {
         const config = await this.loadConfig();
         console.log('%s relationships to fetch from', config.relationships.length)

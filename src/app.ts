@@ -22,13 +22,6 @@ program
     });
 
 program
-    .command('init')
-    .action(async function() {
-        const executionContext = parseExecutionContext();
-        await core.init(executionContext);
-    });
-
-program
     .command('store-secret <key> [secret]')
     .action(async function(key:string, secret?:string) {
         if (secret == null)
