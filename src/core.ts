@@ -99,7 +99,7 @@ export class Core
                 });
             }
 
-            console.log(balances);
+            console.log('Written %s balance entries to the data store', balances.length);
         }
         finally
         {
