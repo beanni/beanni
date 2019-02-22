@@ -26,7 +26,7 @@ export class DataStore
                 $accountNumber: balance.accountNumber,
                 $accountName: balance.accountName,
                 $institution: balance.institution,
-                $balance: balance.balance * 100
+                $balance: Math.floor(balance.balance * 100)
             }
         );
     }
