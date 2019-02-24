@@ -27,7 +27,9 @@
             "description": "Beanni Command",
             "options": [
                 "--help",
+                "explore",
                 "fetch",
+                "init",
                 "validate-config"
             ],
             "default": "validate-config"
