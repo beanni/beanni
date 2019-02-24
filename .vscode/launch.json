@@ -24,7 +24,7 @@
         {
             "type": "pickString",
             "id": "subcommand",
-            "description": "Finance Assistant Command",
+            "description": "Beanni Command",
             "options": [
                 "--help",
                 "fetch",
