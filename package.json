@@ -36,7 +36,8 @@
   },
   "files": [
     "/dist",
-    "/src/migrations"
+    "/src/migrations",
+    "/src/example-config.yaml"
   ],
   "bin": {
     "beanni": "./dist/app.js"
