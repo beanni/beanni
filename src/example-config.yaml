@@ -5,6 +5,7 @@
 # NEVER put any usernames or passwords in this file at all. We'll handle them securely later.
 
 relationships:
+  - provider: Asgard
   - provider: Ing
   - provider: Myki
   - provider: Perpetual
