@@ -21,17 +21,27 @@ router.get('/', async function(req, res, next) {
         ];
         var colorIndex = 0;
 
-        var balanceData = await dataStore.getAllBalances();
+        var balanceData : (any)[] = await dataStore.getAllBalances();
+        balanceData.forEach(bd => {
+            bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`;
+        });
+        var dates = _(balanceData)
+            .groupBy(r => r.date)
+            .keys()
+            .value();
+
         var balanceHistoryChartData = {
-            labels: _(balanceData)
-                .groupBy(r => r.date)
-                .keys()
-                .value(),
+            labels: dates,
             datasets: _(balanceData)
-                .groupBy(r => `${r.institution} ${r.accountNumber} ${r.accountName}`)
+                .groupBy(r => r.label)
                 .map((value, key) => ({
                     label: key,
-                    data: _(value).map(r => r.balance).value(),
+                    data: _(dates)
+                        .map(d => {
+                            var dataPoint = _(balanceData).find(bd => bd.label == key && bd.date == d);
+                            return dataPoint == null ? null : dataPoint.balance;
+                        })
+                        .value(),
                     backgroundColor: colors[colorIndex++ % colors.length]
                 }))
                 .value()
