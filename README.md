@@ -10,16 +10,13 @@ Beanni helps gather financial data from all of your various providers, instituti
 
 Get it running in minutes:
 
-1. Create a local folder for config and data
-    * `mkdir beanni`
-    * `cd beanni`
-1. Create `config.yaml` and `beanni.db`
-    * `npx beanni init`
-1. Edit `config.yaml`
-1. Gather your data
-    * `npx beanni fetch`
-1. Get insights
-    * `npx beanni explore`
+| Run | Why |
+| --- | --- |
+| `mkdir beanni` <br/> `cd beanni` | Creates a local folder where config and data will be stored |
+| `npx beanni init` | Creates `config.yaml` and `beanni.db` for you |
+| Edit `config.yaml` | |
+| `npx beanni fetch` | Grab your data |
+| `npx beanni explore` | Launch the analysis UI |
 
 ## Security
 
