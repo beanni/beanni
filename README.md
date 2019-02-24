@@ -10,25 +10,25 @@ Beanni helps gather financial data from all of your various providers, instituti
 
 Get started in minutes:
 
-| Run | Why |
-| --- | --- |
-| https://nodejs.org/en/download/ | Beanni is built on Node.js |
-| `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
-| `npm install beanni --save` | Install Beanni into this folder |
-| `npx beanni init` | Create an example `config.yaml` |
-| Edit `config.yaml` | Add your own banking relationships |
-| `npx beanni fetch` | Grab your data |
-| `npx beanni explore` | Launch the analysis UI |
+| Step | Run | Why |
+| --- | --- | --- |
+| 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
+| 2. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
+| 3. | `npm install beanni --save` | Install Beanni into this folder |
+| 4. | `npx beanni init` | Create an example `config.yaml` |
+| 5. | Edit `config.yaml` | Add your own banking relationships |
+| 6. | `npx beanni fetch` | Grab your data |
+| 7. | `npx beanni explore` | Launch the analysis UI |
 
 💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
 
 In future:
 
-| Run | Why |
-| --- | --- |
-| `npm update beanni` | Update Beanni to the latest version |
-| `npx beanni fetch` | Grab your data |
-| `npx beanni explore` | Launch the analysis UI |
+| Step | Run | Why |
+| --- | --- | --- |
+| 1. | `npm update beanni` | Update Beanni to the latest version |
+| 2. | `npx beanni fetch` | Grab your data |
+| 3. | `npx beanni explore` | Launch the analysis UI |
 
 ## Security, by design
 
