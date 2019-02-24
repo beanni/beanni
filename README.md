@@ -13,8 +13,9 @@ Get it running in minutes:
 | Run | Why |
 | --- | --- |
 | `mkdir beanni` <br/> `cd beanni` | Creates a local folder where config and data will be stored |
-| `npx beanni init` | Creates `config.yaml` and `beanni.db` for you |
-| Edit `config.yaml` | |
+| `npm install beanni` | Install Beanni into this folder |
+| `npx beanni init` | Creates an example `config.yaml` for you |
+| Edit `config.yaml` | Add your own banking relationships |
 | `npx beanni fetch` | Grab your data |
 | `npx beanni explore` | Launch the analysis UI |
 
