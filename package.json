@@ -1,6 +1,6 @@
 {
   "name": "beanni",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Your friendly Australian bean-counter.",
   "main": "index.js",
   "scripts": {
