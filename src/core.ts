@@ -1,6 +1,6 @@
 import { BankDataProviderInterface, FassInstitutionRelationship, AccountBalance } from './types';
 import fs = require('fs');
-import yaml = require('yaml');
+import yaml = require('js-yaml');
 import { SecretStore } from './secretStore';
 import { DataStore } from './dataStore';
 import _ from 'lodash';
@@ -29,7 +29,7 @@ export class Core
 
     async loadConfig() : Promise<FassConfig> {
         const configFileText = fs.readFileSync(CONFIG_PATH, 'utf8');
-        let config = <FassConfig>yaml.parse(configFileText);
+        let config = <FassConfig>yaml.safeLoad(configFileText);
 
         config.relationships.forEach(r => {
             if (r.name == null) {
