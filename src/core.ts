@@ -3,6 +3,7 @@ import fs = require('fs');
 import yaml = require('yaml');
 import { SecretStore } from './secretStore';
 import { DataStore } from './dataStore';
+import _ from 'lodash';
 
 interface FassConfig
 {
@@ -29,6 +30,23 @@ export class Core
     async loadConfig() : Promise<FassConfig> {
         const configFileText = fs.readFileSync(CONFIG_PATH, 'utf8');
         let config = <FassConfig>yaml.parse(configFileText);
+
+        config.relationships.forEach(r => {
+            if (r.name == null) {
+                r.name = r.provider;
+            }
+        });
+
+        var duplicateRelationshipNames = _(config.relationships)
+            .groupBy((r : FassInstitutionRelationship) => r.name)
+            .pickBy(x => x.length > 1)
+            .keys()
+            .value();
+        if (duplicateRelationshipNames.length > 0)
+        {
+            throw 'Duplicate relationships: ' + duplicateRelationshipNames.join(', ') + '\nTo re-use the same provider multiple times, add a name property as well';
+        }
+
         return config;
     }
 

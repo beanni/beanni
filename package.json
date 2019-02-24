@@ -25,10 +25,12 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.121",
     "@types/yaml": "^1.0.2",
     "commander": "^2.19.0",
     "inquirer": "^6.2.2",
     "keytar": "^4.4.0",
+    "lodash": "^4.17.11",
     "puppeteer": "^1.12.2",
     "sqlite": "^3.0.2",
     "ts-node": "^8.0.2",
