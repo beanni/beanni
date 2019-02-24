@@ -5,7 +5,11 @@ import { FassExecutionContext } from '../core';
 const providerName = 'ING';
 
 export class Ing implements BankDataProviderInterface {
-    async getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext): Promise<Array<AccountBalance>> {
+    async getBalances(
+        relationship : FassInstitutionRelationship,
+        executionContext : FassExecutionContext,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) : Promise<Array<AccountBalance>> {
         const balances = new Array<AccountBalance>();
         const browser = await puppeteer.launch({
             headless: !executionContext.debug,
@@ -15,7 +19,7 @@ export class Ing implements BankDataProviderInterface {
 
         try
         {
-            await this.login(page, executionContext, relationship);
+            await this.login(page, executionContext, retrieveSecretCallback);
 
             await page.waitForSelector('ing-page-block.ing-all-accounts-summary');
             if (executionContext.debug) { console.log('8'); }
@@ -39,13 +43,20 @@ export class Ing implements BankDataProviderInterface {
         return balances;
     }
 
-    private async login(page: puppeteer.Page, executionContext: FassExecutionContext, relationship: FassInstitutionRelationship) {
+    private async login(
+        page: puppeteer.Page,
+        executionContext: FassExecutionContext,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) {
+        const username = await retrieveSecretCallback('username');
+        const password = await retrieveSecretCallback('password');
+
         await page.goto("https://www.ing.com.au/securebanking/");
         await page.waitForSelector('#cifField');
         if (executionContext.debug) {
             console.log('1');
         }
-        await page.type('#cifField', relationship.username);
+        await page.type('#cifField', username);
         if (executionContext.debug) {
             console.log('2');
         }
@@ -65,7 +76,7 @@ export class Ing implements BankDataProviderInterface {
             console.log('4');
         }
         // Type the PIN digit-by-digit
-        for (const digit of relationship.password) {
+        for (const digit of password) {
             await page.evaluate((d) => {
                 var button = <any>document.querySelector('.ing-accessible-login input[alt="' + d + '"]');
                 if (button != null)

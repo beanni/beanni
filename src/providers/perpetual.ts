@@ -5,7 +5,11 @@ import { FassExecutionContext } from '../core';
 const providerName = 'Perpetual';
 
 export class Perpetual implements BankDataProviderInterface {
-    async getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext): Promise<Array<AccountBalance>> {
+    async getBalances(
+            relationship : FassInstitutionRelationship,
+            executionContext : FassExecutionContext,
+            retrieveSecretCallback : (key : string) => Promise<string>
+        ) : Promise<Array<AccountBalance>> {
         const balances = new Array<AccountBalance>();
         const browser = await puppeteer.launch({
             headless: !executionContext.debug
@@ -14,7 +18,7 @@ export class Perpetual implements BankDataProviderInterface {
 
         try
         {
-            await this.login(page, relationship);
+            await this.login(page, retrieveSecretCallback);
 
             await page.waitForSelector('#accountSummaryTbl .total');
 
@@ -37,18 +41,24 @@ export class Perpetual implements BankDataProviderInterface {
         return balances;
     }
 
-    private async login(page: puppeteer.Page, relationship: FassInstitutionRelationship) {
+    private async login(
+            page: puppeteer.Page,
+            retrieveSecretCallback : (key : string) => Promise<string>
+        ) {
+        const username = await retrieveSecretCallback('username');
+        const password = await retrieveSecretCallback('password');
+
         await page.goto("https://www.perpetual.com.au/loginsecure");
         const loginPageTitle = await page.title();
         if (loginPageTitle.includes('OpenAM')) {
             await page.waitForSelector('#IDToken1');
-            await page.type('#IDToken1[type=text]', relationship.username);
-            await page.type('#IDToken2[type=password]', relationship.password);
+            await page.type('#IDToken1[type=text]', username);
+            await page.type('#IDToken2[type=password]', password);
         }
         else {
             await page.waitForSelector('#onlineIDTextBox');
-            await page.type('#onlineIDTextBox', relationship.username);
-            await page.type('#passwordTextBox', relationship.password);
+            await page.type('#onlineIDTextBox', username);
+            await page.type('#passwordTextBox', password);
         }
         await page.click('input[type=submit][value=Login]');
     }

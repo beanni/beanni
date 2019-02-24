@@ -3,8 +3,6 @@ import { FassExecutionContext } from "./core";
 export interface FassInstitutionRelationship {
     name: string;
     provider: string;
-    username: string;
-    password: string;
 }
 
 export interface AccountBalance {
@@ -15,5 +13,9 @@ export interface AccountBalance {
 }
 
 export interface BankDataProviderInterface {
-    getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext) : Promise<Array<AccountBalance>>;
+    getBalances(
+            relationship : FassInstitutionRelationship,
+            executionContext : FassExecutionContext,
+            retrieveSecretCallback : (key : string) => Promise<string>
+        ) : Promise<Array<AccountBalance>>;
 }

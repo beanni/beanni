@@ -14,19 +14,6 @@ export interface FassExecutionContext
     debug: boolean;
 }
 
-// export const YamlSecretTag : yaml.Tag = {
-//     identify: (value:any) => false,
-//     default: true,
-//     tag: 'tag:yaml.org,2002:secret',
-//     test: /^\!secret (.*?)$/,
-//     resolve: (str:string, key:string) : yaml.ast.Node => {
-      
-//         //return 'top secret value for: ' + key;
-//     },
-//     stringify: (value:any) => value
-// }
-// yaml.defaultOptions.tags = [YamlSecretTag];
-
 const CONFIG_PATH = './config.yaml';
 
 export class Core
@@ -42,27 +29,11 @@ export class Core
     async loadConfig() : Promise<FassConfig> {
         const configFileText = fs.readFileSync(CONFIG_PATH, 'utf8');
         let config = <FassConfig>yaml.parse(configFileText);
-
-        for (const relationship of config.relationships) {
-            var secretPattern = /^\$secret (.*?)$/;
-
-            var match = secretPattern.exec(relationship.username);
-            if (match == null) continue;
-            var secretKey = match[1];
-            relationship.username = await this.secretStore.retrieveSecret(secretKey);;
-
-            var match = secretPattern.exec(relationship.password);
-            if (match == null) continue;
-            var secretKey = match[1];
-            relationship.password = await this.secretStore.retrieveSecret(secretKey);;
-        };
-
         return config;
     }
 
     async validateConfig() {
         let config = await this.loadConfig();
-        // TODO: Don't dump out secrets here
         console.log(JSON.stringify(config));
     }
 
@@ -82,7 +53,11 @@ export class Core
                 var module = require('./providers/' + providerName);
                 var provider = <BankDataProviderInterface>new module[providerName]();
 
-                var relationshipBalances = await provider.getBalances(relationship, executionContext);
+                var retrieveSecretCallback = async (key : string) => {
+                    return await this.secretStore.retrieveSecret(relationship.name + ':' + key);
+                };
+
+                var relationshipBalances = await provider.getBalances(relationship, executionContext, retrieveSecretCallback);
                 console.log('Found %s accounts', relationshipBalances.length);
                 relationshipBalances.forEach(b => {
                     balances.push(b);

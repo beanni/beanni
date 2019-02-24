@@ -5,7 +5,11 @@ import { FassExecutionContext } from '../core';
 const providerName = 'Myki';
 
 export class Myki implements BankDataProviderInterface {
-    async getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext): Promise<Array<AccountBalance>> {
+    async getBalances(
+        relationship : FassInstitutionRelationship,
+        executionContext : FassExecutionContext,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) : Promise<Array<AccountBalance>> {
         const balances = new Array<AccountBalance>();
         const browser = await puppeteer.launch({
             headless: !executionContext.debug
@@ -14,7 +18,7 @@ export class Myki implements BankDataProviderInterface {
 
         try
         {
-            await this.login(page, relationship);
+            await this.login(page, retrieveSecretCallback);
 
             await page.waitForSelector('#tabs-1 table.acc-tab-table tr a');
 
@@ -30,21 +34,27 @@ export class Myki implements BankDataProviderInterface {
                     balance: parseFloat(await row.$eval('td:nth-child(3)', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
                 });
             }
+
+            await this.logout(page);
         }
         finally
         {
-            await this.logout(page);
             await browser.close();
         }
 
         return balances;
     }
 
-    private async login(page: puppeteer.Page, relationship: FassInstitutionRelationship) {
+    private async login(
+        page: puppeteer.Page,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) {
+        const username = await retrieveSecretCallback('username');
+        const password = await retrieveSecretCallback('password');
         await page.goto('https://www.mymyki.com.au/NTSWebPortal/Login.aspx');
         await page.waitForSelector('input[name$=Username]');
-        await page.type('input[name$=Username]', relationship.username);
-        await page.type('input[name$=Password]', relationship.password);
+        await page.type('input[name$=Username]', username);
+        await page.type('input[name$=Password]', password);
         await page.click('input[type=submit][value=Login]');
     }
 

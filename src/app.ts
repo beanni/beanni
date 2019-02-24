@@ -7,7 +7,24 @@ import program from 'commander';
 import inquirer from 'inquirer';
 
 const dataStore = new DataStore();
+
 const secretStore = new SecretStore();
+secretStore.interactivePrompt = async (promptText : string) => {
+    console.log('Missing a secret');
+    console.warn('What you enter here will be persisted to secure store');
+    var pr:{secret:string} = await inquirer.prompt([
+        {
+            type: 'password',
+            name: 'secret',
+            message: promptText + ':',
+            validate: (val:string) : boolean => {
+                return val.length > 0;
+            }
+        }
+    ]);
+    return pr.secret;
+};
+
 const core = new Core(dataStore, secretStore);
 
 program

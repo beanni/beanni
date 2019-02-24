@@ -5,7 +5,11 @@ import { FassExecutionContext } from '../core';
 const providerName = 'Westpac';
 
 export class Westpac implements BankDataProviderInterface {
-    async getBalances(relationship : FassInstitutionRelationship, executionContext : FassExecutionContext): Promise<Array<AccountBalance>> {
+    async getBalances(
+        relationship : FassInstitutionRelationship,
+        executionContext : FassExecutionContext,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) : Promise<Array<AccountBalance>> {
         const balances = new Array<AccountBalance>();
         const browser = await puppeteer.launch({
             headless: !executionContext.debug
@@ -14,7 +18,7 @@ export class Westpac implements BankDataProviderInterface {
 
         try
         {
-            await this.login(page, relationship);
+            await this.login(page, retrieveSecretCallback);
 
             await page.waitForSelector('#customer-actions');
 
@@ -41,11 +45,16 @@ export class Westpac implements BankDataProviderInterface {
         return balances;
     }
 
-    private async login(page: puppeteer.Page, relationship: FassInstitutionRelationship) {
+    private async login(
+        page: puppeteer.Page,
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) {
+        const username = await retrieveSecretCallback('username');
+        const password = await retrieveSecretCallback('password');
         await page.goto("https://banking.westpac.com.au/wbc/banking/handler?fi=wbc&TAM_OP=login&segment=personal&logout=false");
         await page.waitForSelector('#fakeusername');
-        await page.type('#fakeusername', relationship.username);
-        await page.type('#password', relationship.password);
+        await page.type('#fakeusername', username);
+        await page.type('#password', password);
         await page.click('#signin');
     }
 

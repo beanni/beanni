@@ -2,16 +2,11 @@
 # each of the underlying accounts.
 
 # 🚨 Security first!
-# DON'T put actual usernames or passwords in this file at all. Just use the $secret syntax
-# to specify a key to refer to the secret by. When you run `beanni fetch`, it'll prompt you
-# for the secret values, and then push them into the secure store.
+# NEVER put any usernames or passwords in this file at all.
+# We'll handle them securely later.
 
 relationships:
   - name: Personal ING
     provider: Ing
-    username: $secret ing-username
-    password: $secret ing-password
   - name: Personal Westpac
     provider: Westpac
-    username: $secret westpac-username
-    password: $secret westpac-password
