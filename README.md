@@ -32,24 +32,32 @@ In future:
 
 ## Security, by design
 
+### Execution Environment
+
 Beanni all runs locally on your own machine, or your own hosting. There are no shared web services in play.
+
+### Secret Storage
 
 Secrets are kept out of configuration files entirely, by design.
 
 Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this.
 
+### Dependency Supply Chain
+
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
-* [`commander`](https://www.npmjs.com/package/commander) has >15M weekly downloads, and powers almost every node CLI app out there
-* [`inquirer`](https://www.npmjs.com/package/inquirer) has ~10M weekly downloads, and powers almost every node CLI app out there
-* [`js-yaml`](https://www.npmjs.com/package/js-yaml) has >10M weekly downloads
-* [`keytar`](https://www.npmjs.com/package/keytar) has >20k weekly downloads, and is [maintained by the Atom project](https://github.com/atom/node-keytar)
-* [`lodash`](https://www.npmjs.com/package/lodash) has >15M weekly downloads
-* [`puppeteer`](https://www.npmjs.com/package/puppeteer) has >500k weekly downloads, and is [maintained by Google Chrome](https://github.com/GoogleChrome/puppeteer#readme)
-* [`sqlite`](https://www.npmjs.com/package/sqlite) has >20k weekly downloads
-* [`ts-node`](https://www.npmjs.com/package/ts-node) has >1M weekly downloads
-* `@types` are [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
-    * `@types/lodash`
-    * `@types/yaml`
+
+| Package | Weekly Package Downloads | Known/Trusted Maintainer |
+| --- | --- | --- |
+| [`commander`](https://www.npmjs.com/package/commander) | >15M | |
+| [`inquirer`](https://www.npmjs.com/package/inquirer) | ~10M | |
+| [`js-yaml`](https://www.npmjs.com/package/js-yaml) | >10M | |
+| [`keytar`](https://www.npmjs.com/package/keytar) | >20k | [Atom](https://github.com/atom/node-keytar) |
+| [`lodash`](https://www.npmjs.com/package/lodash) | >15M | |
+| [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >500k | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
+| [`sqlite`](https://www.npmjs.com/package/sqlite) | >20k | |
+| [`ts-node`](https://www.npmjs.com/package/ts-node) | >1M | |
+
+You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies).
 
 ## Development
 
