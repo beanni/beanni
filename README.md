@@ -32,6 +32,8 @@ Secrets are stored in your operating system's credential store (Credential Manag
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
 * `commander` has >15M weekly downloads, and powers almost every node CLI app out there
 * `inquirer` has ~10M weekly downloads, and powers almost every node CLI app out there
+* `lodash` has >15M weekly downloads
+    * `@types/lodash` is [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
 * `keytar` has >20k weekly downloads, and is [maintained by the Atom project](https://github.com/atom/node-keytar)
 * `puppeteer` has >500k weekly downloads, and is [maintained by Google Chrome](https://github.com/GoogleChrome/puppeteer#readme)
 * `sqlite` has >20k weekly downloads
