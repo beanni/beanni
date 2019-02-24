@@ -27,6 +27,8 @@ export interface FassExecutionContext
 // }
 // yaml.defaultOptions.tags = [YamlSecretTag];
 
+const CONFIG_PATH = './config.yaml';
+
 export class Core
 {
     dataStore: DataStore;
@@ -38,7 +40,7 @@ export class Core
     }
 
     async loadConfig() : Promise<FassConfig> {
-        const configFileText = fs.readFileSync('./config.yaml', 'utf8');
+        const configFileText = fs.readFileSync(CONFIG_PATH, 'utf8');
         let config = <FassConfig>yaml.parse(configFileText);
 
         for (const relationship of config.relationships) {
@@ -93,6 +95,23 @@ export class Core
         finally
         {
             await this.dataStore.close();
+        }
+    }
+
+    async init(executionContext:FassExecutionContext) {
+        try
+        {
+            await fs.promises.access(CONFIG_PATH, fs.constants.F_OK);
+            console.error('There\'s already a config.yaml file on disk; leaving it as-is');
+        }
+        catch
+        {
+            await fs.promises.copyFile(
+                __dirname + '/../src/example-config.yaml',
+                CONFIG_PATH,
+                fs.constants.COPYFILE_EXCL
+            );
+            console.log('Created config.yaml')
         }
     }
 }
