@@ -1,11 +1,11 @@
-# Beanie
+# Beanni
 
-Your friendly local bean-counter.
+Your friendly [Australian](https://www.youtube.com/watch?v=Aey_zIE3K9E) bean-counter.
 
 ## Usage
 
-1. `npx beanie --help`
-1. `npx beanie fetch`
+1. `npx beanni --help`
+1. `npx beanni fetch`
 
 ## Development
 

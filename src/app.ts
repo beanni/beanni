@@ -11,7 +11,7 @@ const secretStore = new SecretStore();
 const core = new Core(dataStore, secretStore);
 
 program
-    .name('beanie')
+    .name('beanni')
     .option('-d, --debug');
 
 program

@@ -1,7 +1,7 @@
 import sqlite, { Database } from 'sqlite';
 import { AccountBalance } from './types';
 
-const FASS_DATA_FILE_NAME = './beanie.db';
+const FASS_DATA_FILE_NAME = './beanni.db';
 
 export class DataStore
 {
