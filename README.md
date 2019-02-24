@@ -57,6 +57,8 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 | [`sqlite`](https://www.npmjs.com/package/sqlite) | >20k | |
 | [`ts-node`](https://www.npmjs.com/package/ts-node) | >1M | |
 
+It would be very visible if any of these packages, or their dependencies, were to be compromised.
+
 You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies).
 
 ## Development
