@@ -10,7 +10,7 @@ export class DataStore
     async open()
     {
         this.database = await sqlite.open(FASS_DATA_FILE_NAME);
-        await this.database.migrate({ migrationsPath: 'src/migrations' });
+        await this.database.migrate({ migrationsPath: __dirname + '/../src/migrations' });
     }
 
     async addBalance(balance: AccountBalance) {
