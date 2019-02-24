@@ -15,18 +15,20 @@ Get started in minutes:
 | https://nodejs.org/en/download/ | Beanni is built on Node.js |
 | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
 | `npm install beanni --save` | Install Beanni into this folder |
-| `beanni init` | Create an example `config.yaml` |
+| `npx beanni init` | Create an example `config.yaml` |
 | Edit `config.yaml` | Add your own banking relationships |
-| `beanni fetch` | Grab your data |
-| `beanni explore` | Launch the analysis UI |
+| `npx beanni fetch` | Grab your data |
+| `npx beanni explore` | Launch the analysis UI |
+
+💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
 
 In future:
 
 | Run | Why |
 | --- | --- |
 | `npm update beanni` | Update Beanni to the latest version |
-| `beanni fetch` | Grab your data |
-| `beanni explore` | Launch the analysis UI |
+| `npx beanni fetch` | Grab your data |
+| `npx beanni explore` | Launch the analysis UI |
 
 ## Security, by design
 
