@@ -52,7 +52,8 @@ export class Core
 
     async validateConfig() {
         let config = await this.loadConfig();
-        console.log(JSON.stringify(config));
+        console.log('Config appears valid:')
+        console.log(JSON.stringify(config, null, 2));
     }
 
     async fetch(executionContext:FassExecutionContext) {
