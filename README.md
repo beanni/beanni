@@ -8,24 +8,31 @@ Beanni helps gather financial data from all of your various providers, instituti
 
 ## Usage
 
-Get it running in minutes:
+Get started in minutes:
 
 | Run | Why |
 | --- | --- |
-| `mkdir beanni` <br/> `cd beanni` | Creates a local folder where config and data will be stored |
-| `npm install beanni` | Install Beanni into this folder |
-| `npx beanni init` | Creates an example `config.yaml` for you |
+| https://nodejs.org/en/download/ | Beanni is built on Node.js |
+| `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
+| `npm install beanni --save` | Install Beanni into this folder |
+| `beanni init` | Create an example `config.yaml` |
 | Edit `config.yaml` | Add your own banking relationships |
-| `npx beanni fetch` | Grab your data |
-| `npx beanni explore` | Launch the analysis UI |
+| `beanni fetch` | Grab your data |
+| `beanni explore` | Launch the analysis UI |
 
-💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
+In future:
 
-## Security
+| Run | Why |
+| --- | --- |
+| `npm update beanni` | Update Beanni to the latest version |
+| `beanni fetch` | Grab your data |
+| `beanni explore` | Launch the analysis UI |
+
+## Security, by design
 
 Beannie all runs locally on your own machine, or your own hosting. There are no shared web services in play.
 
-Secrets are kept out of configuration files: `config.yaml` only has keys that point to secrets (e.g. `password: $secret my-bank-username-secret`).
+Secrets are kept out of configuration files entirely, by design.
 
 Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this.
 
@@ -33,13 +40,14 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 * `commander` has >15M weekly downloads, and powers almost every node CLI app out there
 * `inquirer` has ~10M weekly downloads, and powers almost every node CLI app out there
 * `lodash` has >15M weekly downloads
-    * `@types/lodash` is [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
 * `keytar` has >20k weekly downloads, and is [maintained by the Atom project](https://github.com/atom/node-keytar)
 * `puppeteer` has >500k weekly downloads, and is [maintained by Google Chrome](https://github.com/GoogleChrome/puppeteer#readme)
 * `sqlite` has >20k weekly downloads
 * `ts-node` has >1M weekly downloads
 * `yaml` has >50k weekly downloads
-    * `@types/yaml` is [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
+* `@types` are [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
+    * `@types/lodash`
+    * `@types/yaml`
 
 ## Development
 
