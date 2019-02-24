@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { BankDataProviderInterface } from './types';
 import { DataStore } from './dataStore';
 import { SecretStore } from './secretStore';
 import { Core, FassExecutionContext } from './core';
+import { Explorer } from './web/explorer';
 import program from 'commander';
 import inquirer from 'inquirer';
 
@@ -35,7 +35,13 @@ program
     .command('explore')
     .action(async function() {
         const executionContext = parseExecutionContext();
-        await core.explore(executionContext);
+        const explorer = new Explorer(dataStore);
+        explorer.run((url) => {
+            console.log(`Listening on ${url}`);
+            console.log('Press Ctrl+C to quit');
+            var start = (process.platform == 'darwin' ? 'open' : process.platform == 'win32' ? 'start' : 'xdg-open');
+            require('child_process').exec(start + ' ' + url);
+        });
     });
 
 program
