@@ -8,10 +8,16 @@ block content
     p He's worth: $#{netWorth}
 
     h2 Balances
-    div(style='width: 800px; height: 400px;')
+    div(style='width: 100%; height: 600px;')
         canvas#balanceHistoryChart
         script.
             new Chart('balanceHistoryChart', {
-                type: 'pie',
-                data: !{JSON.stringify(balanceHistoryChartData)}
+                type: 'bar',
+                data: !{JSON.stringify(balanceHistoryChartData)},
+                options: {
+                    scales: {
+                        xAxes: [{stacked: true}],
+                        yAxes: [{stacked: true}]
+                    }
+                }
             });

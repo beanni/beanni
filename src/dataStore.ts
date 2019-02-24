@@ -36,7 +36,10 @@ export class DataStore
             throw 'Database not open yet';
         }
         var result = await this.database.all<any>(
-            `SELECT *, max(timestamp) FROM Balances GROUP BY institution, accountNumber`
+            `SELECT date(timestamp) AS 'date', institution, accountNumber, accountName, balance, max(timestamp)
+            FROM Balances
+            GROUP BY institution, accountNumber, date(timestamp)
+            ORDER BY date(timestamp), institution, accountNumber`
         );
         result.forEach(r => { r.balance = r.balance / 100; })
         return result;
