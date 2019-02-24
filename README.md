@@ -30,7 +30,7 @@ In future:
 
 ## Security, by design
 
-Beannie all runs locally on your own machine, or your own hosting. There are no shared web services in play.
+Beanni all runs locally on your own machine, or your own hosting. There are no shared web services in play.
 
 Secrets are kept out of configuration files entirely, by design.
 
