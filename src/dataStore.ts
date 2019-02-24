@@ -31,6 +31,23 @@ export class DataStore
         );
     }
 
+    async getNetWorth() : Promise<number> {
+        if (this.database == null) {
+            throw 'Database not open yet';
+        }
+        var result = await this.database.get<any>(
+            `SELECT SUM(b.Balance) AS result
+            FROM Balances b
+            INNER JOIN (
+                SELECT id, max(timestamp)
+                FROM Balances
+                GROUP BY institution, accountNumber
+            ) b1
+            ON b.id = b1.id ORDER BY institution, accountNumber`
+        );
+        return (<number>result.result) / 100;
+    }
+
     async close() {
         if (this.database == null) {
             throw 'Unexpected flow; closing before opening';

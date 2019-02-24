@@ -32,6 +32,13 @@ program
     .option('-d, --debug');
 
 program
+    .command('explore')
+    .action(async function() {
+        const executionContext = parseExecutionContext();
+        await core.explore(executionContext);
+    });
+
+program
     .command('fetch')
     .action(async function() {
         const executionContext = parseExecutionContext();
