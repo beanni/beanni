@@ -19,6 +19,8 @@ Get it running in minutes:
 | `npx beanni fetch` | Grab your data |
 | `npx beanni explore` | Launch the analysis UI |
 
+💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
+
 ## Security
 
 Beannie all runs locally on your own machine, or your own hosting. There are no shared web services in play.
