@@ -2,11 +2,8 @@
 # each of the underlying accounts.
 
 # 🚨 Security first!
-# NEVER put any usernames or passwords in this file at all.
-# We'll handle them securely later.
+# NEVER put any usernames or passwords in this file at all. We'll handle them securely later.
 
 relationships:
-  - name: Personal ING
-    provider: Ing
-  - name: Personal Westpac
-    provider: Westpac
+  - provider: Ing
+  - provider: Westpac
