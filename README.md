@@ -39,14 +39,14 @@ Secrets are kept out of configuration files entirely, by design.
 Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this.
 
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
-* `commander` has >15M weekly downloads, and powers almost every node CLI app out there
-* `inquirer` has ~10M weekly downloads, and powers almost every node CLI app out there
-* `js-yaml` has >10M weekly downloads
-* `lodash` has >15M weekly downloads
-* `keytar` has >20k weekly downloads, and is [maintained by the Atom project](https://github.com/atom/node-keytar)
-* `puppeteer` has >500k weekly downloads, and is [maintained by Google Chrome](https://github.com/GoogleChrome/puppeteer#readme)
-* `sqlite` has >20k weekly downloads
-* `ts-node` has >1M weekly downloads
+* [`commander`](https://www.npmjs.com/package/commander) has >15M weekly downloads, and powers almost every node CLI app out there
+* [`inquirer`](https://www.npmjs.com/package/inquirer) has ~10M weekly downloads, and powers almost every node CLI app out there
+* [`js-yaml`](https://www.npmjs.com/package/js-yaml) has >10M weekly downloads
+* [`keytar`](https://www.npmjs.com/package/keytar) has >20k weekly downloads, and is [maintained by the Atom project](https://github.com/atom/node-keytar)
+* [`lodash`](https://www.npmjs.com/package/lodash) has >15M weekly downloads
+* [`puppeteer`](https://www.npmjs.com/package/puppeteer) has >500k weekly downloads, and is [maintained by Google Chrome](https://github.com/GoogleChrome/puppeteer#readme)
+* [`sqlite`](https://www.npmjs.com/package/sqlite) has >20k weekly downloads
+* [`ts-node`](https://www.npmjs.com/package/ts-node) has >1M weekly downloads
 * `@types` are [maintained by the DefinitelyTyped project](http://definitelytyped.org/)
     * `@types/lodash`
     * `@types/yaml`
