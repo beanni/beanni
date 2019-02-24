@@ -49,10 +49,12 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 | Package | Weekly Package Downloads | Known/Trusted Maintainer |
 | --- | --- | --- |
 | [`commander`](https://www.npmjs.com/package/commander) | >15M | |
+| [`express`](https://www.npmjs.com/package/express) | >5M | |
 | [`inquirer`](https://www.npmjs.com/package/inquirer) | ~10M | |
 | [`js-yaml`](https://www.npmjs.com/package/js-yaml) | >10M | |
 | [`keytar`](https://www.npmjs.com/package/keytar) | >20k | [Atom](https://github.com/atom/node-keytar) |
 | [`lodash`](https://www.npmjs.com/package/lodash) | >15M | |
+| [`pug`](https://www.npmjs.com/package/pug) | >300k | |
 | [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >500k | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
 | [`sqlite`](https://www.npmjs.com/package/sqlite) | >20k | |
 | [`ts-node`](https://www.npmjs.com/package/ts-node) | >1M | |

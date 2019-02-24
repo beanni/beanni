@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "@types/express": "^4.16.1",
+    "@types/http-errors": "^1.6.1",
     "@types/inquirer": "0.0.43",
     "@types/js-yaml": "^3.12.0",
     "@types/lodash": "^4.14.121",
@@ -34,6 +35,7 @@
     "js-yaml": "^3.12.1",
     "keytar": "^4.4.0",
     "lodash": "^4.17.11",
+    "pug": "^2.0.3",
     "puppeteer": "^1.12.2",
     "sqlite": "^3.0.2",
     "ts-node": "^8.0.2"
@@ -41,6 +43,8 @@
   "files": [
     "/dist",
     "/src/migrations",
+    "/src/web/public",
+    "/src/web/views",
     "/src/example-config.yaml"
   ],
   "bin": {

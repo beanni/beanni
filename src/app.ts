@@ -35,7 +35,7 @@ program
     .command('explore')
     .action(async function() {
         const executionContext = parseExecutionContext();
-        const explorer = new Explorer(dataStore);
+        const explorer = new Explorer();
         explorer.run((url) => {
             console.log(`Listening on ${url}`);
             console.log('Press Ctrl+C to quit');
