@@ -31,6 +31,17 @@ export class DataStore
         );
     }
 
+    async getAllBalances() : Promise<any> {
+        if (this.database == null) {
+            throw 'Database not open yet';
+        }
+        var result = await this.database.all<any>(
+            `SELECT *, max(timestamp) FROM Balances GROUP BY institution, accountNumber`
+        );
+        result.forEach(r => { r.balance = r.balance / 100; })
+        return result;
+    }
+
     async getNetWorth() : Promise<number> {
         if (this.database == null) {
             throw 'Database not open yet';

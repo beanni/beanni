@@ -1,6 +1,17 @@
 extends layout
 
 block content
-  h1 Beanni
-  p His name was Beanni! 🎶
-  p He's worth: $#{netWorth}
+    h1 Beanni
+    p His name was Beanni! 🎶
+
+    h2 Net Worth
+    p He's worth: $#{netWorth}
+
+    h2 Balances
+    div(style='width: 800px; height: 400px;')
+        canvas#balanceHistoryChart
+        script.
+            new Chart('balanceHistoryChart', {
+                type: 'pie',
+                data: !{JSON.stringify(balanceHistoryChartData)}
+            });
