@@ -6,4 +6,6 @@
 
 relationships:
   - provider: Ing
+  - provider: Myki
+  - provider: Perpetual
   - provider: Westpac
