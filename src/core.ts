@@ -70,18 +70,25 @@ export class Core
                 console.log('Fetching \'%s\' via \'%s\'', relationship.name, relationship.provider);
                 const providerName = relationship.provider;
                 var module = require('./providers/' + providerName);
-                var provider = <BankDataProviderInterface>new module[providerName]();
+                var provider = <BankDataProviderInterface>new module[providerName](executionContext);
 
-                var retrieveSecretCallback = async (key : string) => {
-                    return await this.secretStore.retrieveSecret(relationship.name + ':' + key);
-                };
+                try
+                {
+                    await provider.login(async (key : string) => {
+                        return await this.secretStore.retrieveSecret(relationship.name + ':' + key);
+                    });
 
-                var relationshipBalances = await provider.getBalances(relationship, executionContext, retrieveSecretCallback);
-                console.log('Found %s accounts', relationshipBalances.length);
-                relationshipBalances.forEach(b => {
-                    balances.push(b);
-                    this.dataStore.addBalance(b);
-                });
+                    var relationshipBalances = await provider.getBalances();
+                    console.log('Found %s accounts', relationshipBalances.length);
+                    relationshipBalances.forEach(b => {
+                        balances.push(b);
+                        this.dataStore.addBalance(b);
+                    });
+                }
+                finally
+                {
+                    await provider.logout();
+                }
             }
 
             console.log('Written %s balance entries to the data store', balances.length);

@@ -5,46 +5,24 @@ import { FassExecutionContext } from '../core';
 const providerName = 'Perpetual';
 
 export class Perpetual implements BankDataProviderInterface {
-    async getBalances(
-            relationship : FassInstitutionRelationship,
-            executionContext : FassExecutionContext,
-            retrieveSecretCallback : (key : string) => Promise<string>
-        ) : Promise<Array<AccountBalance>> {
-        const balances = new Array<AccountBalance>();
-        const browser = await puppeteer.launch({
-            headless: !executionContext.debug
-        });
-        const page = await browser.newPage();
+    executionContext: FassExecutionContext;
 
-        try
-        {
-            await this.login(page, retrieveSecretCallback);
+    browser: puppeteer.Browser | undefined;
+    page: puppeteer.Page | undefined;
 
-            await page.waitForSelector('#accountSummaryTbl .total');
-
-            var accountSummaryRows = await page.$$('#accountSummaryTbl > tbody > tr');
-            for (const row of accountSummaryRows) {
-                balances.push({
-                    institution: providerName,
-                    accountName: await row.$eval('.clientname', (el:any) => el.textContent.trim()),
-                    accountNumber: await row.$eval('.accountnumber', (el:any) => el.textContent.trim()),
-                    balance: parseFloat(await row.$eval('.accountvalue', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
-                });
-            }
-        }
-        finally
-        {
-            await this.logout(page);
-            await browser.close();
-        }
-
-        return balances;
+    constructor(executionContext : FassExecutionContext)
+    {
+        this.executionContext = executionContext;
     }
 
-    private async login(
-            page: puppeteer.Page,
-            retrieveSecretCallback : (key : string) => Promise<string>
-        ) {
+    async login(
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) {
+        this.browser = await puppeteer.launch({
+            headless: !this.executionContext.debug,
+        });
+        var page = this.page = await this.browser.newPage();
+
         const username = await retrieveSecretCallback('username');
         const password = await retrieveSecretCallback('password');
 
@@ -63,8 +41,36 @@ export class Perpetual implements BankDataProviderInterface {
         await page.click('input[type=submit][value=Login]');
     }
 
-    private async logout(page: puppeteer.Page) {
+    async logout() {
+        if (this.browser == null) throw 'Not logged in yet';
+        if (this.page == null) throw 'Not logged in yet';
+        var page = this.page;
+
         await page.goto("https://secure.perpetual.com.au/LogoutCancelSession.aspx");
         await page.waitForSelector('input[type=submit][value=Login]');
+
+        await this.browser.close();
+    }
+
+    async getBalances() : Promise<Array<AccountBalance>>
+    {
+        if (this.page == null) throw 'Not logged in yet';
+        var page = this.page;
+
+        const balances = new Array<AccountBalance>();
+
+        await page.waitForSelector('#accountSummaryTbl .total');
+
+        var accountSummaryRows = await page.$$('#accountSummaryTbl > tbody > tr');
+        for (const row of accountSummaryRows) {
+            balances.push({
+                institution: providerName,
+                accountName: await row.$eval('.clientname', (el:any) => el.textContent.trim()),
+                accountNumber: await row.$eval('.accountnumber', (el:any) => el.textContent.trim()),
+                balance: parseFloat(await row.$eval('.accountvalue', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
+            });
+        }
+
+        return balances;
     }
 }

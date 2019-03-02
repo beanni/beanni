@@ -13,9 +13,11 @@ export interface AccountBalance {
 }
 
 export interface BankDataProviderInterface {
-    getBalances(
-            relationship : FassInstitutionRelationship,
-            executionContext : FassExecutionContext,
-            retrieveSecretCallback : (key : string) => Promise<string>
-        ) : Promise<Array<AccountBalance>>;
+    login(
+        retrieveSecretCallback : (key : string) => Promise<string>
+    ) : Promise<void>;
+
+    logout() : Promise<void>;
+
+    getBalances() : Promise<Array<AccountBalance>>;
 }

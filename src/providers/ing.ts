@@ -5,63 +5,39 @@ import { FassExecutionContext } from '../core';
 const providerName = 'ING';
 
 export class Ing implements BankDataProviderInterface {
-    async getBalances(
-        relationship : FassInstitutionRelationship,
-        executionContext : FassExecutionContext,
-        retrieveSecretCallback : (key : string) => Promise<string>
-    ) : Promise<Array<AccountBalance>> {
-        const balances = new Array<AccountBalance>();
-        const browser = await puppeteer.launch({
-            headless: !executionContext.debug,
-            slowMo: 100
-        });
-        const page = await browser.newPage();
+    executionContext: FassExecutionContext;
 
-        try
-        {
-            await this.login(page, executionContext, retrieveSecretCallback);
+    browser: puppeteer.Browser | undefined;
+    page: puppeteer.Page | undefined;
 
-            await page.waitForSelector('ing-page-block.ing-all-accounts-summary');
-            if (executionContext.debug) { console.log('8'); }
-
-            var accountSummaryRows = await page.$$('ing-page-block.ing-all-accounts-summary .uia-account-row');
-            for (const row of accountSummaryRows) {
-                balances.push({
-                    institution: providerName,
-                    accountName: await row.$eval('h3', (el:any) => el.textContent),
-                    accountNumber: await row.$eval('.acc .uia-account-number', (el:any) => el.textContent.trim()),
-                    balance: parseFloat(await row.$eval('.cb .uia-account-current-balance-desktop', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
-                });
-            }
-        }
-        finally
-        {
-            await this.logout(page, executionContext);
-            await browser.close();
-        }
-
-        return balances;
+    constructor(executionContext : FassExecutionContext)
+    {
+        this.executionContext = executionContext;
     }
 
-    private async login(
-        page: puppeteer.Page,
-        executionContext: FassExecutionContext,
+    async login(
         retrieveSecretCallback : (key : string) => Promise<string>
     ) {
+        this.browser = await puppeteer.launch({
+            headless: !this.executionContext.debug,
+            slowMo: 100
+        });
+        var page = this.page = await this.browser.newPage();
+
         const username = await retrieveSecretCallback('username');
         const password = await retrieveSecretCallback('password');
 
         await page.goto("https://www.ing.com.au/securebanking/");
         await page.waitForSelector('#cifField');
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('1');
         }
         await page.type('#cifField', username);
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('2');
         }
         await page.keyboard.press('Tab');
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('3');
         }
         // Click the secret pixel that fires up the accessible login form
@@ -72,7 +48,7 @@ export class Ing implements BankDataProviderInterface {
         });
         //await page.click('.ing-login-input input[type="image"].accessibleText');
         await page.waitForSelector('.ing-accessible-login input[alt="1"]');
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('4');
         }
         // Type the PIN digit-by-digit
@@ -82,11 +58,11 @@ export class Ing implements BankDataProviderInterface {
                 if (button != null)
                     button.click();
             }, digit);
-            if (executionContext.debug) {
+            if (this.executionContext.debug) {
                 console.log('5');
             }
         }
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('6');
         }
         await page.evaluate(() => {
@@ -94,23 +70,52 @@ export class Ing implements BankDataProviderInterface {
             if (button != null)
                 button.click();
         });
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('7');
         }
     }
 
-    private async logout(page: puppeteer.Page, executionContext: FassExecutionContext) {
+    async logout() {
+        if (this.browser == null) throw 'Not logged in yet';
+        if (this.page == null) throw 'Not logged in yet';
+        var page = this.page;
+
         await page.evaluate(() => {
             var button = <any>document.querySelector('button.uia-logout');
             if (button != null)
                 button.click();
         });
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('10');
         }
         await page.waitForSelector('.login-button');
-        if (executionContext.debug) {
+        if (this.executionContext.debug) {
             console.log('11');
         }
+
+        await this.browser.close();
+    }
+
+    async getBalances() : Promise<Array<AccountBalance>>
+    {
+        if (this.page == null) throw 'Not logged in yet';
+        var page = this.page;
+
+        const balances = new Array<AccountBalance>();
+
+        await page.waitForSelector('ing-page-block.ing-all-accounts-summary');
+        if (this.executionContext.debug) { console.log('8'); }
+
+        var accountSummaryRows = await page.$$('ing-page-block.ing-all-accounts-summary .uia-account-row');
+        for (const row of accountSummaryRows) {
+            balances.push({
+                institution: providerName,
+                accountName: await row.$eval('h3', (el:any) => el.textContent),
+                accountNumber: await row.$eval('.acc .uia-account-number', (el:any) => el.textContent.trim()),
+                balance: parseFloat(await row.$eval('.cb .uia-account-current-balance-desktop', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
+            });
+        }
+
+        return balances;
     }
 }
