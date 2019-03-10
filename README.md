@@ -10,6 +10,8 @@ Beanni is just a local helper, on your own machine. You're not sharing your pass
 
 ## Usage
 
+### First Run
+
 Get started in minutes:
 
 | Step | Run | Why |
@@ -24,6 +26,8 @@ Get started in minutes:
 
 💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
 
+### Ongoing Usage
+
 In future:
 
 | Step | Run | Why |
@@ -31,6 +35,17 @@ In future:
 | 1. | `npm update beanni` | Update Beanni to the latest version |
 | 2. | `npx beanni fetch` | Grab your data |
 | 3. | `npx beanni explore` | Launch the analysis UI |
+
+### Uninstall
+
+1. Delete the local working folder (the database contains bank account numbers and financial data)
+1. Remove secrets from your operating system's credential store
+    * Windows:
+        1. `Win` > `credential manager`
+        1. _Windows Credentials_
+        1. _Generic Credentials_
+        1. Look for anything that starts with `Beanni:`
+    * MacOS: Keychain
 
 ## Security, by design
 
