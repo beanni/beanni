@@ -93,19 +93,30 @@ export class Ing implements BankDataProviderInterface {
         this.debugLog('getBalances', 0);
 
         // ING uses web components / Polymer, so we get nice and stable tag names
-        await page.waitForSelector('ing-page-block.ing-all-accounts-summary');
+        await page.waitForSelector('ing-all-accounts-summary');
         this.debugLog('getBalances', 1);
 
-        // ING seem to use 'uia-' as a prefix for their own UI Automation hooks; great for us!
-        var accountSummaryRows = await page.$$('ing-page-block.ing-all-accounts-summary .uia-account-row');
-        for (const row of accountSummaryRows) {
+        // Wait for the AJAX load to complete
+        await page.waitForFunction(() => {
+            // @ts-ignore
+            var componentData = document.querySelector('ing-all-accounts-summary').__data__;
+            return typeof(componentData.accountSummaryData) !== 'undefined';
+        });
+        this.debugLog('getBalances', 2);
+
+        // Pull structured data straight off the Polymer component
+        var accounts = await page.$eval('ing-all-accounts-summary', (el:any) =>
+            el.__data__.accountSummaryData.Categories.flatMap((cat:any) => cat.Accounts)
+        );
+        for (const account of accounts) {
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval('h3', (el:any) => el.textContent),
-                accountNumber: await row.$eval('.acc .uia-account-number', (el:any) => el.textContent.trim()),
-                balance: parseFloat(await row.$eval('.cb .uia-account-current-balance-desktop', (el:any) => el.textContent.trim().replace('$', '').replace(',', '')))
+                accountName: account.AccountName,
+                accountNumber: account.AccountNumber,
+                balance: account.CurrentBalance
             });
         }
+        this.debugLog('getBalances', 2);
 
         return balances;
     }
