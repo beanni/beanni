@@ -6,6 +6,8 @@ By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.co
 
 Beanni helps gather financial data from all of your various providers, institutions, and banks. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as spend-by-merchant stats, or net-worth trends.
 
+Beanni is just a local helper, on your own machine. You're not sharing your passwords with us, or anybody else. You're not reverse engineering your bank. Beanni is just a robot that's really fast at clicking the same transaction export buttons that you would otherwise have to click manually.
+
 ## Usage
 
 Get started in minutes:
