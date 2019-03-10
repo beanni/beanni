@@ -25,11 +25,20 @@ export class Asgard implements BankDataProviderInterface {
 
         const username = await retrieveSecretCallback('username');
         const password = await retrieveSecretCallback('password');
+
         await page.goto('https://www.investoronline.info/iol/iollogon/logon.jsp');
         await page.waitForSelector('input[type=text]');
+        this.debugLog('login', 1);
+
         await page.type('input[type=text]', username);
         await page.type('input[type=password]', password);
+        this.debugLog('login', 2);
+
         await page.click('input[type=submit][value=Login]');
+        this.debugLog('login', 3);
+
+        await page.waitForSelector('#logoutButton');
+        this.debugLog('login', 4);
     }
 
     async logout() {
@@ -38,6 +47,7 @@ export class Asgard implements BankDataProviderInterface {
         var page = this.page;
 
         await page.goto('https://www.investoronline.info/iol/iollogon/logout_transfer.jsp');
+        this.debugLog('logout', 1);
 
         await this.browser.close();
     }
@@ -49,8 +59,13 @@ export class Asgard implements BankDataProviderInterface {
 
         const balances = new Array<AccountBalance>();
 
-        await page.goto('https://www.investoronline.info/iol/home.do');
+        this.debugLog('getBalances', 0);
+
+        await page.click('#headerLogo img');
+        this.debugLog('getBalances', 1);
+
         await page.waitForSelector('b');
+        this.debugLog('getBalances', 1);
 
         var tables = await page.$x('//b[contains(text(), "Account type")]/ancestor::table[tbody/tr/td/b]');
         var table = (tables)[0];
@@ -77,5 +92,11 @@ export class Asgard implements BankDataProviderInterface {
         }
 
         return balances;
+    }
+
+    private debugLog(stage: string, position: number) {
+        if (this.executionContext.debug) {
+            console.log('%s: %s', stage, position.toString());
+        }
     }
 }
