@@ -99,4 +99,5 @@ To release (if you have the rights):
 1. Validate the file list
     * ⚠ Make sure `config.yaml` or other dev-local files aren't in there
 1. `npm publish`
+1. `git push`
 1. `git push --tags`
