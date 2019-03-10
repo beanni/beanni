@@ -7,7 +7,22 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Compiled JS",
+            "args":
+            [
+                "${workspaceFolder}\\dist\\app.js",
+                "${input:subcommand}",
+                "${input:debugFlag}"
+            ],
+            "cwd": "${workspaceFolder}",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart",
+            "preLaunchTask": "build"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "ts-node",
             "args":
             [
                 "${workspaceFolder}\\src\\app.ts",
