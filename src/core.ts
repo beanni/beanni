@@ -85,6 +85,10 @@ export class Core
                         this.dataStore.addBalance(b);
                     });
                 }
+                catch (ex)
+                {
+                    console.error(ex);
+                }
                 finally
                 {
                     await provider.logout();
