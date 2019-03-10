@@ -80,6 +80,8 @@ It would be very visible if any of these packages, or their dependencies, were t
 
 You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies).
 
+We use Dependabot to ensure we adopt updates to these dependencies as fast as possible. [It's a busy little bot.](https://github.com/beanni/beanni/pulls?q=author%3Aapp%2Fdependabot)
+
 ## Development
 
 Run it locally:
