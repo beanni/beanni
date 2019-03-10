@@ -2,7 +2,8 @@
 # NEVER put any usernames or passwords in this file at all. We'll handle them securely later.
 
 # List out each of your financial relationships. We'll use these relationships to discover
-# each of the underlying accounts.
+# each of the underlying accounts. To start things off, we've listed all of the ones that we
+# support, so you can just remove or comment out the ones you don't need.
 relationships:
   - provider: Asgard
   - provider: Ing
