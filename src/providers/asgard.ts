@@ -49,6 +49,7 @@ export class Asgard implements BankDataProviderInterface {
 
         const balances = new Array<AccountBalance>();
 
+        await page.goto('https://www.investoronline.info/iol/home.do');
         await page.waitForSelector('b');
 
         var tables = await page.$x('//b[contains(text(), "Account type")]/ancestor::table[tbody/tr/td/b]');
