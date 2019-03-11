@@ -16,7 +16,7 @@ Get started in minutes:
 
 | Step | Run | Why |
 | --- | --- | --- |
-| 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
+| 1. | https://nodejs.org/en/download/ <br/> Minimum supported version: 11.11.0 | Beanni is built on Node.js |
 | 2. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
 | 3. | `npm install beanni --save` | Install Beanni into this folder |
 | 4. | `npx beanni init` | Create an example `config.yaml` |
@@ -25,6 +25,7 @@ Get started in minutes:
 | 7. | `npx beanni explore` | Launch the analysis UI |
 
 💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
+💡 You may have issues with the `npx` commands unless your nodejs install version is at least 11.11.0.
 
 ### Ongoing Usage
 
