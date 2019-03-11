@@ -11,3 +11,4 @@ relationships:
   - provider: Myki
   - provider: Perpetual
   - provider: Westpac
+  - provider: Anz
