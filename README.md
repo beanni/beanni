@@ -18,7 +18,7 @@ Get started in minutes:
 | --- | --- | --- |
 | 1. | https://nodejs.org/en/download/ <br/> Minimum supported version: 11.11.0 | Beanni is built on Node.js |
 | 2. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
-| 3. | `npm install beanni --save` | Install Beanni into this folder |
+| 3. | `npm install beanni` | Install Beanni into this folder |
 | 4. | `npx beanni init` | Create an example `config.yaml` |
 | 5. | Edit `config.yaml` | Add your own banking relationships |
 | 6. | `npx beanni fetch` | Grab your data |
