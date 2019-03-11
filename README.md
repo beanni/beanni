@@ -57,7 +57,7 @@ Beanni all runs locally on your own machine, or your own hosting. There are no s
 
 Secrets are kept out of configuration files entirely, by design.
 
-Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this.
+Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this, which is [built and maintained by the Atom project](https://github.com/atom/node-keytar).
 
 ### Dependency Supply Chain
 
