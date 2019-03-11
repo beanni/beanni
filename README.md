@@ -96,8 +96,7 @@ To release (if you have the rights):
 1. Clean git context
 1. `npm version major|minor|patch`
 1. `npm pack`
-1. Validate the file list
-    * ⚠ Make sure `config.yaml` or other dev-local files aren't in there
-1. `npm publish`
+1. Validate the file list. ⚠ Make sure `config.yaml` or other dev-local files aren't in there.
+1. `npm publish .\beanni-x.x.xx.tgz`
 1. `git push`
 1. `git push --tags`
