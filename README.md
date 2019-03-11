@@ -78,7 +78,7 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 
 It would be very visible if any of these packages, or their dependencies, were to be compromised.
 
-You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies).
+You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies, based on the package we publish), or https://github.com/beanni/beanni/network/dependencies (GitHub's view of Beanni's dependencies, based on what's in source control).
 
 We use Dependabot to ensure we adopt updates to these dependencies as fast as possible. [It's a busy little bot.](https://github.com/beanni/beanni/pulls?q=author%3Aapp%2Fdependabot)
 
