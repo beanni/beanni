@@ -5,10 +5,10 @@
 # each of the underlying accounts. To start things off, we've listed all of the ones that we
 # support, so you can just remove or comment out the ones you don't need.
 relationships:
+  - provider: Anz
   - provider: Asgard
   - provider: DefenceBank
   - provider: Ing
   - provider: Myki
   - provider: Perpetual
   - provider: Westpac
-  - provider: Anz
