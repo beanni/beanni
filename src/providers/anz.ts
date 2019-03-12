@@ -1,6 +1,5 @@
 import {
   BankDataProviderInterface,
-  FassInstitutionRelationship,
   AccountBalance
 } from "../types";
 import puppeteer = require("puppeteer");

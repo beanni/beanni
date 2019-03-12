@@ -1,4 +1,4 @@
-import { BankDataProviderInterface, FassInstitutionRelationship, AccountBalance } from '../types';
+import { BankDataProviderInterface, AccountBalance } from '../types';
 import puppeteer = require('puppeteer');
 import { FassExecutionContext } from '../core';
 
