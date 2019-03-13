@@ -2,6 +2,10 @@
 
 Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=Aey_zIE3K9E).
 
+![npm](https://img.shields.io/npm/v/beanni.svg)
+![npm](https://img.shields.io/npm/dt/beanni.svg)
+![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)
+
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
 Beanni helps gather financial data from all of your various providers, institutions, and banks. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as spend-by-merchant stats, or net-worth trends.
