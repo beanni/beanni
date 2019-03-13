@@ -16,17 +16,17 @@ Get started in minutes:
 
 | Step | Run | Why |
 | --- | --- | --- |
-| 1. | https://nodejs.org/en/download/ <br/> Minimum supported version: 11.11.0 | Beanni is built on Node.js |
-| 2. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
-| 3. | `npm install beanni` | Install Beanni into this folder |
-| 4. | `npx beanni init` | Create an example `config.yaml` |
-| 5. | Edit `config.yaml` | Add your own banking relationships |
-| 6. | `npx beanni fetch` | Grab your data |
-| 7. | `npx beanni explore` | Launch the analysis UI |
+| 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
+| 2. | `node --version` | Make sure you're on Node ≥10.13.0 |
+| 3. | `npm --version` | Make sure you're on NPM ≥6.8.0 |
+| 4. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
+| 5. | `npm install beanni` | Install Beanni into this folder |
+| 6. | `npx beanni init` | Create an example `config.yaml` |
+| 7. | Edit `config.yaml` | Add your own banking relationships |
+| 8. | `npx beanni fetch` | Grab your data |
+| 9. | `npx beanni explore` | Launch the analysis UI |
 
 💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
-
-💡 You may have issues with the `npx` commands unless your nodejs install version is at least 11.11.0.
 
 ### Ongoing Usage
 
