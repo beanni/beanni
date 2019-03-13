@@ -8,6 +8,7 @@ relationships:
   - provider: AmericanExpress
   - provider: Anz
   - provider: Asgard
+  - provider: Bankwest
   - provider: DefenceBank
   - provider: Ing
   - provider: Myki
