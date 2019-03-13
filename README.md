@@ -25,6 +25,7 @@ Get started in minutes:
 | 7. | `npx beanni explore` | Launch the analysis UI |
 
 💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
+
 💡 You may have issues with the `npx` commands unless your nodejs install version is at least 11.11.0.
 
 ### Ongoing Usage
