@@ -2,9 +2,9 @@
 
 Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=Aey_zIE3K9E).
 
-![npm](https://img.shields.io/npm/v/beanni.svg)
-![npm](https://img.shields.io/npm/dt/beanni.svg)
-![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)
+[![npm](https://img.shields.io/npm/v/beanni.svg)](https://www.npmjs.com/package/beanni)
+[![npm](https://img.shields.io/npm/dt/beanni.svg)](https://www.npmjs.com/package/beanni)
+[![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)](https://github.com/beanni/beanni/graphs/contributors)
 
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
