@@ -1,32 +1,32 @@
+import puppeteer = require("puppeteer");
+import { IBeanniExecutionContext } from "../core";
 import {
-    BankDataProviderInterface,
-    AccountBalance
-} from '../types';
-import puppeteer = require('puppeteer');
-import { FassExecutionContext } from '../core';
+    IAccountBalance,
+    IBankDataProviderInterface,
+} from "../types";
 
-const providerName = 'Bankwest';
+const providerName = "Bankwest";
 
-export class Bankwest implements BankDataProviderInterface {
-    executionContext: FassExecutionContext;
+export class Bankwest implements IBankDataProviderInterface {
+    public executionContext: IBeanniExecutionContext;
 
-    browser: puppeteer.Browser | undefined;
-    page: puppeteer.Page | undefined;
+    public browser: puppeteer.Browser | undefined;
+    public page: puppeteer.Page | undefined;
 
-    constructor(executionContext: FassExecutionContext) {
+    constructor(executionContext: IBeanniExecutionContext) {
         this.executionContext = executionContext;
     }
 
-    async login(retrieveSecretCallback: (key: string) => Promise<string>) {
+    public async login(retrieveSecretCallback: (key: string) => Promise<string>) {
         this.browser = await puppeteer.launch({
-            headless: !this.executionContext.debug
+            headless: !this.executionContext.debug,
         });
-        var page = (this.page = await this.browser.newPage());
+        const page = (this.page = await this.browser.newPage());
 
-        const username = await retrieveSecretCallback('username');
-        const password = await retrieveSecretCallback('password');
+        const username = await retrieveSecretCallback("username");
+        const password = await retrieveSecretCallback("password");
 
-        await page.goto('https://ibs.bankwest.com.au/BWLogin/rib.aspx');
+        await page.goto("https://ibs.bankwest.com.au/BWLogin/rib.aspx");
 
         await page.type('input[name="AuthUC$txtUserID"]', username);
         await page.type('input[type="password"]', password);
@@ -35,41 +35,41 @@ export class Bankwest implements BankDataProviderInterface {
         await page.waitForSelector('[id$="lblWelcomeMessage"]');
     }
 
-    async logout() {
-        if (this.browser == null) throw "Not logged in yet";
-        if (this.page == null) throw "Not logged in yet";
-        var page = this.page;
+    public async logout() {
+        if (this.browser == null) { throw new Error("Not logged in yet"); }
+        if (this.page == null) { throw new Error("Not logged in yet"); }
+        const page = this.page;
 
-        await page.goto('https://ibs.bankwest.com.au/CMWeb/Logout.aspx');
+        await page.goto("https://ibs.bankwest.com.au/CMWeb/Logout.aspx");
         await this.browser.close();
     }
 
-    async getBalances(): Promise<Array<AccountBalance>> {
-        if (this.page == null) throw "Not logged in yet";
-        var page = this.page;
+    public async getBalances(): Promise<IAccountBalance[]> {
+        if (this.page == null) { throw new Error("Not logged in yet"); }
+        const page = this.page;
 
-        const balances = new Array<AccountBalance>();
+        const balances = new Array<IAccountBalance>();
 
-        await page.waitForSelector('table[id$=grdBalances] tbody tr');
+        await page.waitForSelector("table[id$=grdBalances] tbody tr");
 
-        var accountSummaryRows = await page.$$('table[id$=grdBalances] tbody tr');
+        const accountSummaryRows = await page.$$("table[id$=grdBalances] tbody tr");
         for (const row of accountSummaryRows) {
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval('td:nth-child(1)', (el: any) =>
-                    el.textContent.trim()
+                accountName: await row.$eval("td:nth-child(1)", (el: any) =>
+                    el.textContent.trim(),
                 ),
-                accountNumber: await row.$eval('td:nth-child(2)', (el: any) =>
-                    el.textContent.trim()
+                accountNumber: await row.$eval("td:nth-child(2)", (el: any) =>
+                    el.textContent.trim(),
                 ),
                 balance: parseFloat(
-                    await row.$eval('td:nth-child(3)', (el: any) =>
+                    await row.$eval("td:nth-child(3)", (el: any) =>
                         el.textContent
-                            .replace(/\s/g, '')
-                            .replace('$', '')
-                            .replace(',', '')
-                    )
-                )
+                            .replace(/\s/g, "")
+                            .replace("$", "")
+                            .replace(",", ""),
+                    ),
+                ),
             });
         }
 

@@ -26,6 +26,7 @@
     "@types/lodash": "^4.14.123",
     "@types/node": "^11.11.3",
     "@types/puppeteer": "^1.12.2",
+    "tslint": "^5.14.0",
     "typescript": "^3.3.3333"
   },
   "dependencies": {

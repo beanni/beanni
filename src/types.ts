@@ -1,23 +1,21 @@
-import { FassExecutionContext } from "./core";
-
-export interface FassInstitutionRelationship {
+export interface IInstitutionRelationship {
     name: string;
     provider: string;
 }
 
-export interface AccountBalance {
+export interface IAccountBalance {
     accountNumber: string;
     accountName: string;
     institution: string;
     balance: number;
 }
 
-export interface BankDataProviderInterface {
+export interface IBankDataProviderInterface {
     login(
-        retrieveSecretCallback : (key : string) => Promise<string>
-    ) : Promise<void>;
+        retrieveSecretCallback: (key: string) => Promise<string>,
+    ): Promise<void>;
 
-    logout() : Promise<void>;
+    logout(): Promise<void>;
 
-    getBalances() : Promise<Array<AccountBalance>>;
+    getBalances(): Promise<IAccountBalance[]>;
 }

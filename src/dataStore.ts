@@ -1,21 +1,19 @@
-import sqlite, { Database } from 'sqlite';
-import { AccountBalance } from './types';
+import sqlite, { Database } from "sqlite";
+import { IAccountBalance } from "./types";
 
-const FASS_DATA_FILE_NAME = './beanni.db';
+const FASS_DATA_FILE_NAME = "./beanni.db";
 
-export class DataStore
-{
+export class DataStore {
     private database?: Database;
 
-    async open()
-    {
+    public async open() {
         this.database = await sqlite.open(FASS_DATA_FILE_NAME);
-        await this.database.migrate({ migrationsPath: __dirname + '/../src/migrations' });
+        await this.database.migrate({ migrationsPath: __dirname + "/../src/migrations" });
     }
 
-    async addBalance(balance: AccountBalance) {
+    public async addBalance(balance: IAccountBalance) {
         if (this.database == null) {
-            throw 'Database not open yet';
+            throw new Error("Database not open yet");
         }
         await this.database.run(
             `INSERT INTO Balances
@@ -26,30 +24,30 @@ export class DataStore
                 $accountNumber: balance.accountNumber,
                 $accountName: balance.accountName,
                 $institution: balance.institution,
-                $balance: Math.floor(balance.balance * 100)
-            }
+                $balance: Math.floor(balance.balance * 100),
+            },
         );
     }
 
-    async getAllBalances() : Promise<any> {
+    public async getAllBalances(): Promise<any> {
         if (this.database == null) {
-            throw 'Database not open yet';
+            throw new Error("Database not open yet");
         }
-        var result = await this.database.all<any>(
+        const result = await this.database.all<any>(
             `SELECT date(timestamp) AS 'date', institution, accountNumber, accountName, balance, max(timestamp)
             FROM Balances
             GROUP BY institution, accountNumber, date(timestamp)
-            ORDER BY date(timestamp), institution, accountNumber`
+            ORDER BY date(timestamp), institution, accountNumber`,
         );
-        result.forEach(r => { r.balance = r.balance / 100; })
+        result.forEach((r) => { r.balance = r.balance / 100; });
         return result;
     }
 
-    async getNetWorth() : Promise<number> {
+    public async getNetWorth(): Promise<number> {
         if (this.database == null) {
-            throw 'Database not open yet';
+            throw new Error("Database not open yet");
         }
-        var result = await this.database.get<any>(
+        const result = await this.database.get<any>(
             `SELECT SUM(b.Balance) AS result
             FROM Balances b
             INNER JOIN (
@@ -57,14 +55,14 @@ export class DataStore
                 FROM Balances
                 GROUP BY institution, accountNumber
             ) b1
-            ON b.id = b1.id ORDER BY institution, accountNumber`
+            ON b.id = b1.id ORDER BY institution, accountNumber`,
         );
-        return (<number>result.result) / 100;
+        return ( result.result as number) / 100;
     }
 
-    async close() {
+    public async close() {
         if (this.database == null) {
-            throw 'Unexpected flow; closing before opening';
+            throw new Error("Unexpected flow; closing before opening");
         }
         await this.database.close();
     }
