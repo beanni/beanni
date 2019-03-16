@@ -64,18 +64,20 @@ export class Core {
             await this.dataStore.open();
 
             for (const relationship of config.relationships) {
-                console.log("Fetching '%s' via '%s'", relationship.name, relationship.provider);
+                console.log("[%s] Fetching '%s'", relationship.provider, relationship.name);
                 const providerName = relationship.provider;
                 const module = require("./providers/" + providerName);
                 const provider =  new module[providerName](executionContext) as IBankDataProviderInterface;
 
                 try {
+                    console.log("[%s] Logging in", relationship.provider);
                     await provider.login(async (key: string) => {
                         return await this.secretStore.retrieveSecret(relationship.name + ":" + key);
                     });
 
+                    console.log("[%s] Getting balances", relationship.provider);
                     const relationshipBalances = await provider.getBalances();
-                    console.log("Found %s accounts", relationshipBalances.length);
+                    console.log("[%s] Found %s balances", relationship.provider, relationshipBalances.length);
                     relationshipBalances.forEach((b) => {
                         balances.push(b);
                         this.dataStore.addBalance(b);
@@ -83,6 +85,7 @@ export class Core {
                 } catch (ex) {
                     console.error(ex);
                 } finally {
+                    console.log("[%s] Logging out", relationship.provider);
                     await provider.logout();
                 }
             }
