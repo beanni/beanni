@@ -10,6 +10,16 @@
             "problemMatcher": [
                 "$tsc"
             ],
+            "group": "build"
+        },
+        {
+            "label": "verify",
+            "type": "npm",
+            "script": "verify",
+            "problemMatcher": [
+                "$tsc",
+                "$tslint5"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true

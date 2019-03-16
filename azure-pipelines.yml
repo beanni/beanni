@@ -19,5 +19,5 @@ steps:
     node --version
     npm --version
     npm install
-    npm run build
-  displayName: 'npm install and build'
+    npm run verify
+  displayName: 'npm install and verify'
