@@ -5,7 +5,7 @@ Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=
 [![npm](https://img.shields.io/npm/v/beanni.svg)](https://www.npmjs.com/package/beanni)
 [![npm](https://img.shields.io/npm/dt/beanni.svg)](https://www.npmjs.com/package/beanni)
 [![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)](https://github.com/beanni/beanni/graphs/contributors)
-[![Azure DevOps builds](https://img.shields.io/azure-devops/build/beanni/efed68d6-5a84-4c28-909a-8af3549a7f70/1/master.svg)](https://dev.azure.com/beanni/Beanni/_build?definitionId=1)
+[![Build Status](https://dev.azure.com/beanni/Beanni/_apis/build/status/beanni.beanni?branchName=master)](https://dev.azure.com/beanni/Beanni/_build/latest?definitionId=1&branchName=master)
 
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
