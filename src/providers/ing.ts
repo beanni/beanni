@@ -1,10 +1,13 @@
+import fs = require("fs");
 import puppeteer = require("puppeteer");
+import request = require("request");
+import { URL } from "url";
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface } from "../types";
 
 const providerName = "ING";
 
-export class Ing implements IBankDataProviderInterface {
+export class Ing implements IBankDataProviderInterface, IBankDataDocumentProviderInterface {
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -118,6 +121,125 @@ export class Ing implements IBankDataProviderInterface {
         this.debugLog("getBalances", 2);
 
         return balances;
+    }
+
+    public async getDocuments(): Promise<void> {
+        if (this.page == null) { throw new Error("Not logged in yet"); }
+        const page = this.page;
+
+        // Navigate to the e-Statements page
+        await page.waitForSelector("ing-menu");
+        await page.click('ing-menu [data-target="#navigation-finance"]');
+        await page.click('ing-menu [data-target="#navigation-estatements"]');
+        this.debugLog("getDocuments", 1);
+
+        // Wait for the modules to load
+        await page.waitForSelector("ing-estatements");
+        await page.waitForSelector("ing-estatements-filters");
+        await page.waitForSelector("ing-estatements-filters ing-accounts-dropdown-simple");
+
+        // Wait for the AJAX load to complete
+        await page.waitForFunction(() =>
+            // @ts-ignore
+            (document.querySelector("ing-estatements").__data__.eligibleAccountsLoading === false),
+        );
+        this.debugLog("getDocuments", 2);
+
+        // Find available accounts
+        const availableAccounts = await page.$eval(
+            "ing-estatements-filters",
+            (el: any) => el.accounts,
+        );
+        for (const account of availableAccounts) {
+            await this.getDocumentsForAccount(page, account);
+            this.debugLog("getDocuments", 3);
+        }
+        this.debugLog("getDocuments", 4);
+    }
+
+    private async getDocumentsForAccount(page: puppeteer.Page, account: { AccountNumber: string; }) {
+        // Filter to this account, and longest period available
+        await page.$eval(
+            "ing-estatements-filters",
+            (el: any, accountNumber: string) => {
+                el.selectAccountByNumber(accountNumber);
+                el.selectedPeriodIndex = (el.periods.length - 1);
+            },
+            account.AccountNumber,
+        );
+        this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 0);
+
+        // Find all of the statements
+        await page.click("ing-estatements #findButton");
+        this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 1);
+
+        // Wait for the AJAX load to complete
+        await page.waitForFunction(
+            (accountNumber) => {
+                return true &&
+                    // @ts-ignore
+                    (document.querySelector("ing-estatements").__data__.estatementsLoading === false) &&
+                    // @ts-ignore
+                    (document.querySelector("ing-estatements-results").__data__.accountNumber === accountNumber);
+            },
+            { timeout: 60000 },
+            account.AccountNumber,
+        );
+        this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 2);
+
+        // Pull the data out of the page
+        const statementsResultsData = await page.$eval(
+            "ing-estatements-results",
+            (el: any) => el.__data__,
+        );
+
+        const apiEndpoint = new URL(
+            statementsResultsData.globalServices.getEstatementDocument,
+            "https://www.ing.com.au/",
+        );
+
+        for (const statement of statementsResultsData.data.Items) {
+            const filename = `${statement.EndDate} ING ${account.AccountNumber} Statement ${statement.Id}.pdf`;
+            const targetPath = `./statements/${filename}`;
+
+            const exists = await new Promise<boolean>((resolve, reject) => {
+                fs.access(targetPath, fs.constants.F_OK, (err) => {
+                    resolve(err === null);
+                });
+            });
+            if (exists) {
+                console.log(`[ING] Skipping download; already on disk: ${filename}`);
+                continue;
+            }
+
+            await new Promise((resolve, reject) => {
+                const file = fs.createWriteStream(targetPath);
+                request
+                    .post({
+                        uri: apiEndpoint,
+                        form: {
+                            "X-AuthToken": statementsResultsData.token,
+                            "Id": statement.Id,
+                            "AccountNumber": statementsResultsData.accountNumber,
+                            "ProductName": statementsResultsData.productName,
+                        },
+                        headers: {
+                            Referer: "https://www.ing.com.au/securebanking/",
+                        },
+                    })
+                    .on("response", (res) => {
+                        res.on("close", () => {
+                            file.close();
+                            console.log(`[ING] Statement downloaded: ${filename}`);
+                            resolve();
+                        });
+                    })
+                    .pipe(file);
+            });
+
+            this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 3);
+        }
+        this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 6);
     }
 
     private debugLog(stage: string, position: number) {
