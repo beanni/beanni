@@ -80,6 +80,7 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 | [`lodash`](https://www.npmjs.com/package/lodash) | >15M | |
 | [`pug`](https://www.npmjs.com/package/pug) | >300k | |
 | [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >500k | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
+| [`request`](https://www.npmjs.com/package/request) | ~15M | |
 | [`sqlite`](https://www.npmjs.com/package/sqlite) | >20k | |
 | [`ts-node`](https://www.npmjs.com/package/ts-node) | >1M | |
 

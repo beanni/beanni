@@ -3,7 +3,12 @@ import yaml = require("js-yaml");
 import _ from "lodash";
 import { DataStore } from "./dataStore";
 import { SecretStore } from "./secretStore";
-import { IAccountBalance, IBankDataProviderInterface, IInstitutionRelationship } from "./types";
+import {
+    IAccountBalance,
+    IBankDataDocumentProviderInterface,
+    IBankDataProviderInterface,
+    IInstitutionRelationship,
+} from "./types";
 
 interface IBeanniConfig {
     relationships: IInstitutionRelationship[];
@@ -82,6 +87,14 @@ export class Core {
                         balances.push(b);
                         this.dataStore.addBalance(b);
                     });
+
+                    if (this.isDocumentProvider(provider)) {
+                        const documentProvider = provider as IBankDataDocumentProviderInterface;
+                        console.log("[%s] Getting documents", relationship.provider);
+                        await documentProvider.getDocuments();
+                    } else {
+                        console.log("[%s] Doesn't support documents; skipping", relationship.provider);
+                    }
                 } catch (ex) {
                     console.error(ex);
                 } finally {
@@ -94,6 +107,11 @@ export class Core {
         } finally {
             await this.dataStore.close();
         }
+    }
+
+    public isDocumentProvider(provider: IBankDataProviderInterface | IBankDataDocumentProviderInterface)
+        : provider is IBankDataDocumentProviderInterface {
+        return ( provider as IBankDataDocumentProviderInterface).getDocuments !== undefined;
     }
 
     public async init(executionContext: IBeanniExecutionContext) {

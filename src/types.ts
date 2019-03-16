@@ -19,3 +19,7 @@ export interface IBankDataProviderInterface {
 
     getBalances(): Promise<IAccountBalance[]>;
 }
+
+export interface IBankDataDocumentProviderInterface {
+    getDocuments(): Promise<void>;
+}
