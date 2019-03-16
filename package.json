@@ -14,7 +14,7 @@
     "url": "git+https://github.com/beanni/beanni.git"
   },
   "author": "Matt Hilton, Tatham Oddie",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/beanni/beanni/issues"
   },
