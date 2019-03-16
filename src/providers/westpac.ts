@@ -24,7 +24,9 @@ export class Westpac implements IBankDataProviderInterface {
 
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
-        await page.goto("https://banking.westpac.com.au/wbc/banking/handler?fi=wbc&TAM_OP=login&segment=personal&logout=false");
+        await page.goto(
+            "https://banking.westpac.com.au/wbc/banking/handler?fi=wbc&TAM_OP=login&segment=personal&logout=false",
+        );
         await page.waitForSelector("#fakeusername");
         await page.type("#fakeusername", username);
         await page.type("#password", password);

@@ -1,6 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import path = require("path");
+// tslint:disable-next-line:no-var-requires
 const indexRouter = require("./routes/index").default;
 
 export class Explorer {
