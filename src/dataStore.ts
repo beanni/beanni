@@ -1,13 +1,13 @@
 import sqlite, { Database } from "sqlite";
 import { IAccountBalance } from "./types";
 
-const FASS_DATA_FILE_NAME = "./beanni.db";
+const DATA_FILE_NAME = "./beanni.db";
 
 export class DataStore {
     private database?: Database;
 
     public async open() {
-        this.database = await sqlite.open(FASS_DATA_FILE_NAME);
+        this.database = await sqlite.open(DATA_FILE_NAME);
         await this.database.migrate({ migrationsPath: __dirname + "/../src/migrations" });
     }
 

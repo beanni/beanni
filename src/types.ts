@@ -21,5 +21,5 @@ export interface IBankDataProviderInterface {
 }
 
 export interface IBankDataDocumentProviderInterface {
-    getDocuments(): Promise<void>;
+    getDocuments(statementFolderPath: string): Promise<void>;
 }

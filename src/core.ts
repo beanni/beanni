@@ -19,6 +19,7 @@ export interface IBeanniExecutionContext {
 }
 
 const CONFIG_PATH = "./config.yaml";
+const STATEMENT_PATH = "./statements/";
 
 export class Core {
     public dataStore: DataStore;
@@ -63,6 +64,8 @@ export class Core {
         const config = await this.loadConfig();
         console.log("%s relationships to fetch from", config.relationships.length);
 
+        await fs.promises.mkdir(STATEMENT_PATH, { recursive: true });
+
         const balances = new Array<IAccountBalance>();
 
         try {
@@ -91,7 +94,7 @@ export class Core {
                     if (this.isDocumentProvider(provider)) {
                         const documentProvider = provider as IBankDataDocumentProviderInterface;
                         console.log("[%s] Getting documents", relationship.provider);
-                        await documentProvider.getDocuments();
+                        await documentProvider.getDocuments(STATEMENT_PATH);
                     } else {
                         console.log("[%s] Doesn't support documents; skipping", relationship.provider);
                     }

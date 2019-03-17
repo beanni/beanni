@@ -123,7 +123,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         return balances;
     }
 
-    public async getDocuments(): Promise<void> {
+    public async getDocuments(statementFolderPath: string): Promise<void> {
         if (this.page == null) { throw new Error("Not logged in yet"); }
         const page = this.page;
 
@@ -151,13 +151,17 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
             (el: any) => el.accounts,
         );
         for (const account of availableAccounts) {
-            await this.getDocumentsForAccount(page, account);
+            await this.getDocumentsForAccount(page, account, statementFolderPath);
             this.debugLog("getDocuments", 3);
         }
         this.debugLog("getDocuments", 4);
     }
 
-    private async getDocumentsForAccount(page: puppeteer.Page, account: { AccountNumber: string; }) {
+    private async getDocumentsForAccount(
+        page: puppeteer.Page,
+        account: { AccountNumber: string; },
+        statementFolderPath: string,
+    ) {
         // Filter to this account, and longest period available
         await page.$eval(
             "ing-estatements-filters",
@@ -200,7 +204,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
         for (const statement of statementsResultsData.data.Items) {
             const filename = `${statement.EndDate} ING ${account.AccountNumber} Statement ${statement.Id}.pdf`;
-            const targetPath = `./statements/${filename}`;
+            const targetPath = statementFolderPath + `${filename}`;
 
             const exists = await new Promise<boolean>((resolve, reject) => {
                 fs.access(targetPath, fs.constants.F_OK, (err) => {
