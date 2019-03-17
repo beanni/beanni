@@ -1,10 +1,12 @@
+import fs = require("fs");
 import puppeteer = require("puppeteer");
+import request = require("request");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface } from "../types";
 
 const providerName = "Westpac";
 
-export class Westpac implements IBankDataProviderInterface {
+export class Westpac implements IBankDataProviderInterface, IBankDataDocumentProviderInterface {
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -74,5 +76,149 @@ export class Westpac implements IBankDataProviderInterface {
         }
 
         return balances;
+    }
+
+    public async getDocuments(statementFolderPath: string): Promise<void> {
+        if (this.page == null) { throw new Error("Not logged in yet"); }
+        const page = this.page;
+
+        // Wait for all of the panels to load
+        await page.goto("https://banking.westpac.com.au/secure/banking/account/statements");
+        await page.waitForSelector(".widget.accounts-statementswidget");
+        await page.waitForFunction(
+            // @ts-ignore
+            () => ko.dataFor(document.querySelector(".widget.accounts-statementswidget")).Accounts().length > 0,
+        );
+
+        // Pull the session-specific and well-known account identifiers
+        const accountList = await page.evaluate(() => {
+            // @ts-ignore
+            return ko.dataFor(document.querySelector(".widget.accounts-statementswidget")).Accounts().map((_) => ({
+                AccountGlobalId: _.AccountGlobalId(),
+                AccountNumber: _.AccountNumber(),
+            }));
+        });
+
+        // Snapshot the cookies from the browser to our own jar
+        const cookies = await page.cookies();
+        const cookieJar = request.jar();
+        for (const cookie of cookies) {
+            cookieJar.setCookie(`${cookie.name}=${cookie.value}`, "https://banking.westpac.com.au/");
+        }
+
+        // For each account
+        for (const account of accountList) {
+            // For each of the last 7 years
+            for (let yearsPast = 0; yearsPast < 7; yearsPast++) {
+                // Download all the statements
+                const dateRangeString = this.generateDateRangeString(yearsPast);
+                const areMore = await this.downloadStatementsAndDetermineIfThereAreMore(
+                    account, dateRangeString, cookieJar, statementFolderPath);
+                if (!areMore) { break; }
+            }
+        }
+    }
+
+    private generateDateRangeString(yearsPast: number) {
+        const end = new Date();
+        end.setFullYear(end.getFullYear() - yearsPast);
+
+        const start = new Date();
+        start.setFullYear(start.getFullYear() - yearsPast - 1);
+
+        const rangeText =
+            `${start.getDate()}/${start.getMonth()}/${start.getFullYear()}-` +
+            `${end.getDate()}/${end.getMonth()}/${end.getFullYear()}`;
+
+        return rangeText;
+    }
+
+    private async downloadStatementsAndDetermineIfThereAreMore(
+            account: any,
+            dateRangeString: string,
+            cookieJar: request.CookieJar,
+            statementFolderPath: string,
+        ): Promise<boolean> {
+        const result = await new Promise<{
+            totalRecords: number,
+            statements: Array<{
+                DateString: string;
+                Id: string;
+                PdfDocumentId: string;
+                PdfLink: string;
+            }>;
+        }>((resolve, reject) => {
+            request.get({
+                uri: "https://banking.westpac.com.au/secure/banking/accounts/getstatementlist",
+                qs: {
+                    pageNumber: 0,
+                    pageSize: 50,
+                    accountGlobalId: account.AccountGlobalId,
+                    statementDateRange: dateRangeString,
+                },
+                jar: cookieJar,
+                json: true,
+            },
+            (err, res, json) => {
+                if (err !== null) {
+                    throw err;
+                } else {
+                    resolve(json);
+                }
+            });
+        });
+        if (result.totalRecords === 0) {
+            return false;
+        }
+        for (const statement of result.statements) {
+            await this.downloadStatement(account, statement, cookieJar, statementFolderPath);
+        }
+        return true;
+    }
+
+    private async downloadStatement(
+            account: {
+                AccountNumber: string;
+            },
+            statement: {
+                DateString: string;
+                Id: string;
+                PdfDocumentId: string;
+                PdfLink: string;
+            },
+            cookieJar: request.CookieJar,
+            statementFolderPath: string,
+        ): Promise<void> {
+        const filename =
+            `${statement.DateString} Westpac ${account.AccountNumber} ` +
+            `Statement ${statement.Id || statement.PdfDocumentId}.pdf`;
+        const targetPath = statementFolderPath + `${filename}`;
+
+        const exists = await new Promise<boolean>((resolve, reject) => {
+            fs.access(targetPath, fs.constants.F_OK, (err) => {
+                resolve(err === null);
+            });
+        });
+        if (exists) {
+            console.log(`[Westpac] Skipping download; already on disk: ${filename}`);
+            return;
+        }
+
+        await new Promise((resolve, reject) => {
+            const file = fs.createWriteStream(targetPath);
+            request
+                .get({
+                    uri: statement.PdfLink,
+                    jar: cookieJar,
+                })
+                .on("response", (res) => {
+                    res.on("close", () => {
+                        file.close();
+                        console.log(`[Westpac] Statement downloaded: ${filename}`);
+                        resolve();
+                    });
+                })
+                .pipe(file);
+        });
     }
 }
