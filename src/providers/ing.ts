@@ -208,7 +208,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                 });
             });
             if (exists) {
-                console.log(`[ING] Skipping download; already on disk: ${filename}`);
+                console.log(`[Ing] Skipping download; already on disk: ${filename}`);
                 continue;
             }
 
@@ -230,7 +230,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                     .on("response", (res) => {
                         res.on("close", () => {
                             file.close();
-                            console.log(`[ING] Statement downloaded: ${filename}`);
+                            console.log(`[Ing] Statement downloaded: ${filename}`);
                             resolve();
                         });
                     })
