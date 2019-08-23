@@ -36,7 +36,7 @@
   "dependencies": {
     "commander": "^2.19.0",
     "express": "^4.16.4",
-    "inquirer": "^6.2.2",
+    "inquirer": "^7.0.0",
     "js-yaml": "^3.12.2",
     "keytar": "^4.4.1",
     "lodash": "^4.17.11",
