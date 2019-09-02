@@ -34,7 +34,7 @@
     "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "commander": "^2.19.0",
+    "commander": "^3.0.1",
     "express": "^4.16.4",
     "inquirer": "^6.2.2",
     "js-yaml": "^3.12.2",
