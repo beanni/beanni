@@ -10,7 +10,7 @@
             "name": "Compiled JS",
             "args":
             [
-                "${workspaceFolder}\\dist\\app.js",
+                "${workspaceFolder}/dist/app.js",
                 "${input:subcommand}",
                 "${input:debugFlag}"
             ],
@@ -25,7 +25,7 @@
             "name": "ts-node",
             "args":
             [
-                "${workspaceFolder}\\src\\app.ts",
+                "${workspaceFolder}/src/app.ts",
                 "${input:subcommand}",
                 "${input:debugFlag}"
             ],
