@@ -17,13 +17,13 @@ export class Perpetual implements IBankDataProviderInterface {
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
     ) {
+        const username = await retrieveSecretCallback("username");
+        const password = await retrieveSecretCallback("password");
+
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
         const page = this.page = await this.browser.newPage();
-
-        const username = await retrieveSecretCallback("username");
-        const password = await retrieveSecretCallback("password");
 
         await page.goto("https://www.perpetual.com.au/loginsecure");
         const loginPageTitle = await page.title();
