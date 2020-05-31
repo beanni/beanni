@@ -16,13 +16,10 @@ export class KeytarSecretStore implements ISecretStore {
     }
 
     public async retrieveSecret(key: string): Promise<string> {
-        var result;
-        try
-        {
+        let result;
+        try {
             result = await keytar.findPassword(this.formatServiceName(key));
-        }
-        catch (ex)
-        {
+        } catch (ex) {
             console.error(ex);
             throw new Error("Couldn't lookup secret " + key);
         }

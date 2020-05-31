@@ -4,12 +4,12 @@ import { Dictionary } from "lodash";
 import { ISecretStore } from "./types";
 
 export class HeadlessSecretStore implements ISecretStore {
-    data : Dictionary<string> = {};
+    private data: Dictionary<string> = {};
 
     constructor(path: string) {
         const configFileText = fs.readFileSync(path, "utf8");
         const fileData =  yaml.safeLoad(configFileText);
-        fileData.secrets.forEach((s : any) => {
+        fileData.secrets.forEach((s: any) => {
             this.data[s.key] = s.value;
         });
     }
