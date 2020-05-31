@@ -31,6 +31,10 @@ export class Core {
     }
 
     public async loadConfig(): Promise<IBeanniConfig> {
+        if (! fs.existsSync(CONFIG_PATH)) {
+            throw new Error("No config file found at " + CONFIG_PATH + "; try running `beanni init` first")
+        }
+
         const configFileText = fs.readFileSync(CONFIG_PATH, "utf8");
         const config =  yaml.safeLoad(configFileText) as IBeanniConfig;
 
