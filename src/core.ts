@@ -2,7 +2,7 @@ import fs = require("fs");
 import yaml = require("js-yaml");
 import _ from "lodash";
 import { DataStore } from "./dataStore";
-import { SecretStore } from "./secretStore";
+import { ISecretStore } from "./types";
 import {
     IAccountBalance,
     IBankDataDocumentProviderInterface,
@@ -23,9 +23,9 @@ const STATEMENT_PATH = "./statements/";
 
 export class Core {
     public dataStore: DataStore;
-    public secretStore: SecretStore;
+    public secretStore: ISecretStore;
 
-    constructor(dataStore: DataStore, secretStore: SecretStore) {
+    constructor(dataStore: DataStore, secretStore: ISecretStore) {
         this.dataStore = dataStore;
         this.secretStore = secretStore;
     }

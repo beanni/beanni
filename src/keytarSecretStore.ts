@@ -1,8 +1,9 @@
 import keytar from "keytar";
+import { ISecretStore } from "./types";
 
 const FASS_SERVICE_NAME = "Beanni";
 
-export class SecretStore {
+export class KeytarSecretStore implements ISecretStore {
     public interactivePrompt?: (promptText: string) => Promise<string>;
 
     public async storeSecret(key: string, secret: string) {

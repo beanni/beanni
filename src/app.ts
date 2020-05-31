@@ -3,12 +3,12 @@ import program from "commander";
 import inquirer from "inquirer";
 import { Core, IBeanniExecutionContext } from "./core";
 import { DataStore } from "./dataStore";
-import { SecretStore } from "./secretStore";
+import { KeytarSecretStore } from "./keytarSecretStore";
 import { Explorer } from "./web/explorer";
 
 const dataStore = new DataStore();
 
-const secretStore = new SecretStore();
+const secretStore = new KeytarSecretStore();
 secretStore.interactivePrompt = async (promptText: string) => {
     console.log("Missing a secret");
     console.warn("What you enter here will be persisted to secure store");

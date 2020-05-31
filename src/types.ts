@@ -23,3 +23,8 @@ export interface IBankDataProviderInterface {
 export interface IBankDataDocumentProviderInterface {
     getDocuments(statementFolderPath: string): Promise<void>;
 }
+
+export interface ISecretStore {
+    storeSecret(key: string, secret: string): Promise<void>;
+    retrieveSecret(key: string): Promise<string>;
+}
