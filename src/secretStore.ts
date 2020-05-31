@@ -6,7 +6,12 @@ export class SecretStore {
     public interactivePrompt?: (promptText: string) => Promise<string>;
 
     public async storeSecret(key: string, secret: string) {
-        await keytar.setPassword(this.formatServiceName(key), key, secret);
+        await keytar
+            .setPassword(this.formatServiceName(key), key, secret)
+            .catch((reason: any) => {
+                console.error("Failed to persist secret " + key + " for future re-use; will work once");
+                console.error(reason);
+            });
     }
 
     public async retrieveSecret(key: string): Promise<string> {
@@ -17,7 +22,7 @@ export class SecretStore {
 
         if (this.interactivePrompt != null) {
             result = await this.interactivePrompt(key);
-            this.storeSecret(key, result);
+            await this.storeSecret(key, result);
             return result;
         }
 
