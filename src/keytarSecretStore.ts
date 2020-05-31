@@ -16,7 +16,17 @@ export class KeytarSecretStore implements ISecretStore {
     }
 
     public async retrieveSecret(key: string): Promise<string> {
-        let result = await keytar.findPassword(this.formatServiceName(key));
+        var result;
+        try
+        {
+            result = await keytar.findPassword(this.formatServiceName(key));
+        }
+        catch (ex)
+        {
+            console.error(ex);
+            throw new Error("Couldn't lookup secret " + key);
+        }
+
         if (result != null) {
             return result;
         }

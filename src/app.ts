@@ -3,28 +3,12 @@ import program from "commander";
 import inquirer from "inquirer";
 import { Core, IBeanniExecutionContext } from "./core";
 import { DataStore } from "./dataStore";
-import { KeytarSecretStore } from "./keytarSecretStore";
+import { DynamicSecretStore } from "./dynamicSecretStore";
 import { Explorer } from "./web/explorer";
 
 const dataStore = new DataStore();
 
-const secretStore = new KeytarSecretStore();
-secretStore.interactivePrompt = async (promptText: string) => {
-    console.log("Missing a secret");
-    console.warn("What you enter here will be persisted to secure store");
-    const pr: {secret: string} = await inquirer.prompt([
-        {
-            type: "password",
-            name: "secret",
-            message: promptText + ":",
-            validate: (val: string): boolean => {
-                return val.length > 0;
-            },
-        },
-    ]);
-    return pr.secret;
-};
-
+const secretStore = new DynamicSecretStore();
 const core = new Core(dataStore, secretStore);
 
 program
