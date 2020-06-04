@@ -92,8 +92,10 @@ We use Dependabot to ensure we adopt updates to these dependencies as fast as po
 
 ## Development
 
-Run it locally:
+### Ubuntu Dependencies
+* [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly 
 
+### Run it locally
 1. Clone
 1. `npm install`
 1. One of:
