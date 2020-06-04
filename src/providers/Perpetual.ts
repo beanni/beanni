@@ -40,8 +40,7 @@ export class Perpetual implements IBankDataProviderInterface {
     }
 
     public async logout() {
-        if (this.browser == null) { throw new Error("Not logged in yet"); }
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
         await page.goto("https://secure.perpetual.com.au/LogoutCancelSession.aspx");

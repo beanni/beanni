@@ -32,8 +32,7 @@ export class Myki implements IBankDataProviderInterface {
     }
 
     public async logout() {
-        if (this.browser == null) { throw new Error("Not logged in yet"); }
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
         await page.click('input[name="ctl00$uxHeader$uxLoginImg"]');

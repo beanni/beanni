@@ -37,8 +37,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
     }
 
     public async logout() {
-        if (this.browser == null) { throw new Error("Not logged in yet"); }
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
         await page.goto("https://banking.westpac.com.au/wbc/banking/handler?TAM_OP=logout");

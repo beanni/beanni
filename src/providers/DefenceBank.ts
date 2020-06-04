@@ -41,8 +41,7 @@ export class DefenceBank implements IBankDataProviderInterface {
     }
 
     public async logout() {
-        if (this.browser == null) { throw new Error("Not logged in yet"); }
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
         await page.goto("https://digital.defencebank.com.au/logout");
