@@ -112,7 +112,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         for (const account of accounts) {
             balances.push({
                 institution: providerName,
-                accountName: account.AccountName,
+                accountName: account.AccountName ?? account.ProductName,
                 accountNumber: account.AccountNumber,
                 balance: account.CurrentBalance,
             });
