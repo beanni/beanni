@@ -25,6 +25,10 @@ export class HeadlessSecretStore implements ISecretStore {
     }
 
     public async retrieveSecret(key: string): Promise<string> {
-        return this.data[key];
+        const secret = this.data[key];
+        if (secret === undefined) {
+            console.warn("Tried to read secret " + key + " but couldn't find it in the headless secrets file");
+        }
+        return secret;
     }
 }
