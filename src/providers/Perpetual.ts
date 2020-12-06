@@ -25,7 +25,7 @@ export class Perpetual implements IBankDataProviderInterface {
         });
         const page = this.page = await this.browser.newPage();
 
-        await page.goto("https://www.perpetual.com.au/loginsecure");
+        await page.goto("https://secure.perpetual.com.au/");
         const loginPageTitle = await page.title();
         if (loginPageTitle.includes("OpenAM")) {
             await page.waitForSelector("#IDToken1");
