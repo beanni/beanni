@@ -19,5 +19,5 @@ steps:
     node --version
     npm --version
     npm install
-    npm run verify
+    npm run lint
   displayName: 'npm install and verify'
