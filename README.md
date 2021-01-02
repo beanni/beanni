@@ -45,8 +45,8 @@ In future:
 
 | Step | Run | Why |
 | --- | --- | --- |
-| 2. | `npm run fetch` | Grab your data |
-| 3. | `npm run explore` | Launch the analysis UI |
+| 1. | `npm run fetch` | Grab your data |
+| 2. | `npm run explore` | Launch the analysis UI |
 
 ### Uninstall
 
