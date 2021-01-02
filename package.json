@@ -2,15 +2,12 @@
   "name": "beanni",
   "version": "0.1.25",
   "description": "Your friendly Australian bean-counter.",
-  "main": "dist/app.js",
+  "main": "index.js",
   "scripts": {
-    "postinstall": "npm run build",
     "build": "tsc",
     "lint": "tslint --project tsconfig.json",
-    "start": "node dist/app.js",
-    "init": "npm start -- init",
-    "fetch": "npm start -- fetch",
-    "explore": "npm start -- explore"
+    "verify": "npm-run-all build lint",
+    "prepack": "npm run verify"
   },
   "repository": {
     "type": "git",
@@ -59,5 +56,8 @@
     "/src/web/public",
     "/src/web/views",
     "/src/example-config.yaml"
-  ]
+  ],
+  "bin": {
+    "beanni": "./dist/app.js"
+  }
 }

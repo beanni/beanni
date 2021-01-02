@@ -24,20 +24,14 @@ Get started in minutes:
 | 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
 | 2. | `node --version` | Make sure you're on Node ≥10.13.0 |
 | 3. | `npm --version` | Make sure you're on NPM ≥6.8.0 |
-| 4. | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
-| 5. | `npm install` | Install Beanni into this folder |
-| 6. | `npm run init` | Create an example `config.yaml` |
+| 4. | `mkdir beanni` <br/> `cd beanni` | Create a local folder where config and data will be stored |
+| 5. | `npm install beanni` | Install Beanni into this folder |
+| 6. | `npx beanni init` | Create an example `config.yaml` |
 | 7. | Edit `config.yaml` | Add your own banking relationships |
-| 8. | `npm run fetch` | Grab your data |
-| 9. | `npm run explore` | Launch the analysis UI |
+| 8. | `npx beanni fetch` | Grab your data |
+| 9. | `npx beanni explore` | Launch the analysis UI |
 
-### Updating Beanni
-Get the latest updates:
-
-| Step | Run | Why |
-| --- | --- | --- |
-| 1. | `git pull` <br/>  | Update Beanni to the latest version |
-| 2. | `npm install` | Install any new dependencies and rebuild |
+💡 Be careful with `npm` vs `npx` in some of those commands; they look very similar at a glance.
 
 ### Ongoing Usage
 
@@ -45,8 +39,9 @@ In future:
 
 | Step | Run | Why |
 | --- | --- | --- |
-| 2. | `npm run fetch` | Grab your data |
-| 3. | `npm run explore` | Launch the analysis UI |
+| 1. | `npm update beanni` | Update Beanni to the latest version |
+| 2. | `npx beanni fetch` | Grab your data |
+| 3. | `npx beanni explore` | Launch the analysis UI |
 
 ### Uninstall
 
@@ -103,5 +98,15 @@ We use Dependabot to ensure we adopt updates to these dependencies as fast as po
 ### Run it locally
 1. Clone
 1. `npm install`
-    * A `postinstall` script automatically runs `npm build` after `npm install` to compile TS to JS
-1. VS Code > `Ctrl+F5`
+1. One of:
+    * VS Code > `Ctrl+F5`
+    * `npx ts-node ./src/app.ts --help`
+
+To release (if you have the rights):
+1. Clean git context
+1. `npm version major|minor|patch`
+1. `npm pack`
+1. Validate the file list. ⚠ Make sure `config.yaml` or other dev-local files aren't in there.
+1. `npm publish ./beanni-x.x.xx.tgz`
+1. `git push`
+1. `git push --tags`
