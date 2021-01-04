@@ -9,19 +9,6 @@ router.get("/", async (req, res, next) => {
     try {
         await dataStore.open();
 
-        // https://learnui.design/tools/data-color-picker.html#palette
-        const colors = [
-            "#003f5c",
-            "#2f4b7c",
-            "#665191",
-            "#a05195",
-            "#d45087",
-            "#f95d6a",
-            "#ff7c43",
-            "#ffa600",
-        ];
-        let colorIndex = 0;
-
         const balanceData: any[] = await dataStore.getAllBalances();
         balanceData.forEach((bd) => {
             bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`;
@@ -43,7 +30,6 @@ router.get("/", async (req, res, next) => {
                             return dataPoint == null ? null : dataPoint.balance;
                         })
                         .value(),
-                    backgroundColor: colors[colorIndex++ % colors.length],
                 }))
                 .value(),
         };

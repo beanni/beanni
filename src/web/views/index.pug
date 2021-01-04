@@ -13,6 +13,20 @@ block content
         script.
             (function() {
                 var sourceData = !{JSON.stringify(balanceHistoryChartData)};
+
+                // https://learnui.design/tools/data-color-picker.html#palette
+                const seriesFills = [
+                    '#003f5c',
+                    '#2f4b7c',
+                    '#665191',
+                    '#a05195',
+                    '#d45087',
+                    '#f95d6a',
+                    '#ff7c43',
+                    '#ffa600',
+                ];
+                var seriesFillIndex = 0;
+
                 new Chart('balanceHistoryChart', {
                     type: 'bar',
                     data: {
@@ -20,6 +34,7 @@ block content
                         datasets: sourceData.datasets.map(d => {
                             d.barPercentage = 1.1;
                             d.categoryPercentage = 1.0;
+                            d.backgroundColor = seriesFills[seriesFillIndex++ % seriesFills.length];
                             return d;
                         }),
                     },
