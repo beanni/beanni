@@ -5,19 +5,94 @@ block content
     p His name was Beanni! 🎶
 
     h2 Net Worth
-    p He's worth: $#{netWorth}
+    p He's worth: #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
     h2 Balances
     div(style='width: 100%; height: 600px;')
         canvas#balanceHistoryChart
         script.
-            new Chart('balanceHistoryChart', {
-                type: 'bar',
-                data: !{JSON.stringify(balanceHistoryChartData)},
-                options: {
-                    scales: {
-                        xAxes: [{stacked: true}],
-                        yAxes: [{stacked: true}]
+            (function() {
+                var sourceData = !{JSON.stringify(balanceHistoryChartData)};
+
+                // https://learnui.design/tools/data-color-picker.html#palette
+                const seriesColors = [
+                    '#003f5c',
+                    '#005575',
+                    '#006c86',
+                    '#00848e',
+                    '#009b8c',
+                    '#00b180',
+                    '#14c56c',
+                    '#74d851',
+                    '#b9e630',
+                ];
+                // https://github.com/ashiguruma/patternomaly/tree/master/src/shapes
+                var seriesPatterns = ['dash', 'diagonal', 'dot', 'line', 'line-vertical', 'plus', 'ring', 'triangle', 'weave', 'zigzag'];
+                var seriesFills = seriesColors.map((current, index) => {
+                    var patternName = seriesPatterns[index % seriesPatterns.length];
+                    return pattern.draw(patternName, current, '#ffffff', Math.floor(15 / window.devicePixelRatio))
+                });
+                var seriesFillIndex = 0;
+
+                Chart.defaults.global.defaultFontSize = 14;
+
+                new Chart('balanceHistoryChart', {
+                    type: 'bar',
+                    data: {
+                        labels: sourceData.labels.map(l => new Date(l)),
+                        datasets: sourceData.datasets.map(d => {
+                            d.barPercentage = 1.1;
+                            d.categoryPercentage = 1.0;
+                            d.backgroundColor = seriesFills[seriesFillIndex++ % seriesFills.length];
+                            return d;
+                        }),
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                stacked: true,
+                                type: 'time',
+                                time: {
+                                    unit: 'month',
+                                    tooltipFormat: 'yyyy-MM-DD',
+                                }
+                            }],
+                            yAxes: [{
+                                stacked: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                    }
+                                }
+                            }]
+                        },
+                        tooltips: {
+                            // Display tooltip for the whole day, not specific account
+                            mode: 'index',
+
+                            // Hover anywhere in the column, not just on a specific data point
+                            intersect: false,
+
+                            // Only display accounts with balances on the day
+                            filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
+
+                            // List balances highest to lowest
+                            itemSort: (a, b) => b.yLabel - a.yLabel,
+
+                            callbacks: {
+                                beforeBody: function(tooltipItem, data) {
+                                    // Display the day's net worth at the top of the tooltip
+                                    var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
+                                    return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                },
+                                label: function(tooltipItem, data) {
+                                    // Show values as currency-formatted
+                                    return data.datasets[tooltipItem.datasetIndex].label +
+                                        ': ' +
+                                        tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                }
+                            }
+                        }
                     }
-                }
-            });
+                });
+            })();

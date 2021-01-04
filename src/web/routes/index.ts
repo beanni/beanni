@@ -9,17 +9,6 @@ router.get("/", async (req, res, next) => {
     try {
         await dataStore.open();
 
-        const colors = [
-            "rgb(255, 99, 132)",
-            "rgb(255, 159, 64)",
-            "rgb(255, 205, 86)",
-            "rgb(75, 192, 192)",
-            "rgb(54, 162, 235)",
-            "rgb(153, 102, 255)",
-            "rgb(201, 203, 207)",
-        ];
-        let colorIndex = 0;
-
         const balanceData: any[] = await dataStore.getAllBalances();
         balanceData.forEach((bd) => {
             bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`;
@@ -41,7 +30,6 @@ router.get("/", async (req, res, next) => {
                             return dataPoint == null ? null : dataPoint.balance;
                         })
                         .value(),
-                    backgroundColor: colors[colorIndex++ % colors.length],
                 }))
                 .value(),
         };
