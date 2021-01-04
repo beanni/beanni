@@ -34,10 +34,21 @@ export class DataStore {
             throw new Error("Database not open yet");
         }
         const result = await this.database.all<any>(
-            `SELECT date(timestamp) AS 'date', institution, accountNumber, accountName, balance, max(timestamp)
-            FROM Balances
-            GROUP BY institution, accountNumber, date(timestamp)
-            ORDER BY date(timestamp), institution, accountNumber`,
+            `SELECT
+                date(b.timestamp) AS 'date',
+                b.institution,
+                b.accountNumber,
+                b1.accountName,
+                b.balance
+            FROM Balances b
+            INNER JOIN (
+                SELECT institution, accountNumber, accountName, max(timestamp)
+                FROM Balances
+                GROUP BY institution, accountNumber
+            ) b1
+            ON b.institution = b1.institution AND b.accountNumber = b1.accountNumber
+            GROUP BY b.institution, b.accountNumber, date(b.timestamp)
+            ORDER BY date(b.timestamp), b.institution, b1.accountName`,
         );
         result.forEach((r) => { r.balance = r.balance / 100; });
         return result;
