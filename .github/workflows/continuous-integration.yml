@@ -13,9 +13,7 @@ jobs:
     # restores from that cache on each subsequent build
     - uses: actions/cache@v2
       with:
-        path: | 
-          ~/.npm
-          **/node_modules
+        path: ~/.npm
         key: ubuntu-1604-npm-${{ hashFiles('package-lock.json') }}
         # If cache-miss on exact key, use any previous available caches as the starting point
         restore-keys: |
