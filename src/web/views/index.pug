@@ -17,7 +17,14 @@ block content
                 options: {
                     scales: {
                         xAxes: [{stacked: true}],
-                        yAxes: [{stacked: true}]
+                        yAxes: [{
+                            stacked: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                }
+                            }
+                        }]
                     }
                 }
             });
