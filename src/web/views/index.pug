@@ -17,14 +17,16 @@ block content
                     type: 'bar',
                     data: {
                         labels: sourceData.labels.map(l => new Date(l)),
-                        datasets: sourceData.datasets,
+                        datasets: sourceData.datasets.map(d => {
+                            d.barPercentage = 1.1;
+                            d.categoryPercentage = 1.0;
+                            return d;
+                        }),
                     },
                     options: {
                         scales: {
                             xAxes: [{
                                 stacked: true,
-                                categoryPercentage: 1.0,
-                                barPercentage: 1.1,
                                 type: 'time',
                                 time: {
                                     unit: 'month',
