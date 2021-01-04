@@ -3,9 +3,12 @@ on: push
 
 jobs:
   build-and-lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '10'
     # Caches the contents of the ~/.npm folder on successful build, and attempts to 
     # restores from that cache on each subsequent build
     - uses: actions/cache@v2
