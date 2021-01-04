@@ -15,7 +15,7 @@ block content
                 var sourceData = !{JSON.stringify(balanceHistoryChartData)};
 
                 // https://learnui.design/tools/data-color-picker.html#palette
-                const seriesFills = [
+                const seriesColors = [
                     '#003f5c',
                     '#005575',
                     '#006c86',
@@ -26,6 +26,12 @@ block content
                     '#74d851',
                     '#b9e630',
                 ];
+                // https://github.com/ashiguruma/patternomaly/tree/master/src/shapes
+                var seriesPatterns = ['dash', 'diagonal', 'dot', 'line', 'line-vertical', 'plus', 'ring', 'triangle', 'weave', 'zigzag'];
+                var seriesFills = seriesColors.map((current, index) => {
+                    var patternName = seriesPatterns[index % seriesPatterns.length];
+                    return pattern.draw(patternName, current, '#ffffff', Math.floor(15 / window.devicePixelRatio))
+                });
                 var seriesFillIndex = 0;
 
                 new Chart('balanceHistoryChart', {
