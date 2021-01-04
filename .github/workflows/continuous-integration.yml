@@ -1,0 +1,9 @@
+name: Continuous Integration
+on: push
+
+jobs:
+  build-and-lint:
+    runs-on: ubuntu-latest
+    steps:
+    - run: npm install
+    - run: npm run lint
