@@ -11,10 +11,10 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~/.npm
-        key: ubuntu-npm-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-npm-${{ hashFiles('package-lock.json') }}
         # If cache-miss on exact key, use any previous available caches as the starting point
         restore-keys: |
-          ubuntu-npm-
+          ${{ runner.os }}-npm-
     # `npm ci` uses package-lock.json to restore the exact versions available at commit time
     - run: npm ci
     - run: npm run lint
