@@ -11,51 +11,62 @@ block content
     div(style='width: 100%; height: 600px;')
         canvas#balanceHistoryChart
         script.
-            new Chart('balanceHistoryChart', {
-                type: 'bar',
-                data: !{JSON.stringify(balanceHistoryChartData)},
-                options: {
-                    scales: {
-                        xAxes: [{
-                            stacked: true,
-                            categoryPercentage: 1.0,
-                            barPercentage: 1.1
-                        }],
-                        yAxes: [{
-                            stacked: true,
-                            ticks: {
-                                callback: function(value, index, values) {
-                                    return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
-                                }
-                            }
-                        }]
+            (function() {
+                var sourceData = !{JSON.stringify(balanceHistoryChartData)};
+                new Chart('balanceHistoryChart', {
+                    type: 'bar',
+                    data: {
+                        labels: sourceData.labels.map(l => new Date(l)),
+                        datasets: sourceData.datasets,
                     },
-                    tooltips: {
-                        // Display tooltip for the whole day, not specific account
-                        mode: 'index',
+                    options: {
+                        scales: {
+                            xAxes: [{
+                                stacked: true,
+                                categoryPercentage: 1.0,
+                                barPercentage: 1.1,
+                                type: 'time',
+                                time: {
+                                    unit: 'month',
+                                    tooltipFormat: 'yyyy-MM-DD',
+                                }
+                            }],
+                            yAxes: [{
+                                stacked: true,
+                                ticks: {
+                                    callback: function(value, index, values) {
+                                        return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                    }
+                                }
+                            }]
+                        },
+                        tooltips: {
+                            // Display tooltip for the whole day, not specific account
+                            mode: 'index',
 
-                        // Hover anywhere in the column, not just on a specific data point
-                        intersect: false,
+                            // Hover anywhere in the column, not just on a specific data point
+                            intersect: false,
 
-                        // Only display accounts with balances on the day
-                        filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
+                            // Only display accounts with balances on the day
+                            filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
 
-                        // List balances highest to lowest
-                        itemSort: (a, b) => b.yLabel - a.yLabel,
+                            // List balances highest to lowest
+                            itemSort: (a, b) => b.yLabel - a.yLabel,
 
-                        callbacks: {
-                            beforeBody: function(tooltipItem, data) {
-                                // Display the day's net worth at the top of the tooltip
-                                var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
-                                return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
-                            },
-                            label: function(tooltipItem, data) {
-                                // Show values as currency-formatted
-                                return data.datasets[tooltipItem.datasetIndex].label +
-                                    ': ' +
-                                    tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                            callbacks: {
+                                beforeBody: function(tooltipItem, data) {
+                                    // Display the day's net worth at the top of the tooltip
+                                    var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
+                                    return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                },
+                                label: function(tooltipItem, data) {
+                                    // Show values as currency-formatted
+                                    return data.datasets[tooltipItem.datasetIndex].label +
+                                        ': ' +
+                                        tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            })();
