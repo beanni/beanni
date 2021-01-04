@@ -25,6 +25,33 @@ block content
                                 }
                             }
                         }]
+                    },
+                    tooltips: {
+                        // Display tooltip for the whole day, not specific account
+                        mode: 'index',
+
+                        // Hover anywhere in the column, not just on a specific data point
+                        intersect: false,
+
+                        // Only display accounts with balances on the day
+                        filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
+
+                        // List balances highest to lowest
+                        itemSort: (a, b) => b.yLabel - a.yLabel,
+
+                        callbacks: {
+                            beforeBody: function(tooltipItem, data) {
+                                // Display the day's net worth at the top of the tooltip
+                                var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
+                                return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                            },
+                            label: function(tooltipItem, data) {
+                                // Show values as currency-formatted
+                                return data.datasets[tooltipItem.datasetIndex].label +
+                                    ': ' +
+                                    tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                            }
+                        }
                     }
                 }
             });
