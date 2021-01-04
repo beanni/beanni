@@ -2,8 +2,6 @@
 
 Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=Aey_zIE3K9E).
 
-[![npm](https://img.shields.io/npm/v/beanni.svg)](https://www.npmjs.com/package/beanni)
-[![npm](https://img.shields.io/npm/dt/beanni.svg)](https://www.npmjs.com/package/beanni)
 [![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)](https://github.com/beanni/beanni/graphs/contributors)
 [![Build Status](https://dev.azure.com/beanni/Beanni/_apis/build/status/beanni.beanni?branchName=master)](https://dev.azure.com/beanni/Beanni/_build/latest?definitionId=1&branchName=master)
 
