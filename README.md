@@ -24,6 +24,7 @@ Get started in minutes:
 | 3. | `npm --version` | Make sure you're on NPM ≥6.8.0 |
 | 4. | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
 | 5. | `npm install` | Install Beanni into this folder |
+| 6. | `npm run build` | Build Beanni | 
 | 6. | `npm run init` | Create an example `config.yaml` |
 | 7. | Edit `config.yaml` | Add your own banking relationships |
 | 8. | `npm run fetch` | Grab your data |
@@ -35,7 +36,8 @@ Get the latest updates:
 | Step | Run | Why |
 | --- | --- | --- |
 | 1. | `git pull` <br/>  | Update Beanni to the latest version |
-| 2. | `npm install` | Install any new dependencies and rebuild |
+| 2. | `npm install` | Install any new dependencies |
+| 3. | `npm run build` | Build Beanni |
 
 ### Ongoing Usage
 
@@ -101,5 +103,4 @@ We use Dependabot to ensure we adopt updates to these dependencies as fast as po
 ### Run it locally
 1. Clone
 1. `npm install`
-    * A `postinstall` script automatically runs `npm build` after `npm install` to compile TS to JS
 1. VS Code > `Ctrl+F5`

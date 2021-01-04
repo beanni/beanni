@@ -18,4 +18,4 @@ jobs:
     # `npm ci` uses package-lock.json to restore the exact versions available at commit time
     - run: npm ci
     - run: npm run lint
-    
+    - run: npm run build
