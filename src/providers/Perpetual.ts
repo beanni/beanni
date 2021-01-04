@@ -25,26 +25,23 @@ export class Perpetual implements IBankDataProviderInterface {
         });
         const page = this.page = await this.browser.newPage();
 
-        await page.goto("https://secure.perpetual.com.au/");
-        const loginPageTitle = await page.title();
-        if (loginPageTitle.includes("OpenAM")) {
-            await page.waitForSelector("#IDToken1");
-            await page.type("#IDToken1[type=text]", username);
-            await page.type("#IDToken2[type=password]", password);
-        } else {
-            await page.waitForSelector("#onlineIDTextBox");
-            await page.type("#onlineIDTextBox", username);
-            await page.type("#passwordTextBox", password);
-        }
-        await page.click("input[type=submit][value=Login]");
+        await page.goto("https://investor.myperpetual.com.au/");
+
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await page.waitForSelector("adv-login input", { visible: true });
+
+        await page.type("input[name=username]", username);
+        await page.type("input[name=password]", password);
+        await page.click("button[type=submit]");
+
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
     }
 
     public async logout() {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
-        await page.goto("https://secure.perpetual.com.au/LogoutCancelSession.aspx");
-        await page.waitForSelector("input[type=submit][value=Login]");
+        // Explicit logout not implemented
 
         await this.browser.close();
     }
@@ -53,24 +50,38 @@ export class Perpetual implements IBankDataProviderInterface {
         if (this.page == null) { throw new Error("Not logged in yet"); }
         const page = this.page;
 
+        // Perpetual uses Angular + Ivy in 'production mode' which means all the debugging
+        // entry points for Angular are packed/tree-shaken away, which makes it hard/impossible
+        // to get to the nice view-model objects behind all the custom components.
+
+        // The page markup is gross and horribly inaccessible, so that's not a good route to go.
+
+        // We've opted to intercept the XHR responses as they stream into the page instead.
+
         const balances = new Array<IAccountBalance>();
+        var onResponse = async function(response : any) {
+            var url = response.url();
 
-        await page.waitForSelector("#accountSummaryTbl .total");
+            // Only care for 200-series responses
+            if (!response.ok()) { return; }
 
-        const accountSummaryRows = await page.$$("#accountSummaryTbl > tbody > tr");
-        for (const row of accountSummaryRows) {
+            // Expecting: 'https://investor.myperpetual.com.au/mozart/api/adviser/current/accounts/AB123456789?includeDetails=true'
+            var looksLikeAnAccountResponse = /\/api\/adviser\/current\/accounts\/([^\/]*?)\?/.test(url);
+            if (!looksLikeAnAccountResponse) { return; }
+
+            var data = await response.json();
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval(".clientname", (el: any) => el.textContent.trim()),
-                accountNumber: await row.$eval(".accountnumber", (el: any) => el.textContent.trim()),
-                balance: parseFloat(
-                    await row.$eval(
-                        ".accountvalue",
-                        (el: any) => el.textContent.trim().replace("$", "").replace(",", ""),
-                    ),
-                ),
+                accountName: data.mailingName || data.productName,
+                accountNumber: data.accountNo,
+                balance: data.details.accountBalance,
             });
-        }
+        };
+
+        page.on('response', onResponse);
+        await page.goto("https://investor.myperpetual.com.au/mozart/investorweb/app/accounts/all-investments");
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        page.off('response', onResponse);
 
         return balances;
     }
