@@ -16,7 +16,11 @@ block content
                 data: !{JSON.stringify(balanceHistoryChartData)},
                 options: {
                     scales: {
-                        xAxes: [{stacked: true}],
+                        xAxes: [{
+                            stacked: true,
+                            categoryPercentage: 1.0,
+                            barPercentage: 1.1
+                        }],
                         yAxes: [{
                             stacked: true,
                             ticks: {
