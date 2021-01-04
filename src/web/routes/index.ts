@@ -9,14 +9,16 @@ router.get("/", async (req, res, next) => {
     try {
         await dataStore.open();
 
+        // https://learnui.design/tools/data-color-picker.html#palette
         const colors = [
-            "rgb(255, 99, 132)",
-            "rgb(255, 159, 64)",
-            "rgb(255, 205, 86)",
-            "rgb(75, 192, 192)",
-            "rgb(54, 162, 235)",
-            "rgb(153, 102, 255)",
-            "rgb(201, 203, 207)",
+            "#003f5c",
+            "#2f4b7c",
+            "#665191",
+            "#a05195",
+            "#d45087",
+            "#f95d6a",
+            "#ff7c43",
+            "#ffa600",
         ];
         let colorIndex = 0;
 
