@@ -30,7 +30,7 @@
     "@types/js-yaml": "^3.12.4",
     "@types/lodash": "^4.14.154",
     "@types/node": "^11.15.14",
-    "@types/puppeteer": "^1.20.6",
+    "@types/puppeteer": "^5.4.2",
     "@types/request": "^2.48.5",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/eslint-plugin-tslint": "^4.12.0",
