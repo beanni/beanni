@@ -15,12 +15,12 @@ export class HeadlessSecretStore implements ISecretStore {
             return;
         }
 
-        fileData.secrets.forEach((s: any) => {
+        fileData.secrets.forEach((s: { key: string; value: string; }) => {
             this.data[s.key] = s.value;
         });
     }
 
-    public async storeSecret(key: string, secret: string) {
+    public async storeSecret(key: string): Promise<void> {
         console.info("Asked to persist secret " + key + "; ignoring because we're in headless mode");
     }
 

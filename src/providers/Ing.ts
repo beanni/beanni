@@ -19,7 +19,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
-    ) {
+    ): Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
 
@@ -43,6 +43,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         // Click the secret pixel that fires up the accessible login form
         // For some reason, puppeteer's native page.click doesn't achieve the same result as evaluating in-page
         await page.evaluate(() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const button =  document.querySelector('.ing-login-input input[type="image"].accessibleText') as any;
             if (button != null) { button.click(); }
         });
@@ -52,7 +53,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         // Type the PIN digit-by-digit on their virtual keypad
         for (const digit of password) {
             await page.evaluate((d) => {
-                const button =  document.querySelector('.ing-accessible-login input[alt="' + d + '"]') as any;
+                const button =  document.querySelector('.ing-accessible-login input[alt="' + d + '"]') as HTMLButtonElement;
                 if (button != null) { button.click(); }
             }, digit);
             this.debugLog("login", 4);
@@ -61,19 +62,18 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
         // Click the login button
         await page.evaluate(() => {
-            const button =  document.querySelector('.ing-accessible-login input[alt="Login"]') as any;
-            if (button != null) {
-                button.click();
-            }
+            const button =  document.querySelector('.ing-accessible-login input[alt="Login"]') as HTMLButtonElement;
+            if (button != null) { button.click(); }
         });
         this.debugLog("login", 6);
     }
 
-    public async logout() {
+    public async logout(): Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
         await page.evaluate(() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const button =  document.querySelector("button.uia-logout") as any;
             if (button != null) { button.click(); }
         });
@@ -99,15 +99,16 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
         // Wait for the AJAX load to complete
         await page.waitForFunction(() => {
-            // @ts-ignore
-            const componentData = document.querySelector("ing-all-accounts-summary").__data__;
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const componentData = (<any>document.querySelector("ing-all-accounts-summary"))?.__data__;
             return typeof(componentData.accountSummaryData) !== "undefined";
         });
         this.debugLog("getBalances", 2);
 
         // Pull structured data straight off the Polymer component
-        const accounts = await page.$eval("ing-all-accounts-summary", (el: any) =>
-            el.__data__.accountSummaryData.Categories.flatMap((cat: any) => cat.Accounts),
+        const accounts = await page.$eval("ing-all-accounts-summary", (el) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (<any>el).__data__.accountSummaryData.Categories.flatMap((cat: any) => cat.Accounts),
         );
         for (const account of accounts) {
             balances.push({
@@ -139,14 +140,15 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
         // Wait for the AJAX load to complete
         await page.waitForFunction(() =>
-            // @ts-ignore
-            (document.querySelector("ing-estatements").__data__.eligibleAccountsLoading === false),
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ((<any>document.querySelector("ing-estatements"))?.__data__.eligibleAccountsLoading === false)
         );
         this.debugLog("getDocuments", 2);
 
         // Find available accounts
         const availableAccounts = await page.$eval(
             "ing-estatements-filters",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (el: any) => el.accounts,
         );
         for (const account of availableAccounts) {
@@ -164,6 +166,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         // Filter to this account, and longest period available
         await page.$eval(
             "ing-estatements-filters",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (el: any, accountNumber: string) => {
                 el.selectAccountByNumber(accountNumber);
                 el.selectedPeriodIndex = (el.periods.length - 1);
@@ -180,10 +183,10 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         await page.waitForFunction(
             (accountNumber) => {
                 return true &&
-                    // @ts-ignore
-                    (document.querySelector("ing-estatements").__data__.estatementsLoading === false) &&
-                    // @ts-ignore
-                    (document.querySelector("ing-estatements-results").__data__.accountNumber === accountNumber);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ((<any>document.querySelector("ing-estatements"))?.__data__.estatementsLoading === false) &&
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    ((<any>document.querySelector("ing-estatements-results"))?.__data__.accountNumber === accountNumber);
             },
             { timeout: 60000 },
             account.AccountNumber,
@@ -193,6 +196,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         // Pull the data out of the page
         const statementsResultsData = await page.$eval(
             "ing-estatements-results",
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (el: any) => el.__data__,
         );
 
@@ -205,7 +209,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
             const filename = `${statement.EndDate} ING ${account.AccountNumber} Statement ${statement.Id}.pdf`;
             const targetPath = statementFolderPath + `${filename}`;
 
-            const exists = await new Promise<boolean>((resolve, reject) => {
+            const exists = await new Promise<boolean>((resolve) => {
                 fs.access(targetPath, fs.constants.F_OK, (err) => {
                     resolve(err === null);
                 });
@@ -215,7 +219,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                 continue;
             }
 
-            await new Promise((resolve, reject) => {
+            await new Promise<void>((resolve) => {
                 const file = fs.createWriteStream(targetPath);
                 request
                     .post({

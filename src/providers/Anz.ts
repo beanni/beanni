@@ -17,7 +17,7 @@ export class Anz implements IBankDataProviderInterface {
         this.executionContext = executionContext;
     }
 
-    public async login(retrieveSecretCallback: (key: string) => Promise<string>) {
+    public async login(retrieveSecretCallback: (key: string) => Promise<string>): Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -35,7 +35,7 @@ export class Anz implements IBankDataProviderInterface {
         await page.waitForSelector(".listViewAccountWrapperYourAccounts");
     }
 
-    public async logout() {
+    public async logout(): Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -61,15 +61,11 @@ export class Anz implements IBankDataProviderInterface {
 
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval(".accountNameSection", (el: any) =>
-                    el.textContent.trim(),
-                ),
-                accountNumber: await row.$eval(".accountNoSection", (el: any) =>
-                    el.textContent.trim(),
-                ),
+                accountName: await row.$eval(".accountNameSection", el => (el.textContent || '').trim()),
+                accountNumber: await row.$eval(".accountNoSection", el => (el.textContent || '').trim()),
                 balance: parseFloat(
-                    await row.$eval(".currentBalTD", (el: any) =>
-                        el.textContent
+                    await row.$eval(".currentBalTD", el =>
+                        (el.textContent || '')
                             .replace("Current balance", "")
                             .replace(/\s/g, "")
                             .replace("$", "")

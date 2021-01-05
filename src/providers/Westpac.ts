@@ -18,7 +18,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
 
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
-    ) {
+    ) : Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -36,7 +36,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
         await page.waitForSelector("#customer-actions");
     }
 
-    public async logout() {
+    public async logout() : Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -60,15 +60,17 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
         for (const row of accountSummaryRows) {
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval(".tf-account-detail a span", (el: any) => el.textContent.trim()),
+                accountName: await row.$eval(".tf-account-detail a span", el =>
+                    (el.textContent || '').trim()
+                ),
                 accountNumber: await row.$eval(
                     ".tf-account-detail div > span",
-                    (el: any) => el.innerText.split("\n")[1],
+                    el => (<HTMLElement>el).innerText.split("\n")[1],
                 ),
                 balance: parseFloat(
                     await row.$eval(
                         ".balance.current .balance",
-                        (el: any) => el.textContent.trim().replace("minus", "").replace("$", "").replace(",", ""),
+                        el => (el.textContent || '').trim().replace("minus", "").replace("$", "").replace(",", ""),
                     ),
                 ),
             });
@@ -85,12 +87,14 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
         await page.goto("https://banking.westpac.com.au/secure/banking/account/statements");
         await page.waitForSelector(".widget.accounts-statementswidget");
         await page.waitForFunction(
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             () => ko.dataFor(document.querySelector(".widget.accounts-statementswidget")).Accounts().length > 0,
         );
 
         // Pull the session-specific and well-known account identifiers
         const accountList = await page.evaluate(() => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             return ko.dataFor(document.querySelector(".widget.accounts-statementswidget")).Accounts().map((_) => ({
                 AccountGlobalId: _.AccountGlobalId(),
@@ -133,7 +137,10 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
     }
 
     private async downloadStatementsAndDetermineIfThereAreMore(
-            account: any,
+            account: {
+                AccountNumber: string;
+                AccountGlobalId: string;
+            },
             dateRangeString: string,
             cookieJar: request.CookieJar,
             statementFolderPath: string,
@@ -146,7 +153,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
                 PdfDocumentId: string;
                 PdfLink: string;
             }>;
-        }>((resolve, reject) => {
+        }>((resolve) => {
             request.get({
                 uri: "https://banking.westpac.com.au/secure/banking/accounts/getstatementlist",
                 qs: {
@@ -193,7 +200,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
             `Statement ${statement.Id || statement.PdfDocumentId}.pdf`;
         const targetPath = statementFolderPath + `${filename}`;
 
-        const exists = await new Promise<boolean>((resolve, reject) => {
+        const exists = await new Promise<boolean>((resolve) => {
             fs.access(targetPath, fs.constants.F_OK, (err) => {
                 resolve(err === null);
             });
@@ -203,7 +210,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
             return;
         }
 
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve) => {
             const file = fs.createWriteStream(targetPath);
             request
                 .get({

@@ -10,13 +10,13 @@ export class Perpetual implements IBankDataProviderInterface {
     public browser: puppeteer.Browser | undefined;
     public page: puppeteer.Page | undefined;
 
-    constructor(executionContext: IBeanniExecutionContext) {
+    public constructor(executionContext: IBeanniExecutionContext) {
         this.executionContext = executionContext;
     }
 
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
-    ) {
+    ): Promise<void> {
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
 
@@ -37,9 +37,10 @@ export class Perpetual implements IBankDataProviderInterface {
         await page.waitForNavigation({ waitUntil: "networkidle0" });
     }
 
-    public async logout() {
-        if (this.browser == null || this.page == null) { return; }
-        const page = this.page;
+    public async logout(): Promise<void> {
+        if (this.browser == null || this.page == null) {
+            return;
+        }
 
         // Explicit logout not implemented
 
@@ -47,7 +48,9 @@ export class Perpetual implements IBankDataProviderInterface {
     }
 
     public async getBalances(): Promise<IAccountBalance[]> {
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.page == null) {
+            throw new Error("Not logged in yet");
+        }
         const page = this.page;
 
         // Perpetual uses Angular + Ivy in 'production mode' which means all the debugging
@@ -59,24 +62,39 @@ export class Perpetual implements IBankDataProviderInterface {
         // We've opted to intercept the XHR responses as they stream into the page instead.
 
         const balances = new Array<IAccountBalance>();
-        const onResponse = async (response: any) => {
+        const handleResponse = async (response: puppeteer.Response) => {
             const url = response.url();
 
             // Only care for 200-series responses
-            if (!response.ok()) { return; }
+            if (!response.ok()) {
+                return;
+            }
 
-            // Expecting URL like:
+            // Expecting a URL like:
             // https://investor.myperpetual.com.au/mozart/api/adviser/current/accounts/AB123456789?includeDetails=true
-            const looksLikeAnAccountResponse = /\/api\/adviser\/current\/accounts\/([^\/]*?)\?/.test(url);
-            if (!looksLikeAnAccountResponse) { return; }
+            const looksLikeAnAccountResponse = /\/api\/adviser\/current\/accounts\/([^/]*?)\?/.test(url);
+            if (!looksLikeAnAccountResponse) {
+                return;
+            }
 
-            const data = await response.json();
+            const data = await response.json() as {
+                mailingName: string;
+                productName: string;
+                accountNo: string;
+                details: { accountBalance: number };
+            };
             balances.push({
                 institution: providerName,
                 accountName: data.mailingName || data.productName,
                 accountNumber: data.accountNo,
                 balance: data.details.accountBalance,
             });
+        };
+        const onResponse = (response: puppeteer.Response) => {
+            handleResponse(response)
+                .then(null, (reason) => {
+                    throw reason;
+                });
         };
 
         page.on("response", onResponse);

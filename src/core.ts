@@ -58,13 +58,13 @@ export class Core {
         return config;
     }
 
-    public async validateConfig() {
+    public async validateConfig(): Promise<void> {
         const config = await this.loadConfig();
         console.log("Config appears valid:");
         console.log(JSON.stringify(config, null, 2));
     }
 
-    public async fetch(executionContext: IBeanniExecutionContext) {
+    public async fetch(executionContext: IBeanniExecutionContext): Promise<void> {
         const config = await this.loadConfig();
         console.log("%s relationships to fetch from", config.relationships.length);
 
@@ -78,6 +78,7 @@ export class Core {
             for (const relationship of config.relationships) {
                 console.log("[%s] Fetching '%s'", relationship.provider, relationship.name);
                 const providerName = relationship.provider;
+                // eslint-disable-next-line @typescript-eslint/no-var-requires
                 const module = require("./providers/" + providerName);
                 const provider =  new module[providerName](executionContext) as IBankDataProviderInterface;
 
@@ -121,7 +122,7 @@ export class Core {
         return ( provider as IBankDataDocumentProviderInterface).getDocuments !== undefined;
     }
 
-    public async init(executionContext: IBeanniExecutionContext) {
+    public async init(): Promise<void> {
         try {
             await fs.promises.access(CONFIG_PATH, fs.constants.F_OK);
             console.error("There's already a config.yaml file on disk; leaving it as-is");

@@ -23,7 +23,7 @@ export class DynamicSecretStore implements ISecretStore {
         }
     }
 
-    public async storeSecret(key: string, secret: string) {
+    public async storeSecret(key: string, secret: string): Promise<void> {
         try {
             await this.underlyingStore.storeSecret(key, secret);
         } catch (err) {

@@ -17,7 +17,7 @@ export class Bankwest implements IBankDataProviderInterface {
         this.executionContext = executionContext;
     }
 
-    public async login(retrieveSecretCallback: (key: string) => Promise<string>) {
+    public async login(retrieveSecretCallback: (key: string) => Promise<string>) : Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -35,7 +35,7 @@ export class Bankwest implements IBankDataProviderInterface {
         await page.waitForSelector('[id$="lblWelcomeMessage"]');
     }
 
-    public async logout() {
+    public async logout() : Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -55,15 +55,11 @@ export class Bankwest implements IBankDataProviderInterface {
         for (const row of accountSummaryRows) {
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval("td:nth-child(1)", (el: any) =>
-                    el.textContent.trim(),
-                ),
-                accountNumber: await row.$eval("td:nth-child(2)", (el: any) =>
-                    el.textContent.trim(),
-                ),
+                accountName: await row.$eval("td:nth-child(1)", el => (el.textContent || '').trim()),
+                accountNumber: await row.$eval("td:nth-child(2)", el => (el.textContent || '').trim()),
                 balance: parseFloat(
-                    await row.$eval("td:nth-child(3)", (el: any) =>
-                        el.textContent
+                    await row.$eval("td:nth-child(3)", el =>
+                        (el.textContent || '')
                             .replace(/\s/g, "")
                             .replace("$", "")
                             .replace(",", ""),
