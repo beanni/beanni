@@ -5,6 +5,7 @@ import { Core, IBeanniExecutionContext } from "./core";
 import { DataStore } from "./dataStore";
 import { DynamicSecretStore } from "./dynamicSecretStore";
 import { Explorer } from "./web/explorer";
+import child_process from "child_process";
 
 const dataStore = new DataStore();
 
@@ -18,7 +19,6 @@ program
 program
     .command("explore")
     .action(async () => {
-        const executionContext = parseExecutionContext();
         const explorer = new Explorer();
         explorer.run((url) => {
             console.log(`Listening on ${url}`);
@@ -28,7 +28,7 @@ program
                 process.platform === "win32" ? "start" :
                 "xdg-open"
             );
-            require("child_process").exec(start + " " + url);
+            child_process.exec(start + " " + url);
         });
     });
 
@@ -42,8 +42,7 @@ program
 program
     .command("init")
     .action(async () => {
-        const executionContext = parseExecutionContext();
-        await core.init(executionContext);
+        await core.init();
     });
 
 program

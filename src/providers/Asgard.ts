@@ -16,7 +16,7 @@ export class Asgard implements IBankDataProviderInterface {
 
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
-    ) {
+    ) : Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -40,7 +40,7 @@ export class Asgard implements IBankDataProviderInterface {
         this.debugLog("login", 4);
     }
 
-    public async logout() {
+    public async logout() : Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -71,7 +71,7 @@ export class Asgard implements IBankDataProviderInterface {
             const cells = await row.$$("td");
             if (cells.length !== 3) { continue; }
 
-            const cellText = await Promise.all(cells.map(async (c: any) => {
+            const cellText = await Promise.all(cells.map(async (c) => {
                 const handle = await c.getProperty("textContent");
                 const value = await handle.jsonValue();
                 return value.trim();

@@ -6,13 +6,15 @@ const FASS_SERVICE_NAME = "Beanni";
 export class KeytarSecretStore implements ISecretStore {
     public interactivePrompt?: (promptText: string) => Promise<string>;
 
-    public async storeSecret(key: string, secret: string) {
-        await keytar
-            .setPassword(this.formatServiceName(key), key, secret)
-            .catch((reason: any) => {
-                console.error("Failed to persist secret " + key + " for future re-use; will work once");
-                console.error(reason);
-            });
+    public async storeSecret(key: string, secret: string) : Promise<void> {
+        try
+        {
+            await keytar.setPassword(this.formatServiceName(key), key, secret);
+        }
+        catch (reason) {
+            console.error("Failed to persist secret " + key + " for future re-use; will work once");
+            console.error(reason);
+        }
     }
 
     public async retrieveSecret(key: string): Promise<string> {

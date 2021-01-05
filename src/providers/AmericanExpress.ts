@@ -17,7 +17,7 @@ export class AmericanExpress implements IBankDataProviderInterface {
         this.executionContext = executionContext;
     }
 
-    public async login(retrieveSecretCallback: (key: string) => Promise<string>) {
+    public async login(retrieveSecretCallback: (key: string) => Promise<string>): Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -33,7 +33,7 @@ export class AmericanExpress implements IBankDataProviderInterface {
         await page.waitForSelector(".summary-container");
     }
 
-    public async logout() {
+    public async logout(): Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -48,21 +48,20 @@ export class AmericanExpress implements IBankDataProviderInterface {
         const balances = new Array<IAccountBalance>();
 
         await page.goto(
-// tslint:disable-next-line: max-line-length
+// eslint-disable-next-line max-len
             "https://global.americanexpress.com/myca/intl/istatement/japa/v1/statement.do?BPIndex=0&method=displayStatement&inav=au_myca_pc_statement_yourcrd&Face=en_AU&sorted_index=0#/",
         );
         await page.waitForSelector(".statement-container");
         await page.waitForFunction(() => "angular" in window);
         await page.waitForFunction(
-// tslint:disable-next-line: max-line-length
+// eslint-disable-next-line max-len
             'window.angular.element(document.getElementsByTagName("card-selector")) && window.angular.element(document.getElementsByTagName("card-selector")).scope()',
         );
 
-        const selectedCard =    (
+        const selectedCard =
             await page.evaluate(
                 'window.angular.element(document.getElementsByTagName("card-selector")).scope().selectedCard',
-            )
-        ) as any;
+            );
         const selectedCardBalance = await page.evaluate(
             'window.angular.element(document.getElementsByTagName("card-selector")).scope().totalBalance',
         );

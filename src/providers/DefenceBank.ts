@@ -16,7 +16,7 @@ export class DefenceBank implements IBankDataProviderInterface {
 
     public async login(
         retrieveSecretCallback: (key: string) => Promise<string>,
-    ) {
+    ) : Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -40,7 +40,7 @@ export class DefenceBank implements IBankDataProviderInterface {
         this.debugLog("login", 4);
     }
 
-    public async logout() {
+    public async logout() : Promise<void> {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
@@ -70,12 +70,12 @@ export class DefenceBank implements IBankDataProviderInterface {
             this.debugLog("getBalances", 3);
             balances.push({
                 institution: providerName,
-                accountName: await row.$eval(".account-name", (el: any) => el.textContent.trim()),
-                accountNumber: await row.$eval(".account[data-acct]", (el: any) => el.dataset.acct),
+                accountName: await row.$eval(".account-name", el => (el.textContent || '').trim()),
+                accountNumber: await row.$eval(".account[data-acct]", (el) => (<HTMLElement>el).dataset.acct || ''),
                 balance: parseFloat(
                     await row.$eval(
                         ".account-bal",
-                        (el: any) => el.textContent.trim().replace("$", "").replace(",", ""),
+                        el => (el.textContent || '').trim().replace("$", "").replace(",", ""),
                     ),
                 ),
             });

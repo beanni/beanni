@@ -18,12 +18,21 @@
             "script": "verify",
             "problemMatcher": [
                 "$tsc",
-                "$tslint5"
+                "$eslint-stylish"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "lint",
+            "problemMatcher": [
+                "$eslint-stylish"
+            ],
+            "label": "npm: lint",
+            "detail": "eslint"
         }
     ]
 }

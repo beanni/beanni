@@ -10,6 +10,10 @@ export interface IAccountBalance {
     balance: number;
 }
 
+export interface IHistoricalAccountBalance extends IAccountBalance {
+    date: Date;
+}
+
 export interface IBankDataProviderInterface {
     login(
         retrieveSecretCallback: (key: string) => Promise<string>,

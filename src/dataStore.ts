@@ -1,17 +1,17 @@
 import sqlite, { Database } from "sqlite";
-import { IAccountBalance } from "./types";
+import { IAccountBalance, IHistoricalAccountBalance } from "./types";
 
 const DATA_FILE_NAME = "./beanni.db";
 
 export class DataStore {
     private database?: Database;
 
-    public async open() {
+    public async open() : Promise<void> {
         this.database = await sqlite.open(DATA_FILE_NAME);
         await this.database.migrate({ migrationsPath: __dirname + "/../src/migrations" });
     }
 
-    public async addBalance(balance: IAccountBalance) {
+    public async addBalance(balance: IAccountBalance) : Promise<void> {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }
@@ -29,11 +29,11 @@ export class DataStore {
         );
     }
 
-    public async getAllBalances(): Promise<any> {
+    public async getAllBalances(): Promise<IHistoricalAccountBalance[]> {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }
-        const result = await this.database.all<any>(
+        const result = await this.database.all<IHistoricalAccountBalance>(
             `SELECT
                 date(b.timestamp) AS 'date',
                 b.institution,
@@ -58,7 +58,7 @@ export class DataStore {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }
-        const result = await this.database.get<any>(
+        const result = await this.database.get<{ result : number }>(
             `SELECT SUM(b.Balance) AS result
             FROM Balances b
             INNER JOIN (
@@ -68,10 +68,10 @@ export class DataStore {
             ) b1
             ON b.id = b1.id ORDER BY institution, accountNumber`,
         );
-        return ( result.result as number) / 100;
+        return result.result / 100;
     }
 
-    public async close() {
+    public async close() : Promise<void> {
         if (this.database == null) {
             throw new Error("Unexpected flow; closing before opening");
         }

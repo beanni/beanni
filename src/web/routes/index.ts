@@ -1,18 +1,25 @@
 import { Router } from "express";
 import _ from "lodash";
 import { DataStore } from "../../dataStore";
+import { IHistoricalAccountBalance } from "../../types";
 const router = Router();
 
 /* GET home page. */
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
     const dataStore = new DataStore();
     try {
         await dataStore.open();
 
-        const balanceData: any[] = await dataStore.getAllBalances();
-        balanceData.forEach((bd) => {
-            bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`;
-        });
+        interface displayBalance extends IHistoricalAccountBalance {
+            label: string;
+        }
+
+        const balanceData: displayBalance[] = (await dataStore.getAllBalances())
+            .map(r => {
+                const bd = <displayBalance>r;
+                bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`
+                return bd;
+            });
         const dates = _(balanceData)
             .groupBy((r) => r.date)
             .keys()
@@ -26,7 +33,7 @@ router.get("/", async (req, res, next) => {
                     label: key,
                     data: _(dates)
                         .map((d) => {
-                            const dataPoint = _(balanceData).find((bd) => bd.label === key && bd.date === d);
+                            const dataPoint = _(balanceData).find((bd) => bd.label === key && bd.date.toString() === d);
                             return dataPoint == null ? null : dataPoint.balance;
                         })
                         .value(),
