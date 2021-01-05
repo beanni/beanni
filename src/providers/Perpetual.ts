@@ -27,14 +27,14 @@ export class Perpetual implements IBankDataProviderInterface {
 
         await page.goto("https://investor.myperpetual.com.au/");
 
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await page.waitForNavigation({ waitUntil: "networkidle0" });
         await page.waitForSelector("adv-login input", { visible: true });
 
         await page.type("input[name=username]", username);
         await page.type("input[name=password]", password);
         await page.click("button[type=submit]");
 
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await page.waitForNavigation({ waitUntil: "networkidle0" });
     }
 
     public async logout() {
@@ -59,17 +59,18 @@ export class Perpetual implements IBankDataProviderInterface {
         // We've opted to intercept the XHR responses as they stream into the page instead.
 
         const balances = new Array<IAccountBalance>();
-        var onResponse = async function(response : any) {
-            var url = response.url();
+        const onResponse = async (response: any) => {
+            const url = response.url();
 
             // Only care for 200-series responses
             if (!response.ok()) { return; }
 
-            // Expecting: 'https://investor.myperpetual.com.au/mozart/api/adviser/current/accounts/AB123456789?includeDetails=true'
-            var looksLikeAnAccountResponse = /\/api\/adviser\/current\/accounts\/([^\/]*?)\?/.test(url);
+            // Expecting URL like:
+            // https://investor.myperpetual.com.au/mozart/api/adviser/current/accounts/AB123456789?includeDetails=true
+            const looksLikeAnAccountResponse = /\/api\/adviser\/current\/accounts\/([^\/]*?)\?/.test(url);
             if (!looksLikeAnAccountResponse) { return; }
 
-            var data = await response.json();
+            const data = await response.json();
             balances.push({
                 institution: providerName,
                 accountName: data.mailingName || data.productName,
@@ -78,10 +79,10 @@ export class Perpetual implements IBankDataProviderInterface {
             });
         };
 
-        page.on('response', onResponse);
+        page.on("response", onResponse);
         await page.goto("https://investor.myperpetual.com.au/mozart/investorweb/app/accounts/all-investments");
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
-        page.off('response', onResponse);
+        await page.waitForNavigation({ waitUntil: "networkidle0" });
+        page.off("response", onResponse);
 
         return balances;
     }
