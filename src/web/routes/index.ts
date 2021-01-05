@@ -5,7 +5,7 @@ import { IHistoricalAccountBalance } from "../../types";
 const router = Router();
 
 /* GET home page. */
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
     const dataStore = new DataStore();
     try {
         await dataStore.open();
@@ -45,6 +45,8 @@ router.get("/", async (req, res) => {
             netWorth: await dataStore.getNetWorth(),
             balanceHistoryChartData,
         });
+    } catch (err) {
+        next(err);
     } finally {
         await dataStore.close();
     }
