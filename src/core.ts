@@ -2,12 +2,13 @@ import fs = require("fs");
 import yaml = require("js-yaml");
 import _ from "lodash";
 import { DataStore } from "./dataStore";
-import { ISecretStore } from "./types";
 import {
     IAccountBalance,
     IBankDataDocumentProviderInterface,
+    IBankDataHistoricalBalancesProviderInterface,
     IBankDataProviderInterface,
     IInstitutionRelationship,
+    ISecretStore,
 } from "./types";
 
 interface IBeanniConfig {
@@ -96,6 +97,20 @@ export class Core {
                         this.dataStore.addBalance(b);
                     });
 
+                    if (this.isHistoricalBalancesProvider(provider)) {
+                        const historicalBalanceProvider = provider as IBankDataHistoricalBalancesProviderInterface;
+                        console.log("[%s] Getting historical balances", relationship.provider);
+                        const knownDates = _(await this.dataStore.getAllBalances(relationship.provider))
+                            .map(b => new Date(b.date))
+                            .sortedUniq()
+                            .value();
+                        const historicalBalances = await historicalBalanceProvider.getHistoricalBalances(knownDates);
+                        console.log("[%s] Found %s historical balances", relationship.provider, historicalBalances.length);
+                        historicalBalances.forEach((b) => {
+                            this.dataStore.addHistoricalBalance(b);
+                        });
+                    }
+
                     if (this.isDocumentProvider(provider)) {
                         const documentProvider = provider as IBankDataDocumentProviderInterface;
                         console.log("[%s] Getting documents", relationship.provider);
@@ -115,6 +130,11 @@ export class Core {
         } finally {
             await this.dataStore.close();
         }
+    }
+
+    public isHistoricalBalancesProvider(provider: IBankDataProviderInterface | IBankDataHistoricalBalancesProviderInterface)
+        : provider is IBankDataHistoricalBalancesProviderInterface {
+        return ( provider as IBankDataHistoricalBalancesProviderInterface).getHistoricalBalances !== undefined;
     }
 
     public isDocumentProvider(provider: IBankDataProviderInterface | IBankDataDocumentProviderInterface)

@@ -29,7 +29,26 @@ export class DataStore {
         );
     }
 
-    public async getAllBalances(): Promise<IHistoricalAccountBalance[]> {
+    public async addHistoricalBalance(balance: IHistoricalAccountBalance) : Promise<void> {
+        if (this.database == null) {
+            throw new Error("Database not open yet");
+        }
+        await this.database.run(
+            `INSERT INTO Balances
+                (accountNumber, accountName, institution, balance, timestamp)
+            VALUES
+                ($accountNumber, $accountName, $institution, $balance, $date);`,
+            {
+                $accountNumber: balance.accountNumber,
+                $accountName: balance.accountName,
+                $institution: balance.institution,
+                $balance: Math.floor(balance.balance * 100),
+                $date: balance.date,
+            },
+        );
+    }
+
+    public async getAllBalances(institution : string | null = null): Promise<IHistoricalAccountBalance[]> {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }
@@ -47,8 +66,12 @@ export class DataStore {
                 GROUP BY institution, accountNumber
             ) b1
             ON b.institution = b1.institution AND b.accountNumber = b1.accountNumber
+            WHERE ($institution is null OR b.institution = $institution)
             GROUP BY b.institution, b.accountNumber, date(b.timestamp)
             ORDER BY date(b.timestamp), b.institution, b1.accountName`,
+            {
+                $institution: institution,
+            }
         );
         result.forEach((r) => { r.balance = r.balance / 100; });
         return result;

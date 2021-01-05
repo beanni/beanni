@@ -1,10 +1,11 @@
+import _ from "lodash";
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
 
 const providerName = "Perpetual";
 
-export class Perpetual implements IBankDataProviderInterface {
+export class Perpetual implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -100,6 +101,101 @@ export class Perpetual implements IBankDataProviderInterface {
         page.on("response", onResponse);
         await page.goto("https://investor.myperpetual.com.au/mozart/investorweb/app/accounts/all-investments");
         await page.waitForNavigation({ waitUntil: "networkidle0" });
+        page.off("response", onResponse);
+
+        return balances;
+    }
+
+    public async getHistoricalBalances(knownDates: Date[]): Promise<IHistoricalAccountBalance[]> {
+        if (this.page == null) {
+            throw new Error("Not logged in yet");
+        }
+        const page = this.page;
+
+        knownDates = _(knownDates).sort().value();
+        const datesToLookup = new Array<Date>();
+
+        // Find gaps in the existing date series
+        if (knownDates.length > 0) {
+            const earliestDate = knownDates[0];
+            const latestDate = knownDates[knownDates.length-1];
+            const fullDateSeries = new Array<Date>();
+            for (let cursor = new Date(earliestDate); cursor < latestDate; cursor.setDate(cursor.getDate() + 1)) {
+                fullDateSeries.push(new Date(cursor));
+            }
+            _.difference(fullDateSeries, knownDates).forEach(d => datesToLookup.push(d));
+        }
+        console.log(`[Perpetual] There are ${datesToLookup.length} historical data points to attempt to get`);
+
+        const balances = new Array<IHistoricalAccountBalance>();
+
+        await page.goto("https://investor.myperpetual.com.au/mozart/investorweb/app/accounts/all-investments");
+        await page.waitForNavigation({ waitUntil: "networkidle0" });
+        await page.click('adv-investment-summary mat-expansion-panel mat-expansion-panel-header');
+
+        const handleResponse = async (response: puppeteer.Response) => {
+            const url = response.url();
+
+            // Only care for 200-series responses
+            if (!response.ok()) {
+                return;
+            }
+
+            // Expecting a URL like:
+            // https://investor.myperpetual.com.au/mozart/api/adviser/current/accounts/AB123456789/parcels?effectiveDate=2020-08-05
+            const regex = new RegExp(/\/accounts\/(?<accountNumber>[\w\d]+?)\/parcels?/);
+            const regexMatch = regex.exec(url);
+            if (regexMatch == null) { return; }
+
+            const accountNumber = regexMatch?.groups?.accountNumber;
+            if (accountNumber == null) { return; }
+
+            const effectiveDate = new URL(url).searchParams.get('effectiveDate');
+            if (effectiveDate == null) { return; }
+
+            const data = await response.json() as {
+                certDetails: {
+                    availUnits: number;
+                    origPurchaseDate: Date;
+                    origPurchasePrice: number;
+                    sellPrice: number;
+                }[];
+            }[];
+
+            const balance = _(data)
+                .map(f => f.certDetails.reduce((acc, val) => acc + (val.availUnits * val.sellPrice), 0))
+                .sum();
+
+            balances.push({
+                institution: providerName,
+                accountName: 'Historical Lookup',
+                accountNumber: accountNumber,
+                balance: balance,
+                date: new Date(effectiveDate),
+            });
+        };
+        const onResponse = (response: puppeteer.Response) => {
+            handleResponse(response)
+                .then(null, (reason) => {
+                    throw reason;
+                });
+        };
+
+        page.on("response", onResponse);
+        for await (const dateToLookup of datesToLookup) {
+            console.log(`[Perpetual] Looking up ${dateToLookup.toISOString().substring(0, 10)}`);
+
+            const dmyFormat = `${dateToLookup.getDate()}/${dateToLookup.getMonth()+1}/${dateToLookup.getFullYear()}`;
+
+            await page.click('adv-investment-summary mat-expansion-panel adv-as-at-date-select input');
+            await page.$eval('adv-investment-summary mat-expansion-panel adv-as-at-date-select input', el => (<HTMLInputElement>el).value = '');
+            await page.type('adv-investment-summary mat-expansion-panel adv-as-at-date-select input', dmyFormat);
+            await page.keyboard.press("Tab");
+            await page.waitForResponse(response => response.ok() && response.url().indexOf("/parcels?") > 0);
+
+            // These are probably intensive calculations server-side, so don't smash them too hard
+            await page.waitFor(5000);
+        }
         page.off("response", onResponse);
 
         return balances;
