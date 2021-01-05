@@ -112,7 +112,11 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
         }
         const page = this.page;
 
-        knownDates = _(knownDates).sort().value();
+        const formattedDate = (d: Date) => d.toISOString().substring(0, 10);
+
+        knownDates = _(knownDates)
+            .sortedUniqBy(formattedDate)
+            .value();
         const datesToLookup = new Array<Date>();
 
         // Find gaps in the existing date series
@@ -123,7 +127,10 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
             for (let cursor = new Date(earliestDate); cursor < latestDate; cursor.setDate(cursor.getDate() + 1)) {
                 fullDateSeries.push(new Date(cursor));
             }
-            _.difference(fullDateSeries, knownDates).forEach(d => datesToLookup.push(d));
+            _(fullDateSeries)
+                .differenceBy(knownDates, formattedDate)
+                .sortedUniqBy(formattedDate)
+                .forEach(d => datesToLookup.push(d));
         }
         console.log(`[Perpetual] There are ${datesToLookup.length} historical data points to attempt to get`);
 
@@ -191,7 +198,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
             await page.$eval('adv-investment-summary mat-expansion-panel adv-as-at-date-select input', el => (<HTMLInputElement>el).value = '');
             await page.type('adv-investment-summary mat-expansion-panel adv-as-at-date-select input', dmyFormat);
             await page.keyboard.press("Tab");
-            await page.waitForResponse(response => response.ok() && response.url().indexOf("/parcels?") > 0);
+            await page.waitForResponse(response => response.ok() && response.url().indexOf("/parcels?") > 0, { timeout: 20000 });
 
             // These are probably intensive calculations server-side, so don't smash them too hard
             await page.waitFor(5000);
