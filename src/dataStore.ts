@@ -43,7 +43,7 @@ export class DataStore {
                 $accountName: balance.accountName,
                 $institution: balance.institution,
                 $balance: Math.floor(balance.balance * 100),
-                $date: balance.date,
+                $date: new Date(balance.date).toISOString().substring(0, 10),
             },
         );
     }
