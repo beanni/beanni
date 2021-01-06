@@ -134,6 +134,12 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
         }
         console.log(`[Perpetual] There are ${datesToLookup.length} historical data points to attempt to get`);
 
+        const maxHistoricalBatchSize = 30;
+        if (datesToLookup.length > maxHistoricalBatchSize) {
+            console.log(`[Perpetual] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
+            datesToLookup.splice(maxHistoricalBatchSize);
+        }
+
         const balances = new Array<IHistoricalAccountBalance>();
 
         await page.goto("https://investor.myperpetual.com.au/mozart/investorweb/app/accounts/all-investments");
