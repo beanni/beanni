@@ -1,10 +1,11 @@
+import _ from "lodash";
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
 
 const providerName = "Asgard";
 
-export class Asgard implements IBankDataProviderInterface {
+export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -89,6 +90,96 @@ export class Asgard implements IBankDataProviderInterface {
         }
 
         return balances;
+    }
+
+    public async getHistoricalBalances(knownDates: Date[]): Promise<IHistoricalAccountBalance[]> {
+        if (this.page == null) {
+            throw new Error("Not logged in yet");
+        }
+        const page = this.page;
+
+        const formattedDate = (d: Date) => d.toISOString().substring(0, 10);
+
+        knownDates = _(knownDates)
+            .sortedUniqBy(formattedDate)
+            .value();
+        const datesToLookup = new Array<Date>();
+
+        // Find gaps in the existing date series
+        if (knownDates.length > 0) {
+            const earliestDate = knownDates[0];
+            const latestDate = knownDates[knownDates.length-1];
+            const fullDateSeries = new Array<Date>();
+            for (let cursor = new Date(earliestDate); cursor < latestDate; cursor.setDate(cursor.getDate() + 1)) {
+                fullDateSeries.push(new Date(cursor));
+            }
+            _(fullDateSeries)
+                .differenceBy(knownDates, formattedDate)
+                .sortedUniqBy(formattedDate)
+                .forEach(d => datesToLookup.push(d));
+        }
+        console.log(`[${providerName}] There are ${datesToLookup.length} historical data points to attempt to get`);
+
+        const maxHistoricalBatchSize = 30;
+        if (datesToLookup.length > maxHistoricalBatchSize) {
+            console.log(`[${providerName}] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
+            datesToLookup.splice(maxHistoricalBatchSize);
+        }
+
+        const balances = new Array<IHistoricalAccountBalance>();
+
+        await page.goto("https://www.investoronline.info/iol/portfoliovaluation.do");
+
+        for await (const dateToLookup of datesToLookup) {
+            console.log(`[${providerName}] Looking up ${dateToLookup.toISOString().substring(0, 10)}`);
+
+            const dmyFormat = `${dateToLookup.getDate()}/${dateToLookup.getMonth()+1}/${dateToLookup.getFullYear()}`;
+
+            await page.focus('form[name=PortfolioValuationForm] input[name=clientEnquiryValuationDate]');
+            await page.$eval('form[name=PortfolioValuationForm] input[name=clientEnquiryValuationDate]', el => (<HTMLInputElement>el).value = '');
+            await page.type('form[name=PortfolioValuationForm] input[name=clientEnquiryValuationDate]', dmyFormat);
+            await page.keyboard.press("Tab");
+            await page.click('form[name=PortfolioValuationForm] input[type=submit]');
+
+            const accountName = await this.getTextContentByXPath("//form[@name='PortfolioValuationForm']//table/tbody/tr/td[contains(., 'Account Name')]/following-sibling::td");
+            const accountNumber = await this.getTextContentByXPath("//form[@name='PortfolioValuationForm']//table/tbody/tr/td[contains(., 'Account Number')]/following-sibling::td");
+            const accountValue = await this.getTextContentByXPath("//form[@name='PortfolioValuationForm']//table/tbody/tr/td[contains(., 'Account Value')]/following-sibling::td");
+            const balance = parseFloat(accountValue.trim().replace("$", "").replace(",", ""));
+
+            balances.push({
+                institution: providerName,
+                accountName: accountName,
+                accountNumber: accountNumber,
+                balance: balance,
+                date: new Date(dateToLookup),
+            });
+
+            // These are probably intensive calculations server-side, so don't smash them too hard
+            await page.waitFor(5000);
+        }
+
+        return balances;
+    }
+
+    private async getTextContentByXPath(xpath: string): Promise<string> {
+        let text;
+        try
+        {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const page = this.page!;
+            await page.waitForXPath(xpath);
+            const elements = await page.$x(xpath);
+            text = await page.evaluate(el => el.textContent, elements[0]);
+            if (text === undefined) throw "textContent was undefined";
+        }
+        catch (err) {
+            if (this.executionContext.debug) {
+                console.log(`[${providerName}] Failed to read ${xpath}`);
+                console.error(err);
+                throw err;
+            }
+        }
+        return text;
     }
 
     private debugLog(stage: string, position: number) {
