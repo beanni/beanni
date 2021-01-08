@@ -151,6 +151,7 @@ function calculatePerformanceByPeriods(allBalances: IHistoricalAccountBalance[])
                         performanceAbsolute: (p.endingBalance - p.startingBalance),
                         incompletePeriod: p.incompletePeriod,
                     })),
+                    incompletePeriod: _(value).some(p => p.incompletePeriod),
                 };
             })
             .value(),
