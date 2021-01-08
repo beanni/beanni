@@ -10,3 +10,36 @@ h2 {
 a {
   color: #00B7FF;
 }
+
+table.performanceByPeriod {
+  border: solid 1px #ddd;
+  border-collapse: collapse;
+}
+
+table.performanceByPeriod th {
+  border-top: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+}
+
+  table.performanceByPeriod th,
+  table.performanceByPeriod td {
+    padding: 0.7em 1em;
+    text-align: center;
+  }
+
+  table.performanceByPeriod th.negative-result,
+  table.performanceByPeriod td.negative-result {
+    background-color: #fee;
+    color: #a00;
+  }
+
+  table.performanceByPeriod th.positive-result,
+  table.performanceByPeriod td.positive-result {
+    background-color: #efe;
+    color: #090;
+  }
+
+  table.performanceByPeriod th:not(:last-child),
+  table.performanceByPeriod td:not(:last-child) {
+    border-right: solid 1px #ddd;
+  }

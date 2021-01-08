@@ -7,6 +7,34 @@ block content
     h2 Net Worth
     p He's worth: #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
+    h2 Performance by Period
+    table.performanceByPeriod
+        thead
+            tr
+                each year in performanceByPeriods.years
+                    th(colspan=year.quarters.length) #{year.year}#{year.incompletePeriod ? "*" : ""}
+            tr
+                each year in performanceByPeriods.years
+                    td(
+                        colspan=year.quarters.length,
+                        class=(year.performancePercentage < 0 ? 'negative-result' : 'positive-result')
+                    )
+                        | #{year.performancePercentage>0?'+':''}#{year.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
+                        br
+                        | #{year.performancePercentage>0?'+':''}#{(year.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+        tbody
+            tr
+                each year in performanceByPeriods.years
+                    each quarter in year.quarters
+                        th #{quarter.quarter}#{quarter.incompletePeriod ? "*" : ""}
+            tr
+                each year in performanceByPeriods.years
+                    each quarter in year.quarters
+                        td(class=(quarter.performancePercentage < 0 ? 'negative-result' : 'positive-result'))
+                            | #{quarter.performancePercentage>0?'+':''}#{quarter.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
+                            br
+                            | #{quarter.performancePercentage>0?'+':''}#{(quarter.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+
     h2 Balances
     div(style='width: 100%; height: 600px;')
         canvas#balanceHistoryChart
