@@ -8,9 +8,9 @@ export class HeadlessSecretStore implements ISecretStore {
 
     constructor(path: string) {
         const configFileText = fs.readFileSync(path, "utf8");
-        const fileData =  yaml.safeLoad(configFileText);
+        const fileData =  yaml.load(configFileText) as { secrets: { key: string; value: string; }[] };
 
-        if (fileData === undefined) {
+        if (fileData?.secrets == null) {
             console.log("The secrets file is empty. Example format to use:\n\n```\nsecrets:\n\t- key: Westpac:username\n\tvalue: \"12345678\"\n\t- key: Westpac:password\n\tvalue: \"abcdef\"\n```\n");
             return;
         }

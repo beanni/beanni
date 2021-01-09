@@ -37,7 +37,7 @@ export class Core {
         }
 
         const configFileText = fs.readFileSync(CONFIG_PATH, "utf8");
-        const config =  yaml.safeLoad(configFileText) as IBeanniConfig;
+        const config =  yaml.load(configFileText) as IBeanniConfig;
 
         config.relationships.forEach((r) => {
             if (r.name == null) {
