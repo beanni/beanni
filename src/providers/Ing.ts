@@ -185,11 +185,11 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
             await superPage.click('.navBarContent .navbar-toggle');
             await superPage.click('.menu-item.AccountList_Wrapper a');
-            await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+            await superPage.waitForFunction(() => !!document.querySelector("body:not(.loading)"));
 
             await superPage.click('.navBarContent .navbar-toggle');
             await superPage.click('.child-menu-item.TransactionHistory a');
-            await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+            await superPage.waitForFunction(() => !!document.querySelector("body:not(.loading)"));
 
             for await (const dateToLookup of datesToLookup) {
                 const startDate = new Date(dateToLookup);
@@ -209,7 +209,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                 await superPage.keyboard.press("Tab");
 
                 await superPage.click('.transactionHistoryFilterForm .Submit a');
-                await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+                await superPage.waitForFunction(() => !!document.querySelector("body:not(.loading)"));
 
                 try
                 {

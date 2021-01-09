@@ -206,7 +206,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
             await page.waitForResponse(response => response.ok() && response.url().indexOf("/parcels?") > 0, { timeout: 20000 });
 
             // These are probably intensive calculations server-side, so don't smash them too hard
-            await page.waitFor(5000);
+            await page.waitForTimeout(5000);
         }
         page.off("response", onResponse);
 
