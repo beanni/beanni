@@ -3,11 +3,11 @@ import puppeteer = require("puppeteer");
 import request = require("request");
 import { URL } from "url";
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface, IHistoricalAccountBalance } from "../types";
+import _ from "lodash";
 
-const providerName = "ING";
-
-export class Ing implements IBankDataProviderInterface, IBankDataDocumentProviderInterface {
+export class Ing implements IBankDataProviderInterface, IBankDataDocumentProviderInterface, IBankDataHistoricalBalancesProviderInterface {
+    public institution = "ING";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -112,7 +112,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         );
         for (const account of accounts) {
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: account.AccountName ?? account.ProductName,
                 accountNumber: account.AccountNumber,
                 balance: account.CurrentBalance,
@@ -121,6 +121,119 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         this.debugLog("getBalances", 2);
 
         return balances;
+    }
+
+    async getHistoricalBalances(knownDates: Date[]): Promise<IHistoricalAccountBalance[]> {
+        if (this.page == null) { throw new Error("Not logged in yet"); }
+        const page = this.page;
+
+        if (this.browser == null) { throw new Error("Browser not initialised"); }
+        const browser = this.browser;
+
+        const formattedDate = (d: Date) => d.toISOString().substring(0, 10);
+
+        knownDates = _(knownDates)
+            .sortedUniqBy(formattedDate)
+            .value();
+        const datesToLookup = new Array<Date>();
+
+        // Find gaps in the existing date series
+        if (knownDates.length > 0) {
+            const earliestDate = knownDates[0];
+            const latestDate = knownDates[knownDates.length-1];
+            const fullDateSeries = new Array<Date>();
+            for (let cursor = new Date(earliestDate); cursor < latestDate; cursor.setDate(cursor.getDate() + 1)) {
+                fullDateSeries.push(new Date(cursor));
+            }
+            _(fullDateSeries)
+                .differenceBy(knownDates, formattedDate)
+                .sortedUniqBy(formattedDate)
+                .forEach(d => datesToLookup.push(d));
+        }
+        console.log(`[${this.institution}] There are ${datesToLookup.length} historical data points to attempt to get`);
+
+        const maxHistoricalBatchSize = 3;
+        if (datesToLookup.length > maxHistoricalBatchSize) {
+            console.log(`[${this.institution}] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
+            datesToLookup.splice(maxHistoricalBatchSize);
+        }
+
+        const historicalBalances = new Array<IHistoricalAccountBalance>();
+        if (datesToLookup.length === 0) return historicalBalances;
+
+        // ING uses web components / Polymer, so we get nice and stable tag names
+        await page.waitForSelector("ing-all-accounts-summary");
+
+        // Wait for the AJAX load to complete
+        await page.waitForFunction(() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const componentData = (<any>document.querySelector("ing-all-accounts-summary"))?.__data__;
+            return typeof(componentData.accountSummaryData) !== "undefined";
+        });
+
+        // Pull structured data straight off the Polymer component
+        const superannuationAccounts = await page.$eval("ing-all-accounts-summary", (el) =>
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (<any>el).__data__.accountSummaryData.Categories.filter((cat: any) => cat.Category.Name === "Superannuation").flatMap((cat: any) => cat.Accounts)
+        );
+        
+        // For each Super account
+        for await (const account of superannuationAccounts) {
+            const superPopupPromise = new Promise<puppeteer.Page>(x => browser.once('targetcreated', target => x(target.page())));	
+            await page.click(`[accountNo='${account.AccountNumber}']`);	
+            const superPage = await superPopupPromise;
+
+            await superPage.click('.navBarContent .navbar-toggle');
+            await superPage.click('.menu-item.AccountList_Wrapper a');
+            await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+
+            await superPage.click('.navBarContent .navbar-toggle');
+            await superPage.click('.child-menu-item.TransactionHistory a');
+            await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+
+            for await (const dateToLookup of datesToLookup) {
+                const startDate = new Date(dateToLookup);
+                startDate.setDate(dateToLookup.getDate() - 3);
+
+                const dmyFormat = (date: Date) => `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+                console.log(`[${this.institution}] Getting historical data for ${dmyFormat(dateToLookup)}`);
+                
+                await superPage.focus('.transactionHistoryFilterForm .startDate .gwt-TextBox');
+                await superPage.$eval('.transactionHistoryFilterForm .startDate .gwt-TextBox', el => (<HTMLInputElement>el).value = '');
+                await superPage.type('.transactionHistoryFilterForm .startDate .gwt-TextBox', dmyFormat(startDate));
+                await superPage.keyboard.press("Tab");
+
+                await superPage.focus('.transactionHistoryFilterForm .endDate .gwt-TextBox');
+                await superPage.$eval('.transactionHistoryFilterForm .endDate .gwt-TextBox', el => (<HTMLInputElement>el).value = '');
+                await superPage.type('.transactionHistoryFilterForm .endDate .gwt-TextBox', dmyFormat(dateToLookup));
+                await superPage.keyboard.press("Tab");
+
+                await superPage.click('.transactionHistoryFilterForm .Submit a');
+                await superPage.waitFor(() => !!document.querySelector("body:not(.loading)"));
+
+                try
+                {
+                    const accountValue = await superPage.$eval('.lastRow td.runningBalance', el => <string>((<HTMLElement>el).dataset.bgmlValue));
+                    const balance = parseFloat(accountValue.trim().replace("$", "").replace(",", ""));
+    
+                    historicalBalances.push({
+                        institution: this.institution,
+                        accountName: account.ProductName,
+                        accountNumber: account.AccountNumber,
+                        balance: balance,
+                        date: new Date(dateToLookup),
+                    });
+                }
+                catch
+                {
+                    console.log(`[${this.institution}] Failed to get historical data for ${dmyFormat(dateToLookup)}`)
+                }
+            }
+            
+            await superPage.close();
+        }
+
+        return historicalBalances;
     }
 
     public async getDocuments(statementFolderPath: string): Promise<void> {

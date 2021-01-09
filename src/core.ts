@@ -100,7 +100,7 @@ export class Core {
                     if (this.isHistoricalBalancesProvider(provider)) {
                         const historicalBalanceProvider = provider as IBankDataHistoricalBalancesProviderInterface;
                         console.log("[%s] Getting historical balances", relationship.provider);
-                        const knownDates = _(await this.dataStore.getAllBalances(relationship.provider))
+                        const knownDates = _(await this.dataStore.getAllBalances(provider.institution))
                             .map(b => new Date(b.date))
                             .sortedUniq()
                             .value();

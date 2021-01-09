@@ -15,6 +15,8 @@ export interface IHistoricalAccountBalance extends IAccountBalance {
 }
 
 export interface IBankDataProviderInterface {
+    institution : string;
+
     login(
         retrieveSecretCallback: (key: string) => Promise<string>,
     ): Promise<void>;

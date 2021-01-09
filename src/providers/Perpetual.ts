@@ -3,9 +3,8 @@ import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
 
-const providerName = "Perpetual";
-
 export class Perpetual implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
+    public institution = "Perpetual";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -85,7 +84,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 details: { accountBalance: number };
             };
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: data.mailingName || data.productName,
                 accountNumber: data.accountNo,
                 balance: data.details.accountBalance,
@@ -180,7 +179,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 .sum();
 
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: 'Historical Lookup',
                 accountNumber: accountNumber,
                 balance: balance,

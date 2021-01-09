@@ -4,9 +4,8 @@ import request = require("request");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface } from "../types";
 
-const providerName = "Westpac";
-
 export class Westpac implements IBankDataProviderInterface, IBankDataDocumentProviderInterface {
+    public institution = "Westpac";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -59,7 +58,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
         const accountSummaryRows = await page.$$(".accounts-summarylistwidget table > tbody > tr");
         for (const row of accountSummaryRows) {
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: await row.$eval(".tf-account-detail a span", el =>
                     (el.textContent || '').trim()
                 ),

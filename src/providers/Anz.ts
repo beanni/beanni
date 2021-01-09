@@ -5,9 +5,8 @@ import {
     IBankDataProviderInterface,
 } from "../types";
 
-const providerName = "ANZ";
-
 export class Anz implements IBankDataProviderInterface {
+    public institution = "ANZ";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -60,7 +59,7 @@ export class Anz implements IBankDataProviderInterface {
             if ((await row.$(".accountNameSection")) === null) { continue; }
 
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: await row.$eval(".accountNameSection", el => (el.textContent || '').trim()),
                 accountNumber: await row.$eval(".accountNoSection", el => (el.textContent || '').trim()),
                 balance: parseFloat(

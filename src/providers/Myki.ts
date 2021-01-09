@@ -2,9 +2,8 @@ import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataProviderInterface } from "../types";
 
-const providerName = "Myki";
-
 export class Myki implements IBankDataProviderInterface {
+    public institution = "Myki";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -54,7 +53,7 @@ export class Myki implements IBankDataProviderInterface {
             if ((await row.$$("td")).length === 0) { continue; }
 
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: await row.$eval("td:nth-child(2)", el => (el.textContent || '').trim()),
                 accountNumber: await row.$eval("td a", el => (el.textContent || '').trim()),
                 balance: parseFloat(
