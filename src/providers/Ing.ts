@@ -152,7 +152,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         }
         console.log(`[${this.institution}] There are ${datesToLookup.length} historical data points to attempt to get`);
 
-        const maxHistoricalBatchSize = 3;
+        const maxHistoricalBatchSize = 30;
         if (datesToLookup.length > maxHistoricalBatchSize) {
             console.log(`[${this.institution}] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
             datesToLookup.splice(maxHistoricalBatchSize);
