@@ -25,7 +25,7 @@
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "@types/express": "^4.17.6",
-    "@types/http-errors": "^1.6.3",
+    "@types/http-errors": "^1.8.0",
     "@types/inquirer": "0.0.44",
     "@types/js-yaml": "^3.12.4",
     "@types/lodash": "^4.14.154",
