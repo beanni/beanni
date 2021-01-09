@@ -24,11 +24,11 @@ export class AmericanExpress implements IBankDataProviderInterface {
 
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
-        await page.goto("https://www.americanexpress.com/australia/?inav=NavLogo");
-        await page.waitForSelector("#login-user");
-        await page.type("#login-user", username);
-        await page.type("#login-password", password);
-        await page.click("#login-submit");
+        await page.goto("https://www.americanexpress.com/en-au/account/login");
+        await page.waitForSelector("#eliloUserID");
+        await page.type("#eliloUserID", username);
+        await page.type("#eliloPassword", password);
+        await page.click("#loginSubmit");
         await page.waitForSelector(".summary-container");
     }
 
@@ -36,7 +36,7 @@ export class AmericanExpress implements IBankDataProviderInterface {
         if (this.browser == null || this.page == null) { return; }
         const page = this.page;
 
-        await page.click("#au_utility_login");
+        await page.goto("https://www.americanexpress.com/en-au/account/logout");
         await this.browser.close();
     }
 
@@ -57,13 +57,12 @@ export class AmericanExpress implements IBankDataProviderInterface {
             'window.angular.element(document.getElementsByTagName("card-selector")) && window.angular.element(document.getElementsByTagName("card-selector")).scope()',
         );
 
-        const selectedCard =
-            await page.evaluate(
-                'window.angular.element(document.getElementsByTagName("card-selector")).scope().selectedCard',
-            );
+        const selectedCard = await page.evaluate(
+            'window.angular.element(document.getElementsByTagName("card-selector")).scope().selectedCard',
+        ) as { productId : { cardProductDesc : string }, obfuscatedAccountNumber : string };
         const selectedCardBalance = await page.evaluate(
             'window.angular.element(document.getElementsByTagName("card-selector")).scope().totalBalance',
-        );
+        ) as string;
 
         balances.push({
             institution: this.institution,

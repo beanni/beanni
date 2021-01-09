@@ -58,7 +58,9 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
 
         this.debugLog("getBalances", 0);
 
+        await page.waitForSelector("#headerLogo img")
         await page.click("#headerLogo img");
+        await page.waitForNavigation({ waitUntil: 'networkidle0' });
         this.debugLog("getBalances", 1);
 
         await page.waitForSelector("b");
@@ -73,7 +75,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
 
             const cellText = await Promise.all(cells.map(async (c) => {
                 const handle = await c.getProperty("textContent");
-                const value = await handle.jsonValue();
+                const value = await handle.jsonValue() as string;
                 return value.trim();
             }));
 
@@ -154,7 +156,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
             });
 
             // These are probably intensive calculations server-side, so don't smash them too hard
-            await page.waitFor(5000);
+            await page.waitForTimeout(5000);
         }
 
         return balances;

@@ -30,7 +30,7 @@
     "@types/js-yaml": "^4.0.0",
     "@types/lodash": "^4.14.154",
     "@types/node": "^11.15.14",
-    "@types/puppeteer": "^1.20.6",
+    "@types/puppeteer": "^5.4.2",
     "@types/request": "^2.48.5",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/eslint-plugin-tslint": "^4.12.0",
@@ -51,7 +51,7 @@
     "keytar": "^7.3.0",
     "lodash": "^4.17.15",
     "pug": "^3.0.0",
-    "puppeteer": "^2.1.1",
+    "puppeteer": "^5.5.0",
     "request": "^2.88.2",
     "sqlite": "^3.0.6",
     "ts-node": "^9.1.1"
