@@ -7,15 +7,15 @@ Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=
 
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
-Beanni helps gather financial data from all of your various providers, institutions, and banks. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as spend-by-merchant stats, or net-worth trends.
+Beanni helps gather financial data from all of your various institutions. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as portfolio-wide net-worth trends.
 
-Beanni is just a local helper, on your own machine. You're not sharing your passwords with us, or anybody else. You're not reverse engineering your bank. Beanni is just a robot that's really fast at clicking the same transaction export buttons that you would otherwise have to click manually.
+Beanni is just a local helper, on your own machine. You're not sharing your passwords with us, or anybody else. You're not reverse engineering your bank. Beanni is just a robot that's really fast at clicking the same export buttons that you would otherwise have to click manually.
 
 ## Usage
 
-### First Run
+### 🆕 First Run
 
-Get started in minutes:
+Get started:
 
 | Step | Run | Why |
 | --- | --- | --- |
@@ -23,55 +23,100 @@ Get started in minutes:
 | 2. | `node --version` | Make sure you're on Node ≥10.13.0 |
 | 3. | `npm --version` | Make sure you're on NPM ≥6.8.0 |
 | 4. | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
-| 5. | `npm install` | Install Beanni into this folder |
+| 5. | `npm install` | Install Beanni's dependencies |
 | 6. | `npm run build` | Build Beanni | 
 | 6. | `npm run init` | Create an example `config.yaml` |
 | 7. | Edit `config.yaml` | Add your own banking relationships |
 | 8. | `npm run fetch` | Grab your data |
 | 9. | `npm run explore` | Launch the analysis UI |
 
-### Updating Beanni
-Get the latest updates:
+### ⚒ Ongoing Usage (Manual)
 
-| Step | Run | Why |
-| --- | --- | --- |
-| 1. | `git pull` <br/>  | Update Beanni to the latest version |
-| 2. | `npm install` | Install any new dependencies |
-| 3. | `npm run build` | Build Beanni |
-
-### Ongoing Usage
-
-In future:
+Fetch and explore your data:
 
 | Step | Run | Why |
 | --- | --- | --- |
 | 1. | `npm run fetch` | Grab your data |
 | 2. | `npm run explore` | Launch the analysis UI |
 
-### Uninstall
+### ⚙ Ongoing Usage (Automated, Linux)
 
-1. Delete the local working folder (the database contains bank account numbers and financial data)
+Beanni works best when you're building up long-term data trends.
+
+Setup a cronjob to fetch your data on a regular basis. Twice a day gives the best resilience (you'll get daily data points, with a long recovery window for any provider outages / maintenance windows).
+
+```
+~ $ crontab -e
+
+0 5 * * * (cd ~/beanni; npm run fetch >> ~/cron-log 2>&1;)
+0 17 * * * (cd ~/beanni; npm run fetch >> ~/cron-log 2>&1;)
+```
+
+Keep the web interface running as a service, so that it's always available:
+
+```
+~ $ sudo nano /etc/systemd/system/beanni.service
+
+[Unit]
+Description=Beanni explore server
+After=network.target
+
+[Service]
+Type=simple
+User=matttat
+WorkingDirectory=/home/myuser/beanni
+ExecStart=npm run explore
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+~ $ sudo systemctl enable beanni
+```
+
+### 🆕 Updating Beanni
+
+Get the latest updates:
+
+| Step | Run | Why |
+| --- | --- | --- |
+| 1. | `git pull --ff-only` | Update Beanni to the latest version |
+| 2. | `npm install` | Install any new dependencies |
+| 3. | `npm run build` | Build Beanni |
+
+If you've configured Beanni to run as a service, restart that too. (Probably via `$ sudo systemctl restart beanni`).
+
+### 🗑 Uninstall
+
 1. Remove secrets from your operating system's credential store
     * Windows:
-        1. `Win` > `credential manager`
+        1. <kbd>WinKey</kbd> > _credential manager_
         1. _Windows Credentials_
         1. _Generic Credentials_
         1. Look for anything that starts with `Beanni:`
     * MacOS: Keychain
+    * Headless environment: `~/.beanni/secrets.yaml`
+1. Remove your data from the local working folder, specifically:
+    * `beanni.db` (the database contains bank account numbers and financial data)
+    * `config.yaml` (your provider listing)
+    * `statements/` (folder cache of downloaded statements)
+1. Remove the local working folder
 
 ## Security, by design
 
-### Execution Environment
+### 💻 Execution Environment
 
 Beanni all runs locally on your own machine, or your own hosting. There are no shared web services in play.
 
-### Secret Storage
+### 🤫 Secret Storage
 
 Secrets are kept out of configuration files entirely, by design.
 
 Secrets are stored in your operating system's credential store (Credential Manager on Windows, or Keychain on MacOS). We use [keytar](https://www.npmjs.com/package/keytar) to do this, which is [built and maintained by the Atom project](https://github.com/atom/node-keytar).
 
-### Dependency Supply Chain
+Beanni will seek credentials during your first fetch. If you're running on an interactive command line, it'll prompt you, then store these values in your operating system's credential store. If you're running in a context where this doesn't work, such as headless execution, or without a compatible store, Beanni will give guidance about configuring a secrets file.
+
+### 📦 Dependency Supply Chain
 
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
 
@@ -91,16 +136,28 @@ Our dependency supply chain is the biggest risk. We've been careful to keep our 
 
 It would be very visible if any of these packages, or their dependencies, were to be compromised.
 
-You can compare this table with https://www.npmjs.com/package/beanni (NPM's view of Beanni's dependencies, based on the package we publish), or https://github.com/beanni/beanni/network/dependencies (GitHub's view of Beanni's dependencies, based on what's in source control).
+You can compare this table with https://github.com/beanni/beanni/network/dependencies (GitHub's view of Beanni's dependencies, based on what's in source control).
 
 We use Dependabot to ensure we adopt updates to these dependencies as fast as possible. [It's a busy little bot.](https://github.com/beanni/beanni/pulls?q=author%3Aapp%2Fdependabot)
 
 ## Development
 
-### Ubuntu Dependencies
-* [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly 
+### 👩‍💻 Local Execution
 
-### Run it locally
-1. Clone
+1. `git clone https://github.com/beanni/beanni.git`
 1. `npm install`
-1. VS Code > `Ctrl+F5`
+1. VS Code > <kbd>Ctrl</kbd>+<kbd>F5</kbd>
+
+### 🌲 Dependencies
+
+For a smooth `npm install`:
+
+* On Ubuntu, [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly
+
+* `sqlite3` requires a native binary. `npm install` will attempt to resolve a pre-compiled binary for the right combination of your OS, architecture, and node version. If this fails, it'll attempt to compile from source which will then throw up new dependencies for Python and a C++ compiler. You're probably better off getting the pre-compiled binary option to work instead of trying to install the required compiler toolchain.
+
+### 🤖 Puppeteer Debugging
+
+Running `npm run fetch --debug` will keep the browser visible during execution, and write out more logs.
+
+In VS Code, you can <kbd>F5</kbd> > `explore` > `--debug` to both apply this flag and attach a debugger to the process.
