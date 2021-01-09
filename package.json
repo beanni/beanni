@@ -48,7 +48,7 @@
     "express": "^4.17.1",
     "inquirer": "^6.5.2",
     "js-yaml": "^3.13.1",
-    "keytar": "^6.0.1",
+    "keytar": "^7.3.0",
     "lodash": "^4.17.15",
     "pug": "^2.0.4",
     "puppeteer": "^2.1.1",
