@@ -3,9 +3,8 @@ import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
 
-const providerName = "Asgard";
-
 export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
+    public institution = "Asgard";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -82,7 +81,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
             if (cellText[1] === "") { continue; }
 
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: cellText[0],
                 accountNumber: cellText[1],
                 balance: parseFloat(cellText[2].trim().replace("$", "").replace(",", "")),
@@ -118,11 +117,11 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
                 .sortedUniqBy(formattedDate)
                 .forEach(d => datesToLookup.push(d));
         }
-        console.log(`[${providerName}] There are ${datesToLookup.length} historical data points to attempt to get`);
+        console.log(`[${this.institution}] There are ${datesToLookup.length} historical data points to attempt to get`);
 
         const maxHistoricalBatchSize = 30;
         if (datesToLookup.length > maxHistoricalBatchSize) {
-            console.log(`[${providerName}] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
+            console.log(`[${this.institution}] Limiting to ${maxHistoricalBatchSize} data points in this batch`);
             datesToLookup.splice(maxHistoricalBatchSize);
         }
 
@@ -131,7 +130,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
         await page.goto("https://www.investoronline.info/iol/portfoliovaluation.do");
 
         for await (const dateToLookup of datesToLookup) {
-            console.log(`[${providerName}] Looking up ${dateToLookup.toISOString().substring(0, 10)}`);
+            console.log(`[${this.institution}] Looking up ${dateToLookup.toISOString().substring(0, 10)}`);
 
             const dmyFormat = `${dateToLookup.getDate()}/${dateToLookup.getMonth()+1}/${dateToLookup.getFullYear()}`;
 
@@ -147,7 +146,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
             const balance = parseFloat(accountValue.trim().replace("$", "").replace(",", ""));
 
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: accountName,
                 accountNumber: accountNumber,
                 balance: balance,
@@ -174,7 +173,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
         }
         catch (err) {
             if (this.executionContext.debug) {
-                console.log(`[${providerName}] Failed to read ${xpath}`);
+                console.log(`[${this.institution}] Failed to read ${xpath}`);
                 console.error(err);
                 throw err;
             }

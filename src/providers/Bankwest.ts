@@ -5,9 +5,8 @@ import {
     IBankDataProviderInterface,
 } from "../types";
 
-const providerName = "Bankwest";
-
 export class Bankwest implements IBankDataProviderInterface {
+    public institution = "Bankwest";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -54,7 +53,7 @@ export class Bankwest implements IBankDataProviderInterface {
         const accountSummaryRows = await page.$$("table[id$=grdBalances] tbody tr");
         for (const row of accountSummaryRows) {
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: await row.$eval("td:nth-child(1)", el => (el.textContent || '').trim()),
                 accountNumber: await row.$eval("td:nth-child(2)", el => (el.textContent || '').trim()),
                 balance: parseFloat(

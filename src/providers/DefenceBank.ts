@@ -2,9 +2,9 @@ import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataProviderInterface } from "../types";
 
-const providerName = "DefenceBank";
-
 export class DefenceBank implements IBankDataProviderInterface {
+    public institution = "DefenceBank";
+    
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -69,7 +69,7 @@ export class DefenceBank implements IBankDataProviderInterface {
         for (const row of accountSummaryRows) {
             this.debugLog("getBalances", 3);
             balances.push({
-                institution: providerName,
+                institution: this.institution,
                 accountName: await row.$eval(".account-name", el => (el.textContent || '').trim()),
                 accountNumber: await row.$eval(".account[data-acct]", (el) => (<HTMLElement>el).dataset.acct || ''),
                 balance: parseFloat(

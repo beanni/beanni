@@ -5,9 +5,8 @@ import {
     IBankDataProviderInterface,
 } from "../types";
 
-const providerName = "AmericanExpress";
-
 export class AmericanExpress implements IBankDataProviderInterface {
+    public institution = "AmericanExpress";
     public executionContext: IBeanniExecutionContext;
 
     public browser: puppeteer.Browser | undefined;
@@ -67,7 +66,7 @@ export class AmericanExpress implements IBankDataProviderInterface {
         );
 
         balances.push({
-            institution: providerName,
+            institution: this.institution,
             accountName: selectedCard.productId.cardProductDesc.trim(),
             accountNumber: selectedCard.obfuscatedAccountNumber,
             balance: -parseFloat(selectedCardBalance),
