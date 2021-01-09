@@ -24,11 +24,11 @@
   "homepage": "https://github.com/beanni/beanni#readme",
   "devDependencies": {
     "@types/commander": "^2.12.2",
-    "@types/express": "^4.17.6",
+    "@types/express": "^4.17.9",
     "@types/http-errors": "^1.8.0",
     "@types/inquirer": "^7.3.1",
     "@types/js-yaml": "^4.0.0",
-    "@types/lodash": "^4.14.154",
+    "@types/lodash": "^4.14.167",
     "@types/node": "^11.15.14",
     "@types/puppeteer": "^5.4.2",
     "@types/request": "^2.48.5",
