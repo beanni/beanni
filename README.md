@@ -120,19 +120,19 @@ Beanni will seek credentials during your first fetch. If you're running on an in
 
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
 
-| Package | Weekly Package Downloads | Known/Trusted Maintainer |
+| Package | Weekly Package Downloads (Jan 2021) | Known/Trusted Maintainer |
 | --- | --- | --- |
-| [`commander`](https://www.npmjs.com/package/commander) | >15M | |
-| [`express`](https://www.npmjs.com/package/express) | >5M | |
-| [`inquirer`](https://www.npmjs.com/package/inquirer) | ~10M | |
-| [`js-yaml`](https://www.npmjs.com/package/js-yaml) | >10M | |
-| [`keytar`](https://www.npmjs.com/package/keytar) | >20k | [Atom](https://github.com/atom/node-keytar) |
-| [`lodash`](https://www.npmjs.com/package/lodash) | >15M | |
-| [`pug`](https://www.npmjs.com/package/pug) | >300k | |
-| [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >500k | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
-| [`request`](https://www.npmjs.com/package/request) | ~15M | |
-| [`sqlite`](https://www.npmjs.com/package/sqlite) | >20k | |
-| [`ts-node`](https://www.npmjs.com/package/ts-node) | >1M | |
+| [`commander`](https://www.npmjs.com/package/commander) | >40M | |
+| [`express`](https://www.npmjs.com/package/express) | >10M | |
+| [`inquirer`](https://www.npmjs.com/package/inquirer) | >20M | |
+| [`js-yaml`](https://www.npmjs.com/package/js-yaml) | >20M | |
+| [`keytar`](https://www.npmjs.com/package/keytar) | >100k | [Atom](https://github.com/atom/node-keytar) |
+| [`lodash`](https://www.npmjs.com/package/lodash) | >30M | |
+| [`pug`](https://www.npmjs.com/package/pug) | >750k | |
+| [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >1.5M | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
+| [`request`](https://www.npmjs.com/package/request) | >20M | |
+| [`sqlite`](https://www.npmjs.com/package/sqlite) | >60k | |
+| [`ts-node`](https://www.npmjs.com/package/ts-node) | >6M | |
 
 It would be very visible if any of these packages, or their dependencies, were to be compromised.
 
