@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/",
-    "verify": "npm run build & npm run lint",
+    "verify": "npm-run-all build lint",
     "start": "node dist/app.js",
     "init": "npm start -- init",
     "fetch": "npm start -- fetch",
