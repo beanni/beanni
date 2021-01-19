@@ -27,7 +27,7 @@
     "@types/http-errors": "^1.8.0",
     "@types/inquirer": "^7.3.1",
     "@types/js-yaml": "^4.0.0",
-    "@types/lodash": "^4.14.167",
+    "@types/lodash": "^4.14.168",
     "@types/node": "^11.15.14",
     "@types/puppeteer": "^5.4.2",
     "@types/request": "^2.48.5",
