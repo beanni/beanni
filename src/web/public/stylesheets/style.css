@@ -1,6 +1,23 @@
 body {
-  margin: 50px;
+  margin: 20px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+@media (max-width: 600px) {
+  body {
+    /*
+      Go small on skinny screens
+      Doing it via zoom instead of font-size means that chart fonts follow as well
+    */
+    zoom: 70%;
+  }
+}
+
+@media (min-width: 1000px) {
+  body {
+    /* Go spacious on big screens */
+    margin: 50px;
+  }
 }
 
 h2 {
@@ -11,21 +28,42 @@ a {
   color: #00B7FF;
 }
 
-table.performanceByPeriod {
+div.wideBlock {
+  width: 100%;
+  overflow: auto;
+}
+
+table {
   border: solid 1px #ddd;
   border-collapse: collapse;
 }
 
-table.performanceByPeriod th {
+table tr {
   border-top: solid 1px #ddd;
   border-bottom: solid 1px #ddd;
 }
 
-  table.performanceByPeriod th,
-  table.performanceByPeriod td {
+table thead th {
+  font-weight: normal;
+}
+
+  table th,
+  table td {
     padding: 0.7em 1em;
-    text-align: center;
+    font-weight: normal;
   }
+
+  @media only screen and (max-width: 600px) {
+    table th,
+    table td {
+      padding: 0.2em 0.3em;
+    }
+  }
+
+table.performanceByPeriod th,
+table.performanceByPeriod td {
+  text-align: center;
+}
 
   table.performanceByPeriod th.negative-result,
   table.performanceByPeriod td.negative-result {
@@ -42,4 +80,39 @@ table.performanceByPeriod th {
   table.performanceByPeriod th:not(:last-child),
   table.performanceByPeriod td:not(:last-child) {
     border-right: solid 1px #ddd;
+  }
+
+div.chart {
+  position: relative;
+  height: 80vh;
+  max-height: 500px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  border: solid 1px #f4f4f4;
+}
+
+@media (orientation: portrait) {
+  div.chart {
+    /* Keep the aspect ratio of the chart sensible in portrait scenarios */
+    height: 60vw;
+  }
+}
+
+table#balanceHistoryLegend {
+  margin-top: 2em;
+  width: 100%;
+}
+
+  table#balanceHistoryLegend th {
+    text-align: left;
+  }
+
+  table#balanceHistoryLegend .balance {
+    padding-left: 1em;
+    text-align: right;
+  }
+
+  table#balanceHistoryLegend .label span.asAt {
+    color: #ccc;
   }

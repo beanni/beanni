@@ -4,123 +4,169 @@ block content
     h1 Beanni
     p His name was Beanni! 🎶
 
-    h2 Net Worth
+    h2 💰 Net Worth
     p He's worth: #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
-    h2 Performance by Period
-    table.performanceByPeriod
+    h2 📅 Performance by Period
+    div.wideBlock
+        table.performanceByPeriod
+            thead
+                tr
+                    each year in performanceByPeriods.years
+                        th(colspan=year.quarters.length) #{year.year}#{year.incompletePeriod ? "*" : ""}
+            tbody
+                tr
+                    each year in performanceByPeriods.years
+                        td(
+                            colspan=year.quarters.length,
+                            class=(year.performancePercentage < 0 ? 'negative-result' : 'positive-result')
+                        )
+                            | #{year.performancePercentage>0?'+':''}#{year.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
+                            br
+                            | #{year.performancePercentage>0?'+':''}#{(year.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+            thead
+                tr
+                    each year in performanceByPeriods.years
+                        each quarter in year.quarters
+                            th #{quarter.quarter}#{quarter.incompletePeriod ? "*" : ""}
+            tbody
+                tr
+                    each year in performanceByPeriods.years
+                        each quarter in year.quarters
+                            td(class=(quarter.performancePercentage < 0 ? 'negative-result' : 'positive-result'))
+                                | #{quarter.performancePercentage>0?'+':''}#{quarter.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
+                                br
+                                | #{quarter.performancePercentage>0?'+':''}#{(quarter.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+
+    h2 📈 Balances
+    div.chart
+        canvas#balanceHistoryChart
+    table#balanceHistoryLegend
         thead
             tr
-                each year in performanceByPeriods.years
-                    th(colspan=year.quarters.length) #{year.year}#{year.incompletePeriod ? "*" : ""}
-            tr
-                each year in performanceByPeriods.years
-                    td(
-                        colspan=year.quarters.length,
-                        class=(year.performancePercentage < 0 ? 'negative-result' : 'positive-result')
-                    )
-                        | #{year.performancePercentage>0?'+':''}#{year.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
-                        br
-                        | #{year.performancePercentage>0?'+':''}#{(year.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+                th(scope='col').checkbox
+                th(scope='col').label Account
+                th(scope='col').balance Balance
         tbody
-            tr
-                each year in performanceByPeriods.years
-                    each quarter in year.quarters
-                        th #{quarter.quarter}#{quarter.incompletePeriod ? "*" : ""}
-            tr
-                each year in performanceByPeriods.years
-                    each quarter in year.quarters
-                        td(class=(quarter.performancePercentage < 0 ? 'negative-result' : 'positive-result'))
-                            | #{quarter.performancePercentage>0?'+':''}#{quarter.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
-                            br
-                            | #{quarter.performancePercentage>0?'+':''}#{(quarter.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+            each balance, index in latestBalances
+                tr
+                    td.checkbox
+                        input(type='checkbox', id='balanceHistoryDataset-' + index, data-index=index, checked='checked')
+                    th(scope='row').label
+                        label(for='balanceHistoryDataset-' + index) #{balance.label}
+                        if balance.asAtDaysAgo > 0
+                            span.asAt
+                                = ' as at ' + balance.asAt
+                    td.balance
+                        | #{balance.balance.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
+    script.
+        (function() {
+            var sourceData = !{JSON.stringify(balanceHistoryChartData)};
 
-    h2 Balances
-    div(style='width: 100%; height: 600px;')
-        canvas#balanceHistoryChart
-        script.
-            (function() {
-                var sourceData = !{JSON.stringify(balanceHistoryChartData)};
+            // https://learnui.design/tools/data-color-picker.html#palette
+            const seriesColors = [
+                '#003f5c',
+                '#005575',
+                '#006c86',
+                '#00848e',
+                '#009b8c',
+                '#00b180',
+                '#14c56c',
+                '#74d851',
+                '#b9e630',
+            ];
+            // https://github.com/ashiguruma/patternomaly/tree/master/src/shapes
+            var seriesPatterns = ['dash', 'diagonal', 'dot', 'line', 'line-vertical', 'plus', 'ring', 'triangle', 'weave', 'zigzag'];
+            var seriesFills = seriesColors.map((current, index) => {
+                var patternName = seriesPatterns[index % seriesPatterns.length];
+                return pattern.draw(patternName, current, '#ffffff', Math.floor(15 / window.devicePixelRatio));
+            });
+            var seriesFillIndex = 0;
 
-                // https://learnui.design/tools/data-color-picker.html#palette
-                const seriesColors = [
-                    '#003f5c',
-                    '#005575',
-                    '#006c86',
-                    '#00848e',
-                    '#009b8c',
-                    '#00b180',
-                    '#14c56c',
-                    '#74d851',
-                    '#b9e630',
-                ];
-                // https://github.com/ashiguruma/patternomaly/tree/master/src/shapes
-                var seriesPatterns = ['dash', 'diagonal', 'dot', 'line', 'line-vertical', 'plus', 'ring', 'triangle', 'weave', 'zigzag'];
-                var seriesFills = seriesColors.map((current, index) => {
-                    var patternName = seriesPatterns[index % seriesPatterns.length];
-                    return pattern.draw(patternName, current, '#ffffff', Math.floor(15 / window.devicePixelRatio))
-                });
-                var seriesFillIndex = 0;
+            Chart.defaults.global.defaultFontSize = 14;
 
-                Chart.defaults.global.defaultFontSize = 14;
-
-                new Chart('balanceHistoryChart', {
-                    type: 'bar',
-                    data: {
-                        labels: sourceData.labels.map(l => new Date(l)),
-                        datasets: sourceData.datasets.map(d => {
-                            d.barPercentage = 1.1;
-                            d.categoryPercentage = 1.0;
-                            d.backgroundColor = seriesFills[seriesFillIndex++ % seriesFills.length];
-                            return d;
-                        }),
+            var chart = new Chart('balanceHistoryChart', {
+                type: 'bar',
+                data: {
+                    labels: sourceData.labels.map(l => new Date(l)),
+                    datasets: sourceData.datasets.map(d => {
+                        d.barPercentage = 1.1;
+                        d.categoryPercentage = 1.0;
+                        d.backgroundColor = seriesFills[seriesFillIndex++ % seriesFills.length];
+                        return d;
+                    }),
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    legend: {
+                        display: false,
                     },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                stacked: true,
-                                type: 'time',
-                                time: {
-                                    unit: 'month',
-                                    tooltipFormat: 'yyyy-MM-DD',
-                                }
-                            }],
-                            yAxes: [{
-                                stacked: true,
-                                ticks: {
-                                    callback: function(value, index, values) {
-                                        return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                    scales: {
+                        xAxes: [{
+                            stacked: true,
+                            type: 'time',
+                            time: {
+                                unit: 'month',
+                                tooltipFormat: 'yyyy-MM-DD',
+                            }
+                        }],
+                        yAxes: [{
+                            stacked: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    var isNegative = value < 0;
+                                    var absoluteValue = Math.abs(value);
+                                    if (value === 0) {
+                                        return '0';
                                     }
+                                    else if (absoluteValue >= 1000000 && absoluteValue % 10000 === 0) {
+                                        // A$1.25m
+                                        return (isNegative ? '-' : '') + (absoluteValue / 1000000).toLocaleString() + 'm';
+                                    }
+                                    else if (absoluteValue >= 10000 && absoluteValue % 10000 === 0) {
+                                        // A$820k
+                                        return (isNegative ? '-' : '') + (absoluteValue / 1000).toLocaleString() + 'k';
+                                    }
+                                    return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
                                 }
-                            }]
-                        },
-                        tooltips: {
-                            // Display tooltip for the whole day, not specific account
-                            mode: 'index',
+                            }
+                        }]
+                    },
+                    tooltips: {
+                        // Display tooltip for the whole day, not specific account
+                        mode: 'index',
 
-                            // Hover anywhere in the column, not just on a specific data point
-                            intersect: false,
+                        // Hover anywhere in the column, not just on a specific data point
+                        intersect: false,
 
-                            // Only display accounts with balances on the day
-                            filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
+                        // Only display accounts with balances on the day
+                        filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
 
-                            // List balances highest to lowest
-                            itemSort: (a, b) => b.yLabel - a.yLabel,
+                        // List balances highest to lowest
+                        itemSort: (a, b) => b.yLabel - a.yLabel,
 
-                            callbacks: {
-                                beforeBody: function(tooltipItem, data) {
-                                    // Display the day's net worth at the top of the tooltip
-                                    var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
-                                    return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
-                                },
-                                label: function(tooltipItem, data) {
-                                    // Show values as currency-formatted
-                                    return data.datasets[tooltipItem.datasetIndex].label +
-                                        ': ' +
-                                        tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
-                                }
+                        callbacks: {
+                            beforeBody: function(tooltipItem, data) {
+                                // Display the day's net worth at the top of the tooltip
+                                var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
+                                return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                            },
+                            label: function(tooltipItem, data) {
+                                // Show values as currency-formatted
+                                return data.datasets[tooltipItem.datasetIndex].label +
+                                    ': ' +
+                                    tooltipItem.yLabel.toLocaleString('en', { style: 'currency', currency: 'AUD' });
                             }
                         }
                     }
-                });
-            })();
+                }
+            });
+
+            document.getElementById('balanceHistoryLegend').addEventListener('change', event => {
+                if (!event.target.matches('input[type=checkbox]')) return;
+                var index = event.target.dataset.index;
+                var meta = chart.getDatasetMeta(index);
+                meta.hidden = !event.target.checked;
+                chart.update();
+            });
+        })();

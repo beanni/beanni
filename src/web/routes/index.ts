@@ -43,10 +43,28 @@ router.get("/", async (_req, res, next) => {
                 .value(),
         };
 
+        const latestBalances = _(balanceData)
+            .groupBy((r) => r.label)
+            .map((_value, key) => {
+                const latestBalance = _(_value).maxBy(d => d.date);
+                const asAt = latestBalance?.date;
+                const asAtDaysAgo =
+                    asAt === undefined ? '∞' :
+                    Math.floor((new Date(asAt).getTime() - new Date().getTime()) / (1000 * 3600 * 24) * -1);
+                return {
+                    label: key,
+                    balance: latestBalance?.balance,
+                    asAt: latestBalance?.date,
+                    asAtDaysAgo: asAtDaysAgo,
+                };
+            })
+            .value();
+
         res.render("index", {
             netWorth: await dataStore.getNetWorth(),
             performanceByPeriods,
             balanceHistoryChartData,
+            latestBalances,
         });
     } catch (err) {
         next(err);
