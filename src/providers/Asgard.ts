@@ -58,9 +58,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
 
         this.debugLog("getBalances", 0);
 
-        await page.waitForSelector("#headerLogo img")
-        await page.click("#headerLogo img");
-        await page.waitForNavigation({ waitUntil: 'networkidle0' });
+        await page.goto("https://www.investoronline.info/iol/home.do");
         this.debugLog("getBalances", 1);
 
         await page.waitForSelector("b");
