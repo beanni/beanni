@@ -85,6 +85,9 @@ block content
 
             Chart.defaults.global.defaultFontSize = 14;
 
+            // Only show tooltips when we've got enough space
+            const checkTooltipsEnabled = () => window.visualViewport.width >= 1000;
+
             var chart = new Chart('balanceHistoryChart', {
                 type: 'bar',
                 data: {
@@ -140,13 +143,16 @@ block content
                         intersect: false,
 
                         // Only display accounts with balances on the day
-                        filter: (tooltipItem) => !isNaN(tooltipItem.yLabel),
+                        filter: (tooltipItem) => checkTooltipsEnabled() && !isNaN(tooltipItem.yLabel),
 
                         // List balances highest to lowest
                         itemSort: (a, b) => b.yLabel - a.yLabel,
 
                         callbacks: {
                             beforeBody: function(tooltipItem, data) {
+                                // Short circuit if we're not showing tooltips
+                                if (!checkTooltipsEnabled()) return null;
+
                                 // Display the day's net worth at the top of the tooltip
                                 var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
                                 return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
