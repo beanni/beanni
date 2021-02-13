@@ -44,16 +44,16 @@ block content
     table#balanceHistoryLegend
         thead
             tr
-                th(scope='col').checkbox
                 th(scope='col').label Account
                 th(scope='col').balance Balance
         tbody
             each balance, index in latestBalances
                 tr
-                    td.checkbox
-                        input(type='checkbox', id='balanceHistoryDataset-' + index, data-index=index, checked='checked')
                     th(scope='row').label
-                        label(for='balanceHistoryDataset-' + index) #{balance.label}
+                        label
+                            input(type='checkbox', data-index=index, checked='checked')
+                            canvas(id='balanceHistoryPattern-' + index, width=30, height=15)
+                            | #{balance.label}
                         if balance.asAtDaysAgo > 0
                             span.asAt
                                 = ' as at ' + balance.asAt
@@ -162,7 +162,17 @@ block content
                 }
             });
 
+            sourceData.datasets.map((d, index) => {
+                // Draw the patterns in the legend
+                var canvas = document.getElementById('balanceHistoryPattern-' + index);
+                var context = canvas.getContext("2d");
+                context.rect(0, 0, canvas.width, canvas.height);
+                context.fillStyle = seriesFills[index % seriesFills.length];
+                context.fill();
+            });
+
             document.getElementById('balanceHistoryLegend').addEventListener('change', event => {
+                // Toggle series on and off as checkboxes are tapped
                 if (!event.target.matches('input[type=checkbox]')) return;
                 var index = event.target.dataset.index;
                 var meta = chart.getDatasetMeta(index);

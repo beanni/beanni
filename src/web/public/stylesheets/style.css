@@ -43,15 +43,11 @@ table tr {
   border-bottom: solid 1px #ddd;
 }
 
-table thead th {
+table th,
+table td {
+  padding: 0.7em 1em;
   font-weight: normal;
 }
-
-  table th,
-  table td {
-    padding: 0.7em 1em;
-    font-weight: normal;
-  }
 
   @media only screen and (max-width: 600px) {
     table th,
@@ -111,6 +107,10 @@ table#balanceHistoryLegend {
   table#balanceHistoryLegend .balance {
     padding-left: 1em;
     text-align: right;
+  }
+
+  table#balanceHistoryLegend .label canvas {
+    margin: 0 0.5em;
   }
 
   table#balanceHistoryLegend .label span.asAt {
