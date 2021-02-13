@@ -116,3 +116,13 @@ table#balanceHistoryLegend {
   table#balanceHistoryLegend .label span.asAt {
     color: #ccc;
   }
+
+footer {
+  margin-top: 3em;
+  color: #ccc;
+  font-size: 9px;
+}
+
+  footer a {
+    color: #acf;
+  }
