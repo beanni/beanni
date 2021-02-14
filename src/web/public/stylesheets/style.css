@@ -113,6 +113,11 @@ table#balanceHistoryLegend {
   table#balanceHistoryLegend .balance {
     padding-left: 1em;
     text-align: right;
+    border-left: solid 1px #ddd;
+  }
+
+  table#balanceHistoryLegend tfoot .balance {
+    border-top: double 3px #444;
   }
 
   table#balanceHistoryLegend .label canvas {

@@ -63,6 +63,11 @@ block content
                                 = ' as at ' + balance.asAt
                     td.balance
                         | #{balance.balance.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
+        tfoot
+            tr
+                td.checkbox
+                th(scope='col').label Total
+                td.balance #{ latestBalances.reduce((acc, val) => acc + val.balance, 0).toLocaleString('en', { style: 'currency', currency: 'AUD' }) }
     script.
         (function() {
             var sourceData = !{JSON.stringify(balanceHistoryChartData)};
@@ -186,7 +191,8 @@ block content
                 if (!event.target.matches('input[type=checkbox]')) return;
                 var index = event.target.dataset.index;
 
-                var toggleAllCheckbox = document.querySelector('#balanceHistoryLegend input[type=checkbox]:not([data-index])');
+                const toggleAllCheckbox = document.querySelector('#balanceHistoryLegend input[type=checkbox]:not([data-index])');
+                const allSeriesCheckboxes = Array.from(document.querySelectorAll('#balanceHistoryLegend input[type=checkbox][data-index]'));
 
                 if (event.target === toggleAllCheckbox) {
                     // Toggle all
@@ -203,9 +209,16 @@ block content
                     meta.hidden = !event.target.checked;
 
                     // Update the toggle-all status
-                    var allSeriesCheckboxes = Array.from(document.querySelectorAll('#balanceHistoryLegend input[type=checkbox][data-index]'));
                     toggleAllCheckbox.checked = allSeriesCheckboxes.every(c => c.checked);
                 }
                 chart.update();
+
+                // Update balance
+                const checkedBalance = allSeriesCheckboxes
+                    .filter(c => c.checked)
+                    .reduce((acc, c) => acc + Number.parseFloat(c.dataset.balance), 0);
+                const formattedBalance = checkedBalance.toLocaleString('en', { style: 'currency', currency: 'AUD' });
+                document.querySelector('#balanceHistoryLegend tfoot tr > .balance').innerText = formattedBalance;
+                document.querySelector('#balanceHistoryLegend tfoot tr > .label').innerText = toggleAllCheckbox.checked ? 'Total' : 'Total (selected)';
             });
         })();
