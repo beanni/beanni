@@ -2,10 +2,13 @@ extends layout
 
 block content
     h1 Beanni
-    p His name was Beanni! 🎶
+    p
+        | Your friendly Australian bean-counter. 
+        a(href='https://www.youtube.com/watch?v=Aey_zIE3K9E') His name was Beanni!
+        |  🎶
 
     h2 💰 Net Worth
-    p He's worth: #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
+    p #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
     h2 📅 Performance by Period
     div.wideBlock
