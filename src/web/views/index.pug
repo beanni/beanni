@@ -44,17 +44,18 @@ block content
     table#balanceHistoryLegend
         thead
             tr
+                th(scope='col').checkbox
+                    input#balanceHistoryLegendToggleAll(type='checkbox', checked='checked')
                 th(scope='col').label
-                    label
-                        input(type='checkbox', checked='checked')
-                        | Account
+                    label(for='balanceHistoryLegendToggleAll') All Accounts
                 th(scope='col').balance Balance
         tbody
             each balance, index in latestBalances
                 tr
+                    th(scope='row').checkbox
+                        input(type='checkbox', id='balanceHistoryLegendToggle' + index, data-index=index, data-balance=balance.balance, checked='checked')
                     th(scope='row').label
-                        label
-                            input(type='checkbox', data-index=index, data-balance=balance.balance, checked='checked')
+                        label(for='balanceHistoryLegendToggle' + index)
                             canvas(id='balanceHistoryPattern-' + index, width=30, height=15)
                             | #{balance.label}
                         if balance.asAtDaysAgo > 0

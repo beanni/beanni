@@ -104,9 +104,10 @@ table#balanceHistoryLegend {
     text-align: left;
   }
 
-  table#balanceHistoryLegend input[type=checkbox] {
-    display: inline-block;
-    margin: 0 1em 0 0;
+  table#balanceHistoryLegend th.checkbox {
+    width: 1em;
+    padding-right: 0;
+    text-align: center;
   }
 
   table#balanceHistoryLegend .balance {
