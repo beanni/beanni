@@ -58,7 +58,7 @@ block content
                         label(for='balanceHistoryLegendToggle' + index)
                             canvas(id='balanceHistoryPattern-' + index, width=30, height=15)
                             | #{balance.label}
-                        if balance.asAtDaysAgo > 0
+                        if balance.asAtDaysAgo > 1
                             span.asAt
                                 = ' as at ' + balance.asAt
                     td.balance
