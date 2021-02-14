@@ -54,7 +54,7 @@ export class DataStore {
         }
         const result = await this.database.all<IHistoricalAccountBalance>(
             `SELECT
-                date(b.timestamp) AS 'date',
+                date(max(b.timestamp)) AS 'date',
                 b.institution,
                 b.accountNumber,
                 b1.accountName,
