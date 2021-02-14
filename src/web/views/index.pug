@@ -44,14 +44,17 @@ block content
     table#balanceHistoryLegend
         thead
             tr
-                th(scope='col').label Account
+                th(scope='col').label
+                    label
+                        input(type='checkbox', checked='checked')
+                        | Account
                 th(scope='col').balance Balance
         tbody
             each balance, index in latestBalances
                 tr
                     th(scope='row').label
                         label
-                            input(type='checkbox', data-index=index, checked='checked')
+                            input(type='checkbox', data-index=index, data-balance=balance.balance, checked='checked')
                             canvas(id='balanceHistoryPattern-' + index, width=30, height=15)
                             | #{balance.label}
                         if balance.asAtDaysAgo > 0
@@ -181,8 +184,27 @@ block content
                 // Toggle series on and off as checkboxes are tapped
                 if (!event.target.matches('input[type=checkbox]')) return;
                 var index = event.target.dataset.index;
-                var meta = chart.getDatasetMeta(index);
-                meta.hidden = !event.target.checked;
+
+                var toggleAllCheckbox = document.querySelector('#balanceHistoryLegend input[type=checkbox]:not([data-index])');
+
+                if (event.target === toggleAllCheckbox) {
+                    // Toggle all
+                    chart.data.datasets.forEach((dataset, index) => {
+                        var meta = chart.getDatasetMeta(index);
+                        meta.hidden = !event.target.checked;
+                        var checkbox = document.querySelector('#balanceHistoryLegend input[type=checkbox][data-index="' + index + '"]');
+                        checkbox.checked = event.target.checked;
+                    });
+                }
+                else {
+                    // Toggle single series
+                    var meta = chart.getDatasetMeta(index);
+                    meta.hidden = !event.target.checked;
+
+                    // Update the toggle-all status
+                    var allSeriesCheckboxes = Array.from(document.querySelectorAll('#balanceHistoryLegend input[type=checkbox][data-index]'));
+                    toggleAllCheckbox.checked = allSeriesCheckboxes.every(c => c.checked);
+                }
                 chart.update();
             });
         })();

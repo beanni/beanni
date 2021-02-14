@@ -104,13 +104,18 @@ table#balanceHistoryLegend {
     text-align: left;
   }
 
+  table#balanceHistoryLegend input[type=checkbox] {
+    display: inline-block;
+    margin: 0 1em 0 0;
+  }
+
   table#balanceHistoryLegend .balance {
     padding-left: 1em;
     text-align: right;
   }
 
   table#balanceHistoryLegend .label canvas {
-    margin: 0 0.5em;
+    margin: 0 0.5em 0 0;
   }
 
   table#balanceHistoryLegend .label span.asAt {
