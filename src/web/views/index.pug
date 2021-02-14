@@ -128,11 +128,11 @@ block content
                                     }
                                     else if (absoluteValue >= 1000000 && absoluteValue % 10000 === 0) {
                                         // A$1.25m
-                                        return (isNegative ? '-' : '') + (absoluteValue / 1000000).toLocaleString() + 'm';
+                                        return (isNegative ? '-' : '') + 'A$' + (absoluteValue / 1000000).toLocaleString() + 'm';
                                     }
-                                    else if (absoluteValue >= 10000 && absoluteValue % 10000 === 0) {
-                                        // A$820k
-                                        return (isNegative ? '-' : '') + (absoluteValue / 1000).toLocaleString() + 'k';
+                                    else if (absoluteValue >= 1000 && absoluteValue % 1000 === 0) {
+                                        // A$820k, A$15k, A$4k
+                                        return (isNegative ? '-' : '') + 'A$' + (absoluteValue / 1000).toLocaleString() + 'k';
                                     }
                                     return value.toLocaleString('en', { style: 'currency', currency: 'AUD' });
                                 }
