@@ -154,7 +154,7 @@ For a smooth `npm install`:
 
 * On Ubuntu, [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly
 
-* [sqlite3](https://www.npmjs.com/package/sqlite3) requires a native binary. `npm install` will attempt to resolve a pre-compiled binary for the right combination of your OS, architecture, and node version via `node-pre-gyp`. If this fails, it'll then attempt to compile from source which will then throw up new dependencies for Python and a C++ compiler. You're probably better off getting the pre-compiled binary option to work instead of trying to install the required compiler toolchain.
+* [sqlite3](https://www.npmjs.com/package/sqlite3) requires a native binary. `npm install` will attempt to resolve a pre-compiled binary for the right combination of your OS, architecture, and node version via `node-pre-gyp`. If this fails, it'll then attempt to compile from source which will then throw up new dependencies for Python and a C++ compiler. You're probably better off getting the pre-compiled binary option to work instead of trying to install the required compiler toolchain. If you want to pursue the build tools on Windows, try `npm install --vs2015 --global --production --add-python-to-path windows-build-tools` from an elevated prompt.
 
 ### 🤖 Puppeteer Debugging
 
