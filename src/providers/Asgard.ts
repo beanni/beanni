@@ -72,9 +72,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
             if (cells.length !== 3) { continue; }
 
             const cellText = await Promise.all(cells.map(async (c) => {
-                const handle = await c.getProperty("textContent");
-                const value = await handle.jsonValue() as string;
-                return value.trim();
+                return (await c.evaluate(node => node.textContent)).trim();
             }));
 
             if (cellText[0] === "TOTAL") { continue; }
