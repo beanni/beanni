@@ -7,8 +7,8 @@ block content
         a(href='https://www.youtube.com/watch?v=Aey_zIE3K9E') His name was Beanni!
         |  🎶
 
-    h2 💰 Net Worth
-    p #{netWorth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
+    h2 💰 Net Wealth
+    p #{netWealth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
     h2 📅 Performance by Period
     div.wideBlock
@@ -165,7 +165,7 @@ block content
                                 // Short circuit if we're not showing tooltips
                                 if (!checkTooltipsEnabled()) return null;
 
-                                // Display the day's net worth at the top of the tooltip
+                                // Display the day's net wealth at the top of the tooltip
                                 var dayTotal = tooltipItem.reduce((accumulator, currentValue) => accumulator + currentValue.yLabel, 0);
                                 return dayTotal.toLocaleString('en', { style: 'currency', currency: 'AUD' });
                             },

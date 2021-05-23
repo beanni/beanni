@@ -61,7 +61,7 @@ router.get("/", async (_req, res, next) => {
             .value();
 
         res.render("index", {
-            netWorth: await dataStore.getNetWorth(),
+            netWealth: await dataStore.getNetWealth(),
             performanceByPeriods,
             balanceHistoryChartData,
             latestBalances,

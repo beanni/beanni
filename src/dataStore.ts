@@ -77,7 +77,7 @@ export class DataStore {
         return result;
     }
 
-    public async getNetWorth(): Promise<number> {
+    public async getNetWealth(): Promise<number> {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }

@@ -7,7 +7,7 @@ Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=
 
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
-Beanni helps gather financial data from all of your various institutions. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as portfolio-wide net-worth trends.
+Beanni helps gather financial data from all of your various institutions. Having all of this cached in a local database allows you to do deeper analysis than typical online banking tools would allow, such as portfolio-wide net-wealth trends.
 
 Beanni is just a local helper, on your own machine. You're not sharing your passwords with us, or anybody else. You're not reverse engineering your bank. Beanni is just a robot that's really fast at clicking the same export buttons that you would otherwise have to click manually.
 
