@@ -62,7 +62,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
         // We've opted to intercept the XHR responses as they stream into the page instead.
 
         const balances = new Array<IAccountBalance>();
-        const handleResponse = async (response: puppeteer.Response) => {
+        const handleResponse = async (response: puppeteer.HTTPResponse) => {
             const url = response.url();
 
             // Only care for 200-series responses
@@ -90,7 +90,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 balance: data.details.accountBalance,
             });
         };
-        const onResponse = (response: puppeteer.Response) => {
+        const onResponse = (response: puppeteer.HTTPResponse) => {
             handleResponse(response)
                 .then(null, (reason) => {
                     throw reason;
@@ -145,7 +145,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
         await page.waitForNavigation({ waitUntil: "networkidle0" });
         await page.click('adv-investment-summary mat-expansion-panel mat-expansion-panel-header');
 
-        const handleResponse = async (response: puppeteer.Response) => {
+        const handleResponse = async (response: puppeteer.HTTPResponse) => {
             const url = response.url();
 
             // Only care for 200-series responses
@@ -186,7 +186,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 date: new Date(effectiveDate),
             });
         };
-        const onResponse = (response: puppeteer.Response) => {
+        const onResponse = (response: puppeteer.HTTPResponse) => {
             handleResponse(response)
                 .then(null, (reason) => {
                     throw reason;

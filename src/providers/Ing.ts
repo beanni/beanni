@@ -279,10 +279,11 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
         // Filter to this account, and longest period available
         await page.$eval(
             "ing-estatements-filters",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            (el: any, accountNumber: string) => {
-                el.selectAccountByNumber(accountNumber);
-                el.selectedPeriodIndex = (el.periods.length - 1);
+            (el, accountNumber) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const elA = el as any;
+                elA.selectAccountByNumber(accountNumber);
+                elA.selectedPeriodIndex = (elA.periods.length - 1);
             },
             account.AccountNumber,
         );
@@ -294,7 +295,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
 
         // Wait for the AJAX load to complete
         await page.waitForFunction(
-            (accountNumber) => {
+            (accountNumber : string) => {
                 return true &&
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ((<any>document.querySelector("ing-estatements"))?.__data__.estatementsLoading === false) &&
