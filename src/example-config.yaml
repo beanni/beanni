@@ -13,4 +13,5 @@ relationships:
   - provider: Ing
   - provider: Myki
   - provider: Perpetual
+  - provider: TelstraSuper
   - provider: Westpac
