@@ -158,6 +158,6 @@ For a smooth `npm install`:
 
 ### 🤖 Puppeteer Debugging
 
-Running `npm run fetch --debug` will keep the browser visible during execution, and write out more logs.
+Running `npm run fetch -- --debug` will keep the browser visible during execution, and write out more logs.
 
 In VS Code, you can <kbd>F5</kbd> > `explore` > `--debug` to both apply this flag and attach a debugger to the process.
