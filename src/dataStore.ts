@@ -1,4 +1,5 @@
-import sqlite, { Database } from "sqlite";
+import sqlite3 from "sqlite3";
+import { Database, open } from "sqlite";
 import { IAccountBalance, IHistoricalAccountBalance } from "./types";
 
 const DATA_FILE_NAME = "./beanni.db";
@@ -7,7 +8,10 @@ export class DataStore {
     private database?: Database;
 
     public async open() : Promise<void> {
-        this.database = await sqlite.open(DATA_FILE_NAME);
+        this.database = await open({
+            filename: DATA_FILE_NAME,
+            driver: sqlite3.Database
+        });
         await this.database.migrate({ migrationsPath: __dirname + "/../src/migrations" });
     }
 
@@ -52,7 +56,7 @@ export class DataStore {
         if (this.database == null) {
             throw new Error("Database not open yet");
         }
-        const result = await this.database.all<IHistoricalAccountBalance>(
+        const result = await this.database.all<IHistoricalAccountBalance[]>(
             `SELECT
                 date(max(b.timestamp)) AS 'date',
                 b.institution,
@@ -91,7 +95,7 @@ export class DataStore {
             ) b1
             ON b.id = b1.id ORDER BY institution, accountNumber`,
         );
-        return result.result / 100;
+        return (result?.result ?? 0) / 100;
     }
 
     public async close() : Promise<void> {
