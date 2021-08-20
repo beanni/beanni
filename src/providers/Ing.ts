@@ -1,6 +1,7 @@
 import fs = require("fs");
 import puppeteer = require("puppeteer");
-import request = require("request");
+import https = require("https");
+import querystring = require("querystring");
 import { URL } from "url";
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface, IHistoricalAccountBalance } from "../types";
@@ -333,29 +334,53 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                 continue;
             }
 
-            await new Promise<void>((resolve) => {
+            await new Promise<void>((resolve, reject) => {
                 const file = fs.createWriteStream(targetPath);
-                request
-                    .post({
-                        uri: apiEndpoint,
-                        form: {
-                            "X-AuthToken": statementsResultsData.token,
-                            "Id": statement.Id,
-                            "AccountNumber": statementsResultsData.accountNumber,
-                            "ProductName": statementsResultsData.productName,
-                        },
+                const formData = querystring.stringify({
+                    "X-AuthToken": statementsResultsData.token,
+                    "Id": statement.Id,
+                    "AccountNumber": statementsResultsData.accountNumber,
+                    "ProductName": statementsResultsData.productName,
+                });
+
+                const request = https.request(
+                    apiEndpoint,
+                    {
+                        method: "POST",
                         headers: {
-                            Referer: "https://www.ing.com.au/securebanking/",
+                            "Content-Type": "application/x-www-form-urlencoded",
+                            "Content-Length": Buffer.byteLength(formData),
+                            "Referer": "https://www.ing.com.au/securebanking/",
+                            "User-Agent": "Chrome"
                         },
-                    })
-                    .on("response", (res) => {
-                        res.on("close", () => {
-                            file.close();
-                            console.log(`[Ing] Statement downloaded: ${filename}`);
-                            resolve();
-                        });
-                    })
-                    .pipe(file);
+                        timeout: 10000
+                    },
+                    response => {
+                        if (response.statusCode !== 200) {
+                            reject(new Error(`[Ing] Failed to download statement ${statement.Id}: ${response.statusCode}`));
+                            return;
+                        }
+                        console.log(`[Ing] 200 OK ${statement.Id}, downloading content now`);
+                        response.pipe(file);
+                    }
+                );
+
+                file.on('finish', () => {
+                    console.log(`[Ing] Statement downloaded: ${filename}`);
+                    resolve()
+                });
+
+                request.on('error', err => {
+                    console.log(`[Ing] ${err}`);
+                    fs.unlink(targetPath, () => reject(err));
+                });
+
+                file.on('error', err => {
+                    console.log(`[Ing] ${err}`);
+                    fs.unlink(targetPath, () => reject(err));
+                });
+
+                request.end();
             });
 
             this.debugLog("getDocumentsForAccount:" + account.AccountNumber, 3);
