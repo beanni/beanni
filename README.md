@@ -20,8 +20,8 @@ Get started:
 | Step | Run | Why |
 | --- | --- | --- |
 | 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
-| 2. | `node --version` | Make sure you're on Node ≥10.13.0 |
-| 3. | `npm --version` | Make sure you're on NPM ≥6.8.0 |
+| 2. | `node --version` | Make sure you're on Node ≥14.17.5 |
+| 3. | `npm --version` | Make sure you're on NPM ≥6.14.14 |
 | 4. | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
 | 5. | `npm install` | Install Beanni's dependencies |
 | 6. | `npm run build` | Build Beanni | 
