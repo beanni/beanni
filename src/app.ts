@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import program from "commander";
+import { Command } from "commander";
 import inquirer from "inquirer";
 import { Core, IBeanniExecutionContext } from "./core";
 import { DataStore } from "./dataStore";
@@ -11,6 +11,8 @@ const dataStore = new DataStore();
 
 const secretStore = new DynamicSecretStore();
 const core = new Core(dataStore, secretStore);
+
+const program = new Command("beanni");
 
 program
     .name("beanni")
