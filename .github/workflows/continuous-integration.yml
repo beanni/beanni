@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-lint:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
@@ -20,10 +20,10 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ~/.npm
-        key: ubuntu-1604-npm-${{ hashFiles('package-lock.json') }}
+        key: ubuntu-latest-npm-${{ hashFiles('package-lock.json') }}
         # If cache-miss on exact key, use any previous available caches as the starting point
         restore-keys: |
-          ubuntu-1604-npm-
+          ubuntu-latest-npm-
     # `npm ci` uses package-lock.json to restore the exact versions available at commit time
     - run: npm ci
     - run: npm run verify
