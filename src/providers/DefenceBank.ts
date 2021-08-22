@@ -1,7 +1,7 @@
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { ProviderHelpers } from "../providerHelpers";
-import { IAccountBalance, IBankDataProviderInterface, ValueType } from "../types";
+import { IAccountBalance, IBankDataProviderInterface } from "../types";
 
 export class DefenceBank implements IBankDataProviderInterface {
     public institution = "DefenceBank";
