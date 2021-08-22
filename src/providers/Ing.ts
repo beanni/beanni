@@ -339,18 +339,20 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
             await new Promise<void>((resolve) => {
                 const file = fs.createWriteStream(targetPath);
                 request
-                    .post({
-                        uri: apiEndpoint,
-                        form: {
-                            "X-AuthToken": statementsResultsData.token,
-                            "Id": statement.Id,
-                            "AccountNumber": statementsResultsData.accountNumber,
-                            "ProductName": statementsResultsData.productName,
-                        },
-                        headers: {
-                            Referer: "https://www.ing.com.au/securebanking/",
-                        },
-                    })
+                    .post(
+                        apiEndpoint.toString(),
+                        {
+                            form: {
+                                "X-AuthToken": statementsResultsData.token,
+                                "Id": statement.Id,
+                                "AccountNumber": statementsResultsData.accountNumber,
+                                "ProductName": statementsResultsData.productName,
+                            },
+                            headers: {
+                                Referer: "https://www.ing.com.au/securebanking/",
+                            },
+                        }
+                    )
                     .on("response", (res) => {
                         res.on("close", () => {
                             file.close();
