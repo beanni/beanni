@@ -3,6 +3,7 @@ import { IBeanniExecutionContext } from "../core";
 import {
     IAccountBalance,
     IBankDataProviderInterface,
+    ValueType,
 } from "../types";
 
 export class AmericanExpress implements IBankDataProviderInterface {
@@ -69,6 +70,7 @@ export class AmericanExpress implements IBankDataProviderInterface {
             accountName: selectedCard.productId.cardProductDesc.trim(),
             accountNumber: selectedCard.obfuscatedAccountNumber,
             balance: -parseFloat(selectedCardBalance),
+            valueType: ValueType["Consumer Debt"],
         });
         return balances;
     }

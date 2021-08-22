@@ -1,7 +1,7 @@
 import _ from "lodash";
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
+import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance, ValueType } from "../types";
 
 export class Perpetual implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
     public institution = "Perpetual";
@@ -88,6 +88,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 accountName: data.mailingName || data.productName,
                 accountNumber: data.accountNo,
                 balance: data.details.accountBalance,
+                valueType: ValueType["Investment Funds"],
             });
         };
         const onResponse = (response: puppeteer.HTTPResponse) => {
@@ -183,6 +184,7 @@ export class Perpetual implements IBankDataProviderInterface, IBankDataHistorica
                 accountName: 'Historical Lookup',
                 accountNumber: accountNumber,
                 balance: balance,
+                valueType: ValueType["Investment Funds"],
                 date: new Date(effectiveDate),
             });
         };

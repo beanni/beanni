@@ -1,7 +1,7 @@
 import _ from "lodash";
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance } from "../types";
+import { IAccountBalance, IBankDataHistoricalBalancesProviderInterface, IBankDataProviderInterface, IHistoricalAccountBalance, ValueType } from "../types";
 
 export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface {
     public institution = "Asgard";
@@ -83,6 +83,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
                 accountName: cellText[0],
                 accountNumber: cellText[1],
                 balance: parseFloat(cellText[2].trim().replace("$", "").replace(",", "")),
+                valueType: ValueType.Superannuation,
             });
         }
 
@@ -149,6 +150,7 @@ export class Asgard implements IBankDataProviderInterface, IBankDataHistoricalBa
                 accountNumber: accountNumber,
                 balance: balance,
                 date: new Date(dateToLookup),
+                valueType: ValueType.Superannuation,
             });
 
             // These are probably intensive calculations server-side, so don't smash them too hard

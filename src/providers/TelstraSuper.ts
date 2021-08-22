@@ -1,6 +1,6 @@
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataProviderInterface, ValueType } from "../types";
 
 export class TelstraSuper implements IBankDataProviderInterface {
     public institution = "TelstraSuper";
@@ -89,6 +89,7 @@ export class TelstraSuper implements IBankDataProviderInterface {
                 accountName: accountName,
                 accountNumber: accountNumber + ' ' + option,
                 balance: value,
+                valueType: ValueType.Superannuation,
             });
         }
 

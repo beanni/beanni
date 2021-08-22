@@ -1,8 +1,10 @@
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
+import { ProviderHelpers } from "../providerHelpers";
 import {
     IAccountBalance,
     IBankDataProviderInterface,
+    ValueType,
 } from "../types";
 
 export class Anz implements IBankDataProviderInterface {
@@ -58,9 +60,10 @@ export class Anz implements IBankDataProviderInterface {
         for (const row of accountSummaryRows) {
             if ((await row.$(".accountNameSection")) === null) { continue; }
 
+            const accountName = await row.$eval(".accountNameSection", el => (el.textContent || '').trim());
             balances.push({
                 institution: this.institution,
-                accountName: await row.$eval(".accountNameSection", el => (el.textContent || '').trim()),
+                accountName: accountName,
                 accountNumber: await row.$eval(".accountNoSection", el => (el.textContent || '').trim()),
                 balance: parseFloat(
                     await row.$eval(".currentBalTD", el =>
@@ -71,6 +74,7 @@ export class Anz implements IBankDataProviderInterface {
                             .replace(",", ""),
                     ),
                 ),
+                valueType: ProviderHelpers.guessValueTypeFromAccountName(accountName),
             });
         }
 

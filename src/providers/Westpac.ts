@@ -2,7 +2,8 @@ import fs = require("fs");
 import puppeteer = require("puppeteer");
 import request = require("request");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface } from "../types";
+import { ProviderHelpers } from "../providerHelpers";
+import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface, ValueType } from "../types";
 
 export class Westpac implements IBankDataProviderInterface, IBankDataDocumentProviderInterface {
     public institution = "Westpac";
@@ -57,21 +58,27 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
 
         const accountSummaryRows = await page.$$(".accounts-summarylistwidget table > tbody > tr");
         for (const row of accountSummaryRows) {
+            const accountName = await row.$eval(
+                ".tf-account-detail a span",
+                el => (el.textContent || '').trim()
+            );
+            const accountNumber = await row.$eval(
+                ".tf-account-detail div > span",
+                el => (<HTMLElement>el).innerText.split("\n")[1],
+            );
             balances.push({
                 institution: this.institution,
-                accountName: await row.$eval(".tf-account-detail a span", el =>
-                    (el.textContent || '').trim()
-                ),
-                accountNumber: await row.$eval(
-                    ".tf-account-detail div > span",
-                    el => (<HTMLElement>el).innerText.split("\n")[1],
-                ),
+                accountName: accountName,
+                accountNumber: accountNumber,
                 balance: parseFloat(
                     await row.$eval(
                         ".balance.current .balance",
                         el => (el.textContent || '').trim().replace("minus", "").replace("$", "").replace(",", ""),
                     ),
                 ),
+                valueType:
+                    accountNumber.indexOf('xxxx') === 0 ? ValueType["Consumer Debt"]
+                    : ProviderHelpers.guessValueTypeFromAccountName(accountName),
             });
         }
 

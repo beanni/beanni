@@ -1,6 +1,6 @@
 import sqlite3 from "sqlite3";
 import { Database, open } from "sqlite";
-import { IAccountBalance, IHistoricalAccountBalance } from "./types";
+import { IAccountBalance, IHistoricalAccountBalance, ValueType } from "./types";
 
 const DATA_FILE_NAME = "./beanni.db";
 
@@ -21,14 +21,15 @@ export class DataStore {
         }
         await this.database.run(
             `INSERT INTO Balances
-                (accountNumber, accountName, institution, balance)
+                (accountNumber, accountName, institution, balance, valueType)
             VALUES
-                ($accountNumber, $accountName, $institution, $balance);`,
+                ($accountNumber, $accountName, $institution, $balance, $valueType);`,
             {
                 $accountNumber: balance.accountNumber,
                 $accountName: balance.accountName,
                 $institution: balance.institution,
                 $balance: Math.floor(balance.balance * 100),
+                $valueType: balance.valueType,
             },
         );
     }
@@ -39,14 +40,15 @@ export class DataStore {
         }
         await this.database.run(
             `INSERT INTO Balances
-                (accountNumber, accountName, institution, balance, timestamp)
+                (accountNumber, accountName, institution, balance, valueType, timestamp)
             VALUES
-                ($accountNumber, $accountName, $institution, $balance, $date);`,
+                ($accountNumber, $accountName, $institution, $balance, $valueType, $date);`,
             {
                 $accountNumber: balance.accountNumber,
                 $accountName: balance.accountName,
                 $institution: balance.institution,
                 $balance: Math.floor(balance.balance * 100),
+                $valueType: balance.valueType,
                 $date: new Date(balance.date).toISOString().substring(0, 10),
             },
         );
@@ -62,22 +64,31 @@ export class DataStore {
                 b.institution,
                 b.accountNumber,
                 b1.accountName,
+                b1.valueType,
                 b.balance
             FROM Balances b
             INNER JOIN (
-                SELECT institution, accountNumber, accountName, max(timestamp)
+                SELECT
+                    institution,
+                    accountNumber,
+                    accountName,
+                    valueType,
+                    max(timestamp)
                 FROM Balances
                 GROUP BY institution, accountNumber
             ) b1
             ON b.institution = b1.institution AND b.accountNumber = b1.accountNumber
             WHERE ($institution is null OR b.institution = $institution)
             GROUP BY b.institution, b.accountNumber, date(b.timestamp)
-            ORDER BY date(b.timestamp), b.institution, b1.accountName`,
+            ORDER BY b1.valueType, date(b.timestamp), b.institution, b1.accountName`,
             {
                 $institution: institution,
             }
         );
-        result.forEach((r) => { r.balance = r.balance / 100; });
+        result.forEach((r) => {
+            r.balance = r.balance / 100;
+            r.valueType = r.valueType ?? ValueType.Unknown;
+        });
         return result;
     }
 

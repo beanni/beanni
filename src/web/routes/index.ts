@@ -1,7 +1,7 @@
 import { Router } from "express";
 import _ from "lodash";
 import { DataStore } from "../../dataStore";
-import { IHistoricalAccountBalance } from "../../types";
+import { IHistoricalAccountBalance, ValueType } from "../../types";
 const router = Router();
 
 /* GET home page. */
@@ -17,12 +17,15 @@ router.get("/", async (_req, res, next) => {
         interface displayBalance extends IHistoricalAccountBalance {
             label: string;
         }
-        const balanceData: displayBalance[] = allBalances
+        const balanceData: displayBalance[] = _(allBalances)
             .map(r => {
                 const bd = <displayBalance>r;
                 bd.label = `${bd.institution} ${bd.accountNumber} ${bd.accountName}`
                 return bd;
-            });
+            })
+            .sortBy(r => r.label)
+            .sortBy(r => r.valueType)
+            .value();
         const dates = _(balanceData)
             .map(r => r.date)
             .uniq()
@@ -52,6 +55,8 @@ router.get("/", async (_req, res, next) => {
                     asAt === undefined ? '∞' :
                     Math.floor((new Date(asAt).getTime() - new Date().getTime()) / (1000 * 3600 * 24) * -1);
                 return {
+                    valueType: latestBalance?.valueType,
+                    valueTypeName: ValueType[latestBalance?.valueType ?? ValueType.Unknown],
                     label: key,
                     balance: latestBalance?.balance,
                     asAt: latestBalance?.date,

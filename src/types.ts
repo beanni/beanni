@@ -8,10 +8,21 @@ export interface IAccountBalance {
     accountName: string;
     institution: string;
     balance: number;
+    valueType: ValueType;
 }
 
 export interface IHistoricalAccountBalance extends IAccountBalance {
     date: Date;
+}
+
+export enum ValueType {
+    Superannuation = 100,
+    "Investment Funds" = 500,
+    "Cash Savings" = 750,
+    Cash = 1000,
+    "Stored Value Cards" = 1250,
+    "Consumer Debt" = 2000,
+    Unknown = 10000,
 }
 
 export interface IBankDataProviderInterface {

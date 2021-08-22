@@ -1,6 +1,6 @@
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataProviderInterface } from "../types";
+import { IAccountBalance, IBankDataProviderInterface, ValueType } from "../types";
 
 export class Myki implements IBankDataProviderInterface {
     public institution = "Myki";
@@ -62,6 +62,7 @@ export class Myki implements IBankDataProviderInterface {
                         el => (el.textContent || '').trim().replace("$", "").replace(",", ""),
                     ),
                 ),
+                valueType: ValueType["Stored Value Cards"],
             });
         }
 
