@@ -3,7 +3,7 @@
 Your friendly Australian bean-counter, [Beanni](https://www.youtube.com/watch?v=Aey_zIE3K9E).
 
 [![GitHub contributors](https://img.shields.io/github/contributors/beanni/beanni.svg)](https://github.com/beanni/beanni/graphs/contributors)
-[![Build Status](https://github.com/beanni/beanni/workflows/Continuous%20Integration/badge.svg?branch=master)](https://github.com/beanni/beanni/actions?query=workflow%3A%22Continuous+Integration%22)
+[![Build Status](https://github.com/beanni/beanni/workflows/Continuous%20Integration/badge.svg?branch=main)](https://github.com/beanni/beanni/actions?query=workflow%3A%22Continuous+Integration%22)
 
 By [@mjhilton](https://github.com/mjhilton) and [@tathamoddie](https://github.com/tathamoddie).
 
