@@ -3,8 +3,9 @@ import puppeteer = require("puppeteer");
 import request = require("request");
 import { URL } from "url";
 import { IBeanniExecutionContext } from "../core";
-import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface, IHistoricalAccountBalance } from "../types";
+import { IAccountBalance, IBankDataDocumentProviderInterface, IBankDataProviderInterface, IBankDataHistoricalBalancesProviderInterface, IHistoricalAccountBalance, ValueType } from "../types";
 import _ from "lodash";
+import { ProviderHelpers } from "../providerHelpers";
 
 export class Ing implements IBankDataProviderInterface, IBankDataDocumentProviderInterface, IBankDataHistoricalBalancesProviderInterface {
     public institution = "ING";
@@ -116,6 +117,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                 accountName: account.AccountName ?? account.ProductName,
                 accountNumber: account.AccountNumber,
                 balance: account.CurrentBalance,
+                valueType: ProviderHelpers.guessValueTypeFromAccountName(account.AccountName ?? account.ProductName),
             });
         }
         this.debugLog("getBalances", 2);
@@ -221,6 +223,7 @@ export class Ing implements IBankDataProviderInterface, IBankDataDocumentProvide
                         accountName: account.ProductName,
                         accountNumber: account.AccountNumber,
                         balance: balance,
+                        valueType: ValueType.Superannuation,
                         date: new Date(dateToLookup),
                     });
                 }

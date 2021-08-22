@@ -53,7 +53,13 @@ block content
                     label(for='balanceHistoryLegendToggleAll') All Accounts
                 th(scope='col').balance Balance
         tbody
+            - var currentValueType = 0
             each balance, index in latestBalances
+                unless balance.valueType === currentValueType
+                    - currentValueType = balance.valueType
+                    tr.valueTypeHeader
+                        th(scope='row').checkbox
+                        th(scope='row', colspan=2).label #{balance.valueTypeName}
                 tr
                     th(scope='row').checkbox
                         input(type='checkbox', id='balanceHistoryLegendToggle' + index, data-index=index, data-balance=balance.balance, checked='checked')

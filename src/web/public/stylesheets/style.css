@@ -100,6 +100,15 @@ table#balanceHistoryLegend {
   width: 100%;
 }
 
+  table#balanceHistoryLegend thead {
+    background-color: #e3e3e3;
+  }
+
+  table#balanceHistoryLegend tr.valueTypeHeader {
+    background-color: #f0f0f0;
+    font-style: italic;
+  }
+
   table#balanceHistoryLegend th {
     text-align: left;
   }
