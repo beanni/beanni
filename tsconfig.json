@@ -1,17 +1,13 @@
 {
+  "extends": "ts-node/node12/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": true,
+    "lib": [
+      "dom",
+      "es2018"
+    ],
+    "noImplicitAny": true,
     "outDir": "./dist/",
     "strict": true,
-    "noImplicitAny": true,
-    "esModuleInterop": true,
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "sourceMap": true,
+  }
 }
