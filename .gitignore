@@ -67,3 +67,4 @@ config.yaml
 beanni.db
 *.db
 statements/
+*-screenshot.png

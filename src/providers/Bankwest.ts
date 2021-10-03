@@ -23,13 +23,24 @@ export class Bankwest implements IBankDataProviderInterface {
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
 
-        await page.goto("https://ibs.bankwest.com.au/BWLogin/rib.aspx");
+        try
+        {
+            await page.goto("https://ibs.bankwest.com.au/BWLogin/rib.aspx");
 
-        await page.type('input[name="AuthUC$txtUserID"]', username);
-        await page.type('input[type="password"]', password);
-        await page.click("#AuthUC_btnLogin");
+            await page.type('input[name="AuthUC$txtUserID"]', username);
+            await page.type('input[type="password"]', password);
+            await page.click("#AuthUC_btnLogin");
 
-        await page.waitForSelector('[id$="lblWelcomeMessage"]');
+            await page.waitForSelector('[id$="lblWelcomeMessage"]');
+        } catch (error) {
+            const timeoutError = error as puppeteer.TimeoutError;
+            if (timeoutError.name === "TimeoutError") {
+                const filename = `${new Date().toISOString().substring(0,10)}-${new Date().getTime()}-screenshot.png`;
+                console.log (`[Bankwest] Screenshot saved as ${filename}`);
+                await page.screenshot({ path: filename, fullPage: true });
+            }
+            throw error;
+        }
     }
 
     public async logout() : Promise<void> {
