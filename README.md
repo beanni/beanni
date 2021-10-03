@@ -48,8 +48,8 @@ Setup a cronjob to fetch your data on a regular basis. Twice a day gives the bes
 ```
 ~ $ crontab -e
 
-0 5 * * * (cd ~/beanni; npm run fetch >> ~/cron-log 2>&1;)
-0 17 * * * (cd ~/beanni; npm run fetch >> ~/cron-log 2>&1;)
+0 5 * * * (cd ~/beanni; npm run fetch >> cron.log 2>&1;)
+0 17 * * * (cd ~/beanni; npm run fetch >> cron.log 2>&1;)
 ```
 
 Keep the web interface running as a service, so that it's always available:
