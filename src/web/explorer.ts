@@ -1,6 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import path = require("path");
+import apiRouter = require("./routes/api");
 import indexRouter = require("./routes/index");
 
 export class Explorer {
@@ -16,6 +17,7 @@ export class Explorer {
         server.use(express.static(path.join(__dirname, "../../src/web/public")));
 
         server.use("/", indexRouter.default);
+        server.use("/api/", apiRouter.default);
 
         // catch 404 and forward to error handler
         server.use((req, res, next) => {
