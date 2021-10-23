@@ -1,8 +1,7 @@
 import express from "express";
 import createError from "http-errors";
 import path = require("path");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const indexRouter = require("./routes/index").default;
+import indexRouter = require("./routes/index");
 
 export class Explorer {
     public port = 3000;
@@ -16,7 +15,7 @@ export class Explorer {
 
         server.use(express.static(path.join(__dirname, "../../src/web/public")));
 
-        server.use("/", indexRouter);
+        server.use("/", indexRouter.default);
 
         // catch 404 and forward to error handler
         server.use((req, res, next) => {
