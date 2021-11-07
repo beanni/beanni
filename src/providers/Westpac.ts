@@ -26,14 +26,26 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
 
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
-        await page.goto(
-            "https://banking.westpac.com.au/wbc/banking/handler?fi=wbc&TAM_OP=login&segment=personal&logout=false",
-        );
-        await page.waitForSelector("#fakeusername");
-        await page.type("#fakeusername", username);
-        await page.type("#password", password);
-        await page.click("#signin");
-        await page.waitForSelector("#customer-actions");
+
+        try
+        {
+            await page.goto(
+                "https://banking.westpac.com.au/wbc/banking/handler?TAM_OP=login&segment=personal",
+            );
+            await page.waitForSelector("#fakeusername");
+            await page.type("#fakeusername", username);
+            await page.type("#password", password);
+            await page.click("#signin");
+            await page.waitForSelector("#customer-actions");
+        } catch (error) {
+            const timeoutError = error as puppeteer.TimeoutError;
+            if (timeoutError.name === "TimeoutError") {
+                const filename = `${new Date().toISOString().substring(0,10)}-${new Date().getTime()}-screenshot.png`;
+                console.log (`[${this.institution}] Screenshot saved as ${filename}`);
+                await page.screenshot({ path: filename, fullPage: true });
+            }
+            throw error;
+        }
     }
 
     public async logout() : Promise<void> {
