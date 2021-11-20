@@ -9,7 +9,7 @@ block content
 
     if staleNonZeroBalances.length > 0
         h2 ⚠️ Data Issues
-        p These issues might effect the integrity of the reporting:
+        p These issues might effect integrity of reporting:
         ul
             each balance in staleNonZeroBalances
                 li "#{balance.label}" was last updated #{balance.asAt}. It has a non-zero balance, which is now stale.
