@@ -27,6 +27,9 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
 
+        const browserVersion = await this.browser.version();
+        await page.setUserAgent(`Mozilla/5.0 (Windows NT 10.0; Win64; x64) ${browserVersion.replace('Headless', '')}`);
+
         try
         {
             await page.goto(
