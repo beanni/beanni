@@ -44,7 +44,7 @@ export class Westpac implements IBankDataProviderInterface, IBankDataDocumentPro
             const timeoutError = error as puppeteer.TimeoutError;
             if (timeoutError.name === "TimeoutError") {
                 const filename = `${new Date().toISOString().substring(0,10)}-${new Date().getTime()}-screenshot.png`;
-                console.log (`[${this.institution}] Screenshot saved as ${filename}`);
+                console.log (`[${this.institution}] Screenshot of ${page.url()} saved as ${filename}`);
                 await page.screenshot({ path: filename, fullPage: true });
             }
             throw error;
