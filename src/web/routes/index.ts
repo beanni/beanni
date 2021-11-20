@@ -65,11 +65,20 @@ router.get("/", async (_req, res, next) => {
             })
             .value();
 
+        const staleNonZeroBalances = _(latestBalances)
+            .filter(b =>
+                b.balance != undefined &&
+                b.balance != 0 &&
+                b.asAtDaysAgo > 1
+            )
+            .value();
+
         res.render("index", {
             netWealth: await dataStore.getNetWealth(),
             performanceByPeriods,
             balanceHistoryChartData,
             latestBalances,
+            staleNonZeroBalances,
         });
     } catch (err) {
         next(err);

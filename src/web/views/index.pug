@@ -7,6 +7,13 @@ block content
         a(href='https://www.youtube.com/watch?v=Aey_zIE3K9E') His name was Beanni!
         |  🎶
 
+    if staleNonZeroBalances.length > 0
+        h2 ⚠️ Data Issues
+        p These issues might effect the integrity of the reporting:
+        ul
+            each balance in staleNonZeroBalances
+                li "#{balance.label}" was last updated #{balance.asAt}. It has a non-zero balance, which is now stale.
+
     h2 💰 Net Wealth
     p #{netWealth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
