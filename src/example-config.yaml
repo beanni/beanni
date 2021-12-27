@@ -5,6 +5,7 @@
 # each of the underlying accounts. To start things off, we've listed all of the ones that we
 # support, so you can just remove or comment out the ones you don't need.
 relationships:
+  - provider: AdelaideBank
   - provider: AmericanExpress
   - provider: Anz
   - provider: Asgard

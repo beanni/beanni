@@ -17,6 +17,8 @@ export interface IHistoricalAccountBalance extends IAccountBalance {
 
 export enum ValueType {
     Superannuation = 100,
+    Loan = 300,
+    "Loan Offset" = 400,
     "Investment Funds" = 500,
     "Cash Savings" = 750,
     Cash = 1000,

@@ -8,6 +8,8 @@ export class ProviderHelpers {
 
         if (lowerAccountName.indexOf('savings') > -1) { return ValueType["Cash Savings"]; }
 
+        if (lowerAccountName.indexOf('offset') > -1) { return ValueType["Loan Offset"]; }
+
         return ValueType.Cash;
     }
 }
