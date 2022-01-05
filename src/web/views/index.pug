@@ -69,7 +69,7 @@ block content
                         th(scope='row', colspan=2).label #{balance.valueTypeName}
                 tr
                     th(scope='row').checkbox
-                        input(type='checkbox', id='balanceHistoryLegendToggle' + index, data-index=index, data-balance=balance.balance, checked='checked')
+                        input(type='checkbox', id='balanceHistoryLegendToggle' + index, data-index=index, data-balance=balance.balance, data-value-type=balance.valueType, checked='checked')
                     th(scope='row').label
                         label(for='balanceHistoryLegendToggle' + index)
                             canvas(id='balanceHistoryPattern-' + index, width=30, height=15)
@@ -244,4 +244,14 @@ block content
                 document.querySelector('#balanceHistoryLegend tfoot tr > .balance').innerText = formattedBalance;
                 document.querySelector('#balanceHistoryLegend tfoot tr > .label').innerText = toggleAllCheckbox.checked ? 'Total' : 'Total (selected)';
             });
+
+            // Hide loans and mortgaged assets by default as they cancel each other out,
+            // and often make the time series chart very hard to read
+            const valueTypesHiddenByDefault = [300];
+            Array.from(document.querySelectorAll('#balanceHistoryLegend input[type=checkbox][data-index][data-value-type]'))
+                .filter(c => valueTypesHiddenByDefault.includes(parseInt(c.dataset.valueType)))
+                .forEach(c => {
+                    c.checked = false;
+                    c.dispatchEvent(new Event('change', {bubbles: true}));
+                });
         })();
