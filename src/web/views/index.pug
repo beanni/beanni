@@ -18,35 +18,33 @@ block content
     p #{netWealth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 
     h2 📅 Performance by Period
-    div.wideBlock
-        table.performanceByPeriod
-            thead
+    table.performanceByPeriod
+        thead
+            tr
+                th(colspan=2) CY
+                each quarterNumber in ['Q1', 'Q2', 'Q3', 'Q4']
+                    th #{quarterNumber}
+        tbody
+            each year in performanceByPeriods.years
                 tr
-                    each year in performanceByPeriods.years
-                        th(colspan=year.quarters.length) #{year.year}#{year.incompletePeriod ? "*" : ""}
-            tbody
-                tr
-                    each year in performanceByPeriods.years
-                        td(
-                            colspan=year.quarters.length,
-                            class=(year.performancePercentage < 0 ? 'negative-result' : 'positive-result')
-                        )
-                            | #{year.performancePercentage>0?'+':''}#{year.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
-                            br
-                            | #{year.performancePercentage>0?'+':''}#{(year.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
-            thead
-                tr
-                    each year in performanceByPeriods.years
-                        each quarter in year.quarters
-                            th #{quarter.quarter}#{quarter.incompletePeriod ? "*" : ""}
-            tbody
-                tr
-                    each year in performanceByPeriods.years
-                        each quarter in year.quarters
+                    th #{year.year} #{year.incompletePeriod ? "*" : ""}
+                    td(
+                        class=(year.performancePercentage < 0 ? 'negative-result' : 'positive-result')
+                    )
+                        | #{year.performancePercentage>0?'+':''}#{year.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
+                        br
+                        | #{year.performancePercentage>0?'+':''}#{(year.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+                        | #{year.incompletePeriod ? "*" : ""}
+                    each quarterNumber in ['Q1', 'Q2', 'Q3', 'Q4']
+                        - let quarter = year.quarters.find(q => q.quarter === quarterNumber)
+                        if quarter
                             td(class=(quarter.performancePercentage < 0 ? 'negative-result' : 'positive-result'))
                                 | #{quarter.performancePercentage>0?'+':''}#{quarter.performancePercentage.toLocaleString(undefined,{style: 'percent'})}
                                 br
                                 | #{quarter.performancePercentage>0?'+':''}#{(quarter.performanceAbsolute/1000).toFixed(0).toLocaleString()}k
+                                | #{quarter.incompletePeriod ? "*" : ""}
+                        else
+                            td
 
     h2 📈 Balances
     div.chart
