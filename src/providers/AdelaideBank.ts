@@ -85,7 +85,7 @@ export class AdelaideBank implements IBankDataProviderInterface {
 
             const rowClassName = (await row.evaluate(r => r.className)) || '';
             const valueType =
-                (rowClassName.indexOf('account-category-loan') > -1) ? ValueType.Loan :
+                (rowClassName.indexOf('account-category-loan') > -1) ? ValueType["Property Mortgage"] :
                 ProviderHelpers.guessValueTypeFromAccountName(accountName);
 
             balances.push({

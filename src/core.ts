@@ -7,6 +7,7 @@ import {
     IBankDataDocumentProviderInterface,
     IBankDataHistoricalBalancesProviderInterface,
     IBankDataProviderInterface,
+    ICalculatedProviderInterface,
     IInstitutionRelationship,
     ISecretStore,
 } from "./types";
@@ -85,9 +86,12 @@ export class Core {
 
                 try {
                     console.log("[%s] Logging in", relationship.provider);
-                    await provider.login(async (key: string) => {
-                        return await this.secretStore.retrieveSecret(relationship.name + ":" + key);
-                    });
+                    await provider.login(
+                        async (key: string) => {
+                            return await this.secretStore.retrieveSecret(relationship.name + ":" + key);
+                        },
+                        relationship
+                    );
 
                     console.log("[%s] Getting balances", relationship.provider);
                     const relationshipBalances = await provider.getBalances();
@@ -118,6 +122,17 @@ export class Core {
                     } else {
                         console.log("[%s] Doesn't support documents; skipping", relationship.provider);
                     }
+
+                    if (this.isCalculatedProvider(provider)) {
+                        const calculatedProvider = provider as ICalculatedProviderInterface;
+                        console.log("[%s] Calculating balances", relationship.provider);
+                        const calculatedBalances = await calculatedProvider.getCalculatedBalances(balances);
+                        console.log("[%s] Calculated %s balances", relationship.provider, calculatedBalances.length);
+                        calculatedBalances.forEach((b) => {
+                            balances.push(b);
+                            this.dataStore.addBalance(b);
+                        });
+                    }
                 } catch (ex) {
                     console.error(ex);
                 } finally {
@@ -134,12 +149,17 @@ export class Core {
 
     public isHistoricalBalancesProvider(provider: IBankDataProviderInterface | IBankDataHistoricalBalancesProviderInterface)
         : provider is IBankDataHistoricalBalancesProviderInterface {
-        return ( provider as IBankDataHistoricalBalancesProviderInterface).getHistoricalBalances !== undefined;
+        return (provider as IBankDataHistoricalBalancesProviderInterface).getHistoricalBalances !== undefined;
     }
 
     public isDocumentProvider(provider: IBankDataProviderInterface | IBankDataDocumentProviderInterface)
         : provider is IBankDataDocumentProviderInterface {
-        return ( provider as IBankDataDocumentProviderInterface).getDocuments !== undefined;
+        return (provider as IBankDataDocumentProviderInterface).getDocuments !== undefined;
+    }
+
+    public isCalculatedProvider(provider: IBankDataProviderInterface | ICalculatedProviderInterface)
+        : provider is ICalculatedProviderInterface {
+        return (provider as ICalculatedProviderInterface).getCalculatedBalances !== undefined;
     }
 
     public async init(): Promise<void> {

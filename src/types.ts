@@ -17,7 +17,8 @@ export interface IHistoricalAccountBalance extends IAccountBalance {
 
 export enum ValueType {
     Superannuation = 100,
-    Loan = 300,
+    "Property Mortgage" = 300,
+    "Property Equity" = 320,
     "Investment Funds" = 500,
     "Loan Offset" = 600,
     "Cash Savings" = 750,
@@ -32,6 +33,7 @@ export interface IBankDataProviderInterface {
 
     login(
         retrieveSecretCallback: (key: string) => Promise<string>,
+        config: unknown
     ): Promise<void>;
 
     logout(): Promise<void>;
@@ -45,6 +47,10 @@ export interface IBankDataDocumentProviderInterface {
 
 export interface IBankDataHistoricalBalancesProviderInterface {
     getHistoricalBalances(knownDates: Date[]): Promise<IHistoricalAccountBalance[]>;
+}
+
+export interface ICalculatedProviderInterface {
+    getCalculatedBalances(otherBalances: IAccountBalance[]): Promise<IAccountBalance[]>;
 }
 
 export interface ISecretStore {

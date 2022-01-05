@@ -16,3 +16,9 @@ relationships:
   - provider: Perpetual
   - provider: TelstraSuper
   - provider: Westpac
+  - provider: MortgagedProperty
+    name: 123 Smith Street
+    value: 500000
+    loan:
+      institution: Westpac
+      accountNumber: 1234ABC
