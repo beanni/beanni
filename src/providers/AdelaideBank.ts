@@ -1,4 +1,3 @@
-import _ from "lodash";
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { ProviderHelpers } from "../providerHelpers";
