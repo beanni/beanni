@@ -135,9 +135,13 @@ export class Core {
                     }
                 } catch (ex) {
                     console.error(ex);
-                } finally {
+                }
+
+                try {
                     console.log("[%s] Logging out", relationship.provider);
                     await provider.logout();
+                } catch (ex) {
+                    console.error(ex);
                 }
             }
 
