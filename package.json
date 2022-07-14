@@ -42,7 +42,7 @@
   "dependencies": {
     "commander": "^8.3.0",
     "express": "^4.17.1",
-    "inquirer": "^8.1.2",
+    "inquirer": "^9.0.1",
     "js-yaml": "^4.1.0",
     "keytar": "^7.7.0",
     "lodash": "^4.17.21",
