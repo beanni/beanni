@@ -50,7 +50,7 @@
     "puppeteer": "^11.0.0",
     "request": "^2.88.2",
     "sqlite": "^4.0.23",
-    "sqlite3": "^5.0.2",
+    "sqlite3": "^5.1.1",
     "ts-node": "^10.2.1"
   },
   "engines": {
