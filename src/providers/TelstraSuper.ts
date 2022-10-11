@@ -1,3 +1,4 @@
+import assert = require("assert");
 import puppeteer = require("puppeteer");
 import { IBeanniExecutionContext } from "../core";
 import { IAccountBalance, IBankDataProviderInterface, ValueType } from "../types";
@@ -60,40 +61,34 @@ export class TelstraSuper implements IBankDataProviderInterface {
         await page.goto("https://www.telstrasuper.com.au/your-account");
         this.debugLog("getBalances", 1);
 
-        await page.waitForSelector(".dm-investments-table table tbody");
+        await page.waitForSelector('.bx-balance-breakdown table.js-chart-data-table tbody tr');
         this.debugLog("getBalances", 2);
 
-        const accountName = (await page.$eval(
-            ".dm-balance .dashboard-table table tbody tr:first-child td:first-child span:nth-child(1)",
-            el => (el.textContent || '')
-        ));
+        const rows = await page.$$('.bx-balance-breakdown table.js-chart-data-table tbody tr');
         this.debugLog("getBalances", 3);
-        const accountNumber = (await page.$eval(
-            ".dm-balance .dashboard-table table tbody tr:first-child td:first-child span:nth-child(2)",
-            el => (el.textContent || '').replace("Account number: ", "")
-        ));
-        this.debugLog("getBalances", 4);
-
-        const investmentAllocationTable = (await page.$x("//caption[contains(text(), 'Investment allocation')]/ancestor::table"))[0];
-        const rows = await investmentAllocationTable.$$("tbody tr");
-        this.debugLog("getBalances", 5);
         for (const row of rows) {
-            this.debugLog("getBalances", 6);
-            const option = await row.$eval("td[data-th='Option']", el => (el.textContent || '').trim())
+            const cells = await row.$$('td');
+            this.debugLog("getBalances", 4);
 
-            const valueText = await row.$eval("td[data-th='Value ($AUD)']", el => (el.textContent || '').trim())
-            const value = parseFloat(valueText.replace(",", ""));
+            const accountName = await cells[0].evaluate(el => el.textContent);
+            assert(accountName);
+            const balanceText = await cells[1].evaluate(el => el.textContent);
+            assert(balanceText);
+            const accountNumber = await cells[3].evaluate(el => el.textContent);
+            assert(accountNumber);
+
+            const balance = parseFloat(balanceText);
 
             balances.push({
                 institution: this.institution,
                 accountName: accountName,
-                accountNumber: accountNumber + ' ' + option,
-                balance: value,
+                accountNumber: accountNumber,
+                balance: balance,
                 valueType: ValueType.Superannuation,
             });
         }
 
-        this.debugLog("getBalances", 7);
+        this.debugLog("getBalances", 5);
         return balances;
     }
 
