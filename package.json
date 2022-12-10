@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "commander": "^8.3.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "inquirer": "^8.1.2",
     "js-yaml": "^4.1.0",
     "keytar": "^7.7.0",
