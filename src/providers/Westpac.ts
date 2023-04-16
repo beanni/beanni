@@ -142,9 +142,9 @@ export class Westpac
     );
     await page.waitForSelector(".widget.accounts-statementswidget");
     await page.waitForFunction(
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       () =>
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         ko
           .dataFor(document.querySelector(".widget.accounts-statementswidget"))
           .Accounts().length > 0
@@ -152,15 +152,18 @@ export class Westpac
 
     // Pull the session-specific and well-known account identifiers
     const accountList = await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      return ko
-        .dataFor(document.querySelector(".widget.accounts-statementswidget"))
-        .Accounts()
-        .map((_) => ({
-          AccountGlobalId: _.AccountGlobalId(),
-          AccountNumber: _.AccountNumber(),
-        }));
+      return (
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        ko
+          .dataFor(document.querySelector(".widget.accounts-statementswidget"))
+          .Accounts()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((account: any) => ({
+            AccountGlobalId: account.AccountGlobalId(),
+            AccountNumber: account.AccountNumber(),
+          }))
+      );
     });
 
     // Snapshot the cookies from the browser to our own jar
