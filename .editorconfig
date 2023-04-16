@@ -11,7 +11,7 @@ indent_style = space
 
 # Indentation size in single-spaced characters
 # Possible values - an integer, tab
-indent_size = 4
+indent_size = 2
 
 # Line ending file format
 # Possible values - lf, crlf, cr
@@ -28,10 +28,3 @@ trim_trailing_whitespace = true
 # Denotes whether file should end with a newline
 # Possible values - true, false
 insert_final_newline = true
-
-[*.yaml]
-indent_size = 2
-
-[Makefile]
-indent_style = tabs
-indent_size = 2
