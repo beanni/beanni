@@ -56,9 +56,9 @@ export class Ing
     // Click the secret pixel that fires up the accessible login form
     // For some reason, puppeteer's native page.click doesn't achieve the same result as evaluating in-page
     await page.evaluate(() => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const button = document.querySelector(
         '.ing-login-input input[type="image"].accessibleText'
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ) as any;
       if (button != null) {
         button.click();
@@ -142,6 +142,7 @@ export class Ing
     const accounts = await page.$eval("ing-all-accounts-summary", (el) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (<any>el).__data__.accountSummaryData.Categories.flatMap(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (cat: any) => cat.Accounts
       )
     );
@@ -229,7 +230,9 @@ export class Ing
       (el) =>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (<any>el).__data__.accountSummaryData.Categories.filter(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (cat: any) => cat.Category.Name === "Superannuation"
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ).flatMap((cat: any) => cat.Accounts)
     );
 
