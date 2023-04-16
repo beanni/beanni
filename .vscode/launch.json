@@ -1,63 +1,52 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Compiled JS",
-            "args":
-            [
-                "${workspaceFolder}/dist/app.js",
-                "${input:subcommand}",
-                "${input:debugFlag}"
-            ],
-            "cwd": "${workspaceFolder}",
-            "protocol": "inspector",
-            "internalConsoleOptions": "openOnSessionStart",
-            "preLaunchTask": "build"
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "ts-node",
-            "args":
-            [
-                "${workspaceFolder}/src/app.ts",
-                "${input:subcommand}",
-                "${input:debugFlag}"
-            ],
-            "runtimeArgs": ["-r", "ts-node/register"],
-            "cwd": "${workspaceFolder}",
-            "protocol": "inspector",
-            "internalConsoleOptions": "openOnSessionStart"
-        }
-    ],
-    "inputs": [
-        {
-            "type": "pickString",
-            "id": "subcommand",
-            "description": "Beanni Command",
-            "options": [
-                "--help",
-                "explore",
-                "fetch",
-                "init",
-                "validate-config"
-            ],
-            "default": "explore"
-        },
-        {
-            "type": "pickString",
-            "id": "debugFlag",
-            "description": "Debug flag",
-            "options": [
-                "",
-                "--debug"
-            ],
-            "default": ""
-        }
-    ]
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Compiled JS",
+      "args": [
+        "${workspaceFolder}/dist/app.js",
+        "${input:subcommand}",
+        "${input:debugFlag}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart",
+      "preLaunchTask": "build"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "ts-node",
+      "args": [
+        "${workspaceFolder}/src/app.ts",
+        "${input:subcommand}",
+        "${input:debugFlag}"
+      ],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "cwd": "${workspaceFolder}",
+      "protocol": "inspector",
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "subcommand",
+      "description": "Beanni Command",
+      "options": ["--help", "explore", "fetch", "init", "validate-config"],
+      "default": "explore"
+    },
+    {
+      "type": "pickString",
+      "id": "debugFlag",
+      "description": "Debug flag",
+      "options": ["", "--debug"],
+      "default": ""
+    }
+  ]
 }

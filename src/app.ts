@@ -14,70 +14,61 @@ const core = new Core(dataStore, secretStore);
 
 const program = new Command("beanni");
 
-program
-    .name("beanni")
-    .option("-d, --debug");
+program.name("beanni").option("-d, --debug");
+
+program.command("explore").action(async () => {
+  const explorer = new Explorer();
+  explorer.run((url) => {
+    console.log(`Listening on ${url}`);
+    console.log("Press Ctrl+C to quit");
+    const start =
+      process.platform === "darwin"
+        ? "open"
+        : process.platform === "win32"
+        ? "start"
+        : "xdg-open";
+    child_process.exec(start + " " + url);
+  });
+});
+
+program.command("fetch").action(async () => {
+  const executionContext = parseExecutionContext();
+  await core.fetch(executionContext);
+});
+
+program.command("init").action(async () => {
+  await core.init();
+});
 
 program
-    .command("explore")
-    .action(async () => {
-        const explorer = new Explorer();
-        explorer.run((url) => {
-            console.log(`Listening on ${url}`);
-            console.log("Press Ctrl+C to quit");
-            const start = (
-                process.platform === "darwin" ? "open" :
-                process.platform === "win32" ? "start" :
-                "xdg-open"
-            );
-            child_process.exec(start + " " + url);
-        });
-    });
+  .command("store-secret <key> [secret]")
+  .action(async (key: string, secret?: string) => {
+    if (secret == null) {
+      const pr: { secret: string } = await inquirer.prompt([
+        {
+          type: "password",
+          name: "secret",
+          message: "Secret:",
+          validate: (val: string): boolean => {
+            return val.length > 0;
+          },
+        },
+      ]);
+      secret = pr.secret;
+    }
+    await secretStore.storeSecret(key, secret);
+  });
 
-program
-    .command("fetch")
-    .action(async () => {
-        const executionContext = parseExecutionContext();
-        await core.fetch(executionContext);
-    });
-
-program
-    .command("init")
-    .action(async () => {
-        await core.init();
-    });
-
-program
-    .command("store-secret <key> [secret]")
-    .action(async (key: string, secret?: string) => {
-        if (secret == null) {
-            const pr: {secret: string} = await inquirer.prompt([
-                {
-                    type: "password",
-                    name: "secret",
-                    message: "Secret:",
-                    validate: (val: string): boolean => {
-                        return val.length > 0;
-                    },
-                },
-            ]);
-            secret = pr.secret;
-        }
-        await secretStore.storeSecret(key, secret);
-    });
-
-program
-    .command("validate-config")
-    .action(async () => {
-        await core.validateConfig();
-    });
+program.command("validate-config").action(async () => {
+  await core.validateConfig();
+});
 
 program.showHelpAfterError();
 
 program.parse(process.argv);
 
 function parseExecutionContext(): IBeanniExecutionContext {
-    return {
-        debug: (program.opts().debug === true),
-    };
+  return {
+    debug: program.opts().debug === true,
+  };
 }

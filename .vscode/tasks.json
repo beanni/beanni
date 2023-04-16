@@ -1,38 +1,31 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "type": "npm",
-            "script": "build",
-            "problemMatcher": [
-                "$tsc"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "verify",
-            "type": "npm",
-            "script": "verify",
-            "problemMatcher": [
-                "$tsc",
-                "$eslint-stylish"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "lint",
-            "problemMatcher": [
-                "$eslint-stylish"
-            ],
-            "label": "npm: lint",
-            "detail": "eslint"
-        }
-    ]
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "npm",
+      "script": "build",
+      "problemMatcher": ["$tsc"],
+      "group": "build"
+    },
+    {
+      "label": "verify",
+      "type": "npm",
+      "script": "verify",
+      "problemMatcher": ["$tsc", "$eslint-stylish"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "lint",
+      "problemMatcher": ["$eslint-stylish"],
+      "label": "npm: lint",
+      "detail": "eslint"
+    }
+  ]
 }

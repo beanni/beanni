@@ -17,27 +17,27 @@ Beanni is just a local helper, on your own machine. You're not sharing your pass
 
 Get started:
 
-| Step | Run | Why |
-| --- | --- | --- |
-| 1. | https://nodejs.org/en/download/ | Beanni is built on Node.js |
-| 2. | `node --version` | Make sure you're on Node ≥14.17.5 |
-| 3. | `npm --version` | Make sure you're on NPM ≥6.14.14 |
-| 4. | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
-| 5. | `npm install` | Install Beanni's dependencies |
-| 6. | `npm run build` | Build Beanni | 
-| 6. | `npm run init` | Create an example `config.yaml` |
-| 7. | Edit `config.yaml` | Add your own banking relationships |
-| 8. | `npm run fetch` | Grab your data |
-| 9. | `npm run explore` | Launch the analysis UI |
+| Step | Run                                                                | Why                                    |
+| ---- | ------------------------------------------------------------------ | -------------------------------------- |
+| 1.   | https://nodejs.org/en/download/                                    | Beanni is built on Node.js             |
+| 2.   | `node --version`                                                   | Make sure you're on Node ≥14.17.5      |
+| 3.   | `npm --version`                                                    | Make sure you're on NPM ≥6.14.14       |
+| 4.   | `git clone https://github.com/beanni/beanni.git` <br/> `cd beanni` | Pull down the latest version of Beanni |
+| 5.   | `npm install`                                                      | Install Beanni's dependencies          |
+| 6.   | `npm run build`                                                    | Build Beanni                           |
+| 6.   | `npm run init`                                                     | Create an example `config.yaml`        |
+| 7.   | Edit `config.yaml`                                                 | Add your own banking relationships     |
+| 8.   | `npm run fetch`                                                    | Grab your data                         |
+| 9.   | `npm run explore`                                                  | Launch the analysis UI                 |
 
 ### ⚒ Ongoing Usage (Manual)
 
 Fetch and explore your data:
 
-| Step | Run | Why |
-| --- | --- | --- |
-| 1. | `npm run fetch` | Grab your data |
-| 2. | `npm run explore` | Launch the analysis UI |
+| Step | Run               | Why                    |
+| ---- | ----------------- | ---------------------- |
+| 1.   | `npm run fetch`   | Grab your data         |
+| 2.   | `npm run explore` | Launch the analysis UI |
 
 ### ⚙ Ongoing Usage (Automated, Linux)
 
@@ -78,28 +78,28 @@ WantedBy=multi-user.target
 
 Get the latest updates:
 
-| Step | Run | Why |
-| --- | --- | --- |
-| 1. | `git pull --ff-only` | Update Beanni to the latest version |
-| 2. | `npm install` | Install any new dependencies |
-| 3. | `npm run build` | Build Beanni |
+| Step | Run                  | Why                                 |
+| ---- | -------------------- | ----------------------------------- |
+| 1.   | `git pull --ff-only` | Update Beanni to the latest version |
+| 2.   | `npm install`        | Install any new dependencies        |
+| 3.   | `npm run build`      | Build Beanni                        |
 
 If you've configured Beanni to run as a service, restart that too. (Probably via `$ sudo systemctl restart beanni`).
 
 ### 🗑 Uninstall
 
 1. Remove secrets from your operating system's credential store
-    * Windows:
-        1. <kbd>WinKey</kbd> > _credential manager_
-        1. _Windows Credentials_
-        1. _Generic Credentials_
-        1. Look for anything that starts with `Beanni:`
-    * MacOS: Keychain
-    * Headless environment: `~/.beanni/secrets.yaml`
+   - Windows:
+     1. <kbd>WinKey</kbd> > _credential manager_
+     1. _Windows Credentials_
+     1. _Generic Credentials_
+     1. Look for anything that starts with `Beanni:`
+   - MacOS: Keychain
+   - Headless environment: `~/.beanni/secrets.yaml`
 1. Remove your data from the local working folder, specifically:
-    * `beanni.db` (the database contains bank account numbers and financial data)
-    * `config.yaml` (your provider listing)
-    * `statements/` (folder cache of downloaded statements)
+   - `beanni.db` (the database contains bank account numbers and financial data)
+   - `config.yaml` (your provider listing)
+   - `statements/` (folder cache of downloaded statements)
 1. Remove the local working folder
 
 ### 👩‍💻 API
@@ -130,46 +130,46 @@ And then you can use [Home Assistant](https://www.home-assistant.io/) to deliver
 
 ```yaml
 automation:
-- id: net_wealth_event
-  alias: "[Beanni] Net Wealth Event"
-  trigger:
-    - platform: state
-      entity_id: sensor.net_wealth
-  condition:
-    condition: and
-    conditions:
-      - alias: "Old state was a number"
-        condition: template
-        value_template: "{{ trigger.from_state.state|float > 0 }}"
-      - alias: "New state is a number"
-        condition: template
-        value_template: "{{ trigger.to_state.state|float > 0 }}"
-      - alias: "Only events >$1k"
-        condition: template
-        value_template: "{{ (((trigger.from_state.state|float) - (trigger.to_state.state|float)) | abs) > 1000 }}"
-  action:
-    - service: notify.everyone
-      data_template:
-        title: 🤑 Financial Event
-        message: "{{ 'Positive' if (trigger.to_state.state|float) > (trigger.from_state.state|float) else 'Negative' }} net wealth movement"
-        data:
-          channel: Beanni
-          clickAction: http://host:3000/
+  - id: net_wealth_event
+    alias: "[Beanni] Net Wealth Event"
+    trigger:
+      - platform: state
+        entity_id: sensor.net_wealth
+    condition:
+      condition: and
+      conditions:
+        - alias: "Old state was a number"
+          condition: template
+          value_template: "{{ trigger.from_state.state|float > 0 }}"
+        - alias: "New state is a number"
+          condition: template
+          value_template: "{{ trigger.to_state.state|float > 0 }}"
+        - alias: "Only events >$1k"
+          condition: template
+          value_template: "{{ (((trigger.from_state.state|float) - (trigger.to_state.state|float)) | abs) > 1000 }}"
+    action:
+      - service: notify.everyone
+        data_template:
+          title: 🤑 Financial Event
+          message: "{{ 'Positive' if (trigger.to_state.state|float) > (trigger.from_state.state|float) else 'Negative' }} net wealth movement"
+          data:
+            channel: Beanni
+            clickAction: http://host:3000/
 
-- id: beanni_data_issues
-  alias: "[Beanni] Data Issues"
-  trigger:
-    - platform: state
-      entity_id: sensor.beanni_data_issues
-  condition: "{{ trigger.to_state.state|int > 0 }}"
-  action:
-    - service: notify.everyone
-      data_template:
-        title: ⚠️ Beanni Data Issues
-        message: Requires investigation
-        data:
-          channel: Beanni
-          clickAction: http://host:3000/
+  - id: beanni_data_issues
+    alias: "[Beanni] Data Issues"
+    trigger:
+      - platform: state
+        entity_id: sensor.beanni_data_issues
+    condition: "{{ trigger.to_state.state|int > 0 }}"
+    action:
+      - service: notify.everyone
+        data_template:
+          title: ⚠️ Beanni Data Issues
+          message: Requires investigation
+          data:
+            channel: Beanni
+            clickAction: http://host:3000/
 ```
 
 ## Security, by design
@@ -190,19 +190,19 @@ Beanni will seek credentials during your first fetch. If you're running on an in
 
 Our dependency supply chain is the biggest risk. We've been careful to keep our [package.json](package.json) dependencies list short, and highly trustworthy:
 
-| Package | Weekly Package Downloads (Jan 2021) | Known/Trusted Maintainer |
-| --- | --- | --- |
-| [`commander`](https://www.npmjs.com/package/commander) | >40M | |
-| [`express`](https://www.npmjs.com/package/express) | >10M | |
-| [`inquirer`](https://www.npmjs.com/package/inquirer) | >20M | |
-| [`js-yaml`](https://www.npmjs.com/package/js-yaml) | >20M | |
-| [`keytar`](https://www.npmjs.com/package/keytar) | >100k | [Atom](https://github.com/atom/node-keytar) |
-| [`lodash`](https://www.npmjs.com/package/lodash) | >30M | |
-| [`pug`](https://www.npmjs.com/package/pug) | >750k | |
-| [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >1.5M | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
-| [`request`](https://www.npmjs.com/package/request) | >20M | |
-| [`sqlite`](https://www.npmjs.com/package/sqlite) | >60k | |
-| [`ts-node`](https://www.npmjs.com/package/ts-node) | >6M | |
+| Package                                                | Weekly Package Downloads (Jan 2021) | Known/Trusted Maintainer                                          |
+| ------------------------------------------------------ | ----------------------------------- | ----------------------------------------------------------------- |
+| [`commander`](https://www.npmjs.com/package/commander) | >40M                                |                                                                   |
+| [`express`](https://www.npmjs.com/package/express)     | >10M                                |                                                                   |
+| [`inquirer`](https://www.npmjs.com/package/inquirer)   | >20M                                |                                                                   |
+| [`js-yaml`](https://www.npmjs.com/package/js-yaml)     | >20M                                |                                                                   |
+| [`keytar`](https://www.npmjs.com/package/keytar)       | >100k                               | [Atom](https://github.com/atom/node-keytar)                       |
+| [`lodash`](https://www.npmjs.com/package/lodash)       | >30M                                |                                                                   |
+| [`pug`](https://www.npmjs.com/package/pug)             | >750k                               |                                                                   |
+| [`puppeteer`](https://www.npmjs.com/package/puppeteer) | >1.5M                               | [Google Chrome](https://github.com/GoogleChrome/puppeteer#readme) |
+| [`request`](https://www.npmjs.com/package/request)     | >20M                                |                                                                   |
+| [`sqlite`](https://www.npmjs.com/package/sqlite)       | >60k                                |                                                                   |
+| [`ts-node`](https://www.npmjs.com/package/ts-node)     | >6M                                 |                                                                   |
 
 It would be very visible if any of these packages, or their dependencies, were to be compromised.
 
@@ -222,9 +222,9 @@ We use Dependabot to ensure we adopt updates to these dependencies as fast as po
 
 For a smooth `npm install`:
 
-* On Ubuntu, [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly
+- On Ubuntu, [LibSecret needs to be installed](https://github.com/atom/node-keytar#on-linux) for [Keytar](https://www.npmjs.com/package/keytar) to `npm install` properly
 
-* [sqlite3](https://www.npmjs.com/package/sqlite3) requires a native binary. `npm install` will attempt to resolve a pre-compiled binary for the right combination of your OS, architecture, and node version via `node-pre-gyp`. If this fails, it'll then attempt to compile from source which will then throw up new dependencies for Python and a C++ compiler. You're probably better off getting the pre-compiled binary option to work instead of trying to install the required compiler toolchain. If you want to pursue the build tools on Windows, try `npm install --vs2015 --global --production --add-python-to-path windows-build-tools` from an elevated prompt.
+- [sqlite3](https://www.npmjs.com/package/sqlite3) requires a native binary. `npm install` will attempt to resolve a pre-compiled binary for the right combination of your OS, architecture, and node version via `node-pre-gyp`. If this fails, it'll then attempt to compile from source which will then throw up new dependencies for Python and a C++ compiler. You're probably better off getting the pre-compiled binary option to work instead of trying to install the required compiler toolchain. If you want to pursue the build tools on Windows, try `npm install --vs2015 --global --production --add-python-to-path windows-build-tools` from an elevated prompt.
 
 ### 🤖 Puppeteer Debugging
 
