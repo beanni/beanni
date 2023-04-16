@@ -102,6 +102,76 @@ If you've configured Beanni to run as a service, restart that too. (Probably via
     * `statements/` (folder cache of downloaded statements)
 1. Remove the local working folder
 
+### 👩‍💻 API
+
+There are two REST endpoints exposed while `npm run explore` is running:
+
+`/api/netWealth` returns a JSON object like `{"netWealth":12345.67}`
+
+`/api/dataIssues` returns a JSON object like `{"count":1}`
+
+These can be integrated into a platform like [Home Assistant](https://www.home-assistant.io/), via a REST sensor:
+
+```yaml
+sensor:
+  - platform: rest
+    resource: http://host:3000/api/netWealth
+    name: Net Wealth
+    value_template: "{{ value_json.netWealth }}"
+    device_class: monetary
+    unit_of_measurement: $
+  - platform: rest
+    resource: http://host:3000/api/dataIssues
+    name: Beanni Data Issues
+    value_template: "{{ value_json.count }}"
+```
+
+And then you can use [Home Assistant](https://www.home-assistant.io/) to deliver a push notification to you whenever there's a noteworthy balance movement, or if you have stale balances (because a provider is persistently failing):
+
+```yaml
+automation:
+- id: net_wealth_event
+  alias: "[Beanni] Net Wealth Event"
+  trigger:
+    - platform: state
+      entity_id: sensor.net_wealth
+  condition:
+    condition: and
+    conditions:
+      - alias: "Old state was a number"
+        condition: template
+        value_template: "{{ trigger.from_state.state|float > 0 }}"
+      - alias: "New state is a number"
+        condition: template
+        value_template: "{{ trigger.to_state.state|float > 0 }}"
+      - alias: "Only events >$1k"
+        condition: template
+        value_template: "{{ (((trigger.from_state.state|float) - (trigger.to_state.state|float)) | abs) > 1000 }}"
+  action:
+    - service: notify.everyone
+      data_template:
+        title: 🤑 Financial Event
+        message: "{{ 'Positive' if (trigger.to_state.state|float) > (trigger.from_state.state|float) else 'Negative' }} net wealth movement"
+        clickAction: http://host:3000/
+        data:
+          channel: Beanni
+
+- id: beanni_data_issues
+  alias: "[Beanni] Data Issues"
+  trigger:
+    - platform: state
+      entity_id: sensor.beanni_data_issues
+  condition: "{{ trigger.to_state.state|int > 0 }}"
+  action:
+    - service: notify.everyone
+      data_template:
+        title: ⚠️ Beanni Data Issues
+        message: Requires investigation
+        clickAction: http://host:3000/
+        data:
+          channel: Beanni
+```
+
 ## Security, by design
 
 ### 💻 Execution Environment
