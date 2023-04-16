@@ -152,9 +152,9 @@ automation:
       data_template:
         title: 🤑 Financial Event
         message: "{{ 'Positive' if (trigger.to_state.state|float) > (trigger.from_state.state|float) else 'Negative' }} net wealth movement"
-        clickAction: http://host:3000/
         data:
           channel: Beanni
+          clickAction: http://host:3000/
 
 - id: beanni_data_issues
   alias: "[Beanni] Data Issues"
@@ -167,9 +167,9 @@ automation:
       data_template:
         title: ⚠️ Beanni Data Issues
         message: Requires investigation
-        clickAction: http://host:3000/
         data:
           channel: Beanni
+          clickAction: http://host:3000/
 ```
 
 ## Security, by design
