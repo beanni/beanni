@@ -86,25 +86,29 @@ block content
         (function() {
             var sourceData = !{JSON.stringify(balanceHistoryChartData)};
 
-            // https://learnui.design/tools/data-color-picker.html#palette
+            // https://mode.com/blog/custom-color-palettes/
             const seriesColors = [
-                '#003f5c',
-                '#005575',
-                '#006c86',
-                '#00848e',
-                '#009b8c',
-                '#00b180',
-                '#14c56c',
-                '#74d851',
-                '#b9e630',
+                '#4cb064',
+                '#bfe2ab',
+                '#6996be',
+                '#e8b300',
+                '#ebd39a',
+                '#e36570',
+                '#e8a7a6',
+                '#9e8caf',
+                '#d0cadc',
+                '#8ad7c1',
+                '#c1f2d4',
+                '#3f6c73',
+                '#84b8b9',
+                '#e89dcd',
+                '#eec9dd',
+                '#db7800',
+                '#fabf94',
+                '#9c765c',
+                '#d8c1b0',
             ];
-            // https://github.com/ashiguruma/patternomaly/tree/master/src/shapes
-            var seriesPatterns = ['dash', 'diagonal', 'dot', 'line', 'line-vertical', 'plus', 'ring', 'triangle', 'weave', 'zigzag'];
-            var seriesFills = seriesColors.map((current, index) => {
-                var patternName = seriesPatterns[index % seriesPatterns.length];
-                return pattern.draw(patternName, current, '#ffffff', Math.floor(15 / window.devicePixelRatio));
-            });
-            var seriesFillIndex = 0;
+            var seriesColorIndex = 0;
 
             Chart.defaults.global.defaultFontSize = 14;
 
@@ -118,7 +122,7 @@ block content
                     datasets: sourceData.datasets.map(d => {
                         d.barPercentage = 1.1;
                         d.categoryPercentage = 1.0;
-                        d.backgroundColor = seriesFills[seriesFillIndex++ % seriesFills.length];
+                        d.backgroundColor = seriesColors[seriesColorIndex++ % seriesColors.length];
                         return d;
                     }),
                 },
@@ -203,7 +207,7 @@ block content
                 var canvas = document.getElementById('balanceHistoryPattern-' + index);
                 var context = canvas.getContext("2d");
                 context.rect(0, 0, canvas.width, canvas.height);
-                context.fillStyle = seriesFills[index % seriesFills.length];
+                context.fillStyle = seriesColors[index % seriesColors.length];
                 context.fill();
             });
 
