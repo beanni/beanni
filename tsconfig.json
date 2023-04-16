@@ -1,13 +1,10 @@
 {
   "extends": "ts-node/node12/tsconfig.json",
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "es2018"
-    ],
+    "lib": ["dom", "es2018"],
     "noImplicitAny": true,
     "outDir": "./dist/",
     "strict": true,
-    "sourceMap": true,
+    "sourceMap": true
   }
 }
