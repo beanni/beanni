@@ -25,11 +25,11 @@ export class Bankwest implements IBankDataProviderInterface {
 
         try
         {
-            await page.goto("https://ibs.bankwest.com.au/BWLogin/rib.aspx");
+            await page.goto('https://www.bankwest.com.au/business/login');
 
-            await page.type('input[name="AuthUC$txtUserID"]', username);
-            await page.type('input[type="password"]', password);
-            await page.click("#AuthUC_btnLogin");
+            await page.type('#customerPan', username);
+            await page.type('#customerPassword', password);
+            await page.click('#customerSubmit');
 
             await page.waitForSelector('[id$="lblWelcomeMessage"]');
         } catch (error) {
