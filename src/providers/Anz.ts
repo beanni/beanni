@@ -14,7 +14,9 @@ export class Anz implements IBankDataProviderInterface {
         this.executionContext = executionContext;
     }
 
-    public async login(retrieveSecretCallback: (key: string) => Promise<string>): Promise<void> {
+    public async login(
+        retrieveSecretCallback: (key: string) => Promise<string>
+    ): Promise<void> {
         this.browser = await puppeteer.launch({
             headless: !this.executionContext.debug,
         });
@@ -22,55 +24,77 @@ export class Anz implements IBankDataProviderInterface {
 
         const username = await retrieveSecretCallback("username");
         const password = await retrieveSecretCallback("password");
-        await page.goto("https://www.anz.com/INETBANK/bankmain.asp");
-        const frames = await page.frames();
-        const loginFrame = frames.filter((f) => f.name() === "main")[0];
-        await loginFrame.waitForSelector("#crn");
-        await loginFrame.type("#crn", username);
-        await loginFrame.type("#Password", password);
-        await loginFrame.click("#SignonButton");
-        await page.waitForSelector(".listViewAccountWrapperYourAccounts");
+
+        try {
+            await page.goto("https://login.anz.com/internetbanking");
+            await page.waitForSelector("#customerRegistrationNumber");
+            await page.type("#customerRegistrationNumber", username);
+            await page.type("#password", password);
+            await page.click("button[data-test-id='log-in-btn']");
+            await page.waitForSelector("#main-details-wrapper");
+        } catch (error) {
+            const timeoutError = error as puppeteer.TimeoutError;
+            if (timeoutError.name === "TimeoutError") {
+                const filename = `${new Date()
+                    .toISOString()
+                    .substring(0, 10)}-${new Date().getTime()}-screenshot.png`;
+                console.log(
+                    `[${
+                        this.institution
+                    }] Screenshot of ${page.url()} saved as ${filename}`
+                );
+                await page.screenshot({ path: filename, fullPage: true });
+            }
+            throw error;
+        }
     }
 
     public async logout(): Promise<void> {
-        if (this.browser == null || this.page == null) { return; }
+        if (this.browser == null || this.page == null) {
+            return;
+        }
         const page = this.page;
 
-        await page.click(".button-logout");
+        await page.click("button[data-test-id='Button_Logout']");
         await this.browser.close();
     }
 
     public async getBalances(): Promise<IAccountBalance[]> {
-        if (this.page == null) { throw new Error("Not logged in yet"); }
+        if (this.page == null) {
+            throw new Error("Not logged in yet");
+        }
         const page = this.page;
 
         const balances = new Array<IAccountBalance>();
 
-        await page.waitForSelector(
-            ".listViewAccountWrapperYourAccounts .accountNameSection",
-        );
+        await page.waitForSelector("#main-div");
 
-        const accountSummaryRows = await page.$$(
-            ".listViewAccountWrapperYourAccounts",
-        );
+        const accountSummaryRows = await page.$$("#main-div > ul > li");
         for (const row of accountSummaryRows) {
-            if ((await row.$(".accountNameSection")) === null) { continue; }
+            if ((await row.$("#card-name")) === null) {
+                continue;
+            }
 
-            const accountName = await row.$eval(".accountNameSection", el => (el.textContent || '').trim());
+            const accountName = await row.$eval("#card-name", (el) =>
+                (el.textContent || "").trim()
+            );
             balances.push({
                 institution: this.institution,
                 accountName: accountName,
-                accountNumber: await row.$eval(".accountNoSection", el => (el.textContent || '').trim()),
+                accountNumber: await row.$eval("#card-number", (el) =>
+                    (el.textContent || "").trim()
+                ),
                 balance: parseFloat(
-                    await row.$eval(".currentBalTD", el =>
-                        (el.textContent || '')
+                    await row.$eval("#card-middle-amount > span", (el) =>
+                        (el.textContent || "")
                             .replace("Current balance", "")
                             .replace(/\s/g, "")
                             .replace("$", "")
-                            .replace(",", ""),
-                    ),
+                            .replace(",", "")
+                    )
                 ),
-                valueType: ProviderHelpers.guessValueTypeFromAccountName(accountName),
+                valueType:
+                    ProviderHelpers.guessValueTypeFromAccountName(accountName),
             });
         }
 
