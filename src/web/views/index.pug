@@ -3,7 +3,7 @@ extends layout
 block content
     h1 Beanni
     p
-        | Your friendly Australian bean-counter. 
+        | Your friendly Australian bean-counter.
         a(href='https://www.youtube.com/watch?v=Aey_zIE3K9E') His name was Beanni!
         |  🎶
 
@@ -122,8 +122,9 @@ block content
                     datasets: sourceData.datasets.map(d => {
                         d.backgroundColor = seriesColors[seriesColorIndex++ % seriesColors.length];
                         d.fill = true;
-                        d.showLine = false;
-                        d.pointStyle = false;
+                        const lessThanAMonthOfDataToShow = d.data.length < 30;
+                        d.showLine = lessThanAMonthOfDataToShow;
+                        d.pointStyle = lessThanAMonthOfDataToShow;
                         return d;
                     }),
                 },
