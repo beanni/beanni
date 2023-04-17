@@ -63,7 +63,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=matttat
+User=myuser
 WorkingDirectory=/home/myuser/beanni
 ExecStart=npm run explore
 Restart=on-failure
