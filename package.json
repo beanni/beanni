@@ -13,8 +13,8 @@
     "init": "npm start -- init",
     "fetch": "npm start -- fetch",
     "explore": "npm start -- explore",
-    "prettier:check": "prettier --check '**/*.{ts,json,js,tsx,graphql,md,yml,yaml,jsonc,webmanifest}'",
-    "prettier:fix": "prettier --write '**/*.{ts,json,js,tsx,graphql,md,yml,yaml,jsonc,webmanifest}'"
+    "prettier:check": "prettier --check \"**/*.{ts,json,js,tsx,graphql,md,yml,yaml,jsonc,webmanifest}\"",
+    "prettier:fix": "prettier --write \"**/*.{ts,json,js,tsx,graphql,md,yml,yaml,jsonc,webmanifest}\""
   },
   "repository": {
     "type": "git",
