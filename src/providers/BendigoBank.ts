@@ -84,8 +84,6 @@ export class BendigoBank implements IBankDataProviderInterface {
       );
       const accountData = await apiResponse.json();
 
-      console.log(accountData);
-
       for (const account of accountData.accounts) {
         const balance = {
           institution: this.institution,
