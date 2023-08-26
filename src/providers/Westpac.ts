@@ -276,8 +276,9 @@ export class Westpac
     statementFolderPath: string
   ): Promise<void> {
     const filename =
-      `${statement.DateString} Westpac ${account.AccountNumber} ` +
-      `Statement ${statement.Id || statement.PdfDocumentId}.pdf`;
+      `${statement.DateString} Westpac ${account.AccountNumber} Statement` +
+      (statement.Id ? ` ${statement.Id}` : "") +
+      `.pdf`;
     const targetPath = statementFolderPath + `${filename}`;
 
     const exists = await new Promise<boolean>((resolve) => {
