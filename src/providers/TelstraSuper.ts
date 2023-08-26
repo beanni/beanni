@@ -42,7 +42,10 @@ export class TelstraSuper implements IBankDataProviderInterface {
       await page.click("form[action='/login'] button[type=submit]");
       this.debugLog("login", 3);
 
-      await page.waitForSelector("main#main header h1");
+      // Allow a longer timeout because they have cold start issues
+      await page.waitForSelector("main#main header h1", {
+        timeout: 120000,
+      });
       this.debugLog("login", 4);
     } catch (error) {
       await ProviderHelpers.logError(error, page, this.institution);
