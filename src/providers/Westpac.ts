@@ -52,18 +52,7 @@ export class Westpac
       await page.click("#signin");
       await page.waitForSelector("#customer-actions");
     } catch (error) {
-      const timeoutError = error as puppeteer.TimeoutError;
-      if (timeoutError.name === "TimeoutError") {
-        const filename = `${new Date()
-          .toISOString()
-          .substring(0, 10)}-${new Date().getTime()}-screenshot.png`;
-        console.log(
-          `[${
-            this.institution
-          }] Screenshot of ${page.url()} saved as ${filename}`
-        );
-        await page.screenshot({ path: filename, fullPage: true });
-      }
+      await ProviderHelpers.logError(error, page, this.institution);
       throw error;
     }
   }

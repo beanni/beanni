@@ -34,14 +34,7 @@ export class Bankwest implements IBankDataProviderInterface {
 
       await page.waitForSelector('[id$="lblWelcomeMessage"]');
     } catch (error) {
-      const timeoutError = error as puppeteer.TimeoutError;
-      if (timeoutError.name === "TimeoutError") {
-        const filename = `${new Date()
-          .toISOString()
-          .substring(0, 10)}-${new Date().getTime()}-screenshot.png`;
-        console.log(`[${this.institution}] Screenshot saved as ${filename}`);
-        await page.screenshot({ path: filename, fullPage: true });
-      }
+      await ProviderHelpers.logError(error, page, this.institution);
       throw error;
     }
   }
