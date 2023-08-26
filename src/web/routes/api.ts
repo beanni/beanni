@@ -1,5 +1,5 @@
 import { Router } from "express";
-import _ from "lodash";
+import _, { isNumber } from "lodash";
 import { DataStore } from "../../dataStore";
 const router = Router();
 
@@ -43,7 +43,11 @@ router.get("/dataIssues", async (_req, res, next) => {
         };
       })
       .filter(
-        (b) => b.balance != undefined && b.balance != 0 && b.asAtDaysAgo > 1
+        (b) =>
+          b.balance != undefined &&
+          b.balance != 0 &&
+          isNumber(b.asAtDaysAgo) &&
+          b.asAtDaysAgo > 1
       )
       .value().length;
 
