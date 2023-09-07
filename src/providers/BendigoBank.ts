@@ -94,6 +94,11 @@ export class BendigoBank implements IBankDataProviderInterface {
             account.name
           ),
         };
+
+        if (account.classification === "home-loan") {
+          balance.balance = account.currentBalance.value / 100;
+        }
+
         balances.push(balance);
       }
     } catch (error) {

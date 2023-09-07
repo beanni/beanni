@@ -17,6 +17,10 @@ export class ProviderHelpers {
       return ValueType["Loan Offset"];
     }
 
+    if (lowerAccountName.indexOf("mortgage") > -1) {
+      return ValueType["Property Mortgage"];
+    }
+
     if (lowerAccountName.indexOf("frequent flyer") > -1) {
       return ValueType["Consumer Debt"];
     }
