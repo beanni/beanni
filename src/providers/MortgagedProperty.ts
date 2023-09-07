@@ -67,7 +67,8 @@ export class MortgagedProperty
           config.loan
         )}. ` +
           "The balance needs to have been retrieved by another provider in this same fetch. " +
-          "Execution order of providers matters."
+          "Execution order of providers matters. " +
+          `Balances found: ${JSON.stringify(otherBalances)}`
       );
       return balances;
     }
@@ -76,14 +77,14 @@ export class MortgagedProperty
     balances.push({
       institution: this.institution,
       accountName: config.name || this.institution,
-      accountNumber: "Mortgaged",
+      accountNumber: `Mortgaged ${config.name}`,
       balance: mortgagedBalance,
       valueType: ValueType["Property Mortgage"],
     });
     balances.push({
       institution: this.institution,
       accountName: config.name || this.institution,
-      accountNumber: "Equity",
+      accountNumber: `Equity ${config.name}`,
       balance: config.value - mortgagedBalance,
       valueType: ValueType["Property Equity"],
     });
