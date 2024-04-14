@@ -64,6 +64,7 @@ export class DataStore {
     if (this.database == null) {
       throw new Error("Database not open yet");
     }
+    console.time("dataStore.getAllBalances");
     const result = await this.database.all<IHistoricalAccountBalance[]>(
       `SELECT
                 date(max(b.timestamp)) AS 'date',
@@ -95,6 +96,7 @@ export class DataStore {
       r.balance = r.balance / 100;
       r.valueType = r.valueType ?? ValueType.Unknown;
     });
+    console.timeEnd("dataStore.getAllBalances");
     return result;
   }
 
@@ -102,6 +104,7 @@ export class DataStore {
     if (this.database == null) {
       throw new Error("Database not open yet");
     }
+    console.time("dataStore.getNetWealth");
     const result = await this.database.get<{ result: number }>(
       `SELECT SUM(b.Balance) AS result
             FROM Balances b
@@ -112,6 +115,7 @@ export class DataStore {
             ) b1
             ON b.id = b1.id ORDER BY institution, accountNumber`
     );
+    console.timeEnd("dataStore.getNetWealth");
     return (result?.result ?? 0) / 100;
   }
 

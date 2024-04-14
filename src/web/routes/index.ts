@@ -14,6 +14,7 @@ router.get("/", async (_req, res, next) => {
 
     const performanceByPeriods = calculatePerformanceByPeriods(allBalances);
 
+    console.time("web.routes.index.get.balanceData");
     interface displayBalance extends IHistoricalAccountBalance {
       label: string;
     }
@@ -47,7 +48,9 @@ router.get("/", async (_req, res, next) => {
         }))
         .value(),
     };
+    console.timeEnd("web.routes.index.get.balanceData");
 
+    console.time("web.routes.index.get.latestBalances");
     const latestBalances = _(balanceData)
       .groupBy((r) => r.label)
       .map((_value, key) => {
@@ -72,15 +75,20 @@ router.get("/", async (_req, res, next) => {
         };
       })
       .value();
+    console.timeEnd("web.routes.index.get.latestBalances");
 
+    console.time("web.routes.index.get.staleNonZeroBalances");
     const staleNonZeroBalances = _(latestBalances)
       .filter(
         (b) => b.balance != undefined && b.balance != 0 && b.asAtDaysAgo > 1
       )
       .value();
+    console.timeEnd("web.routes.index.get.staleNonZeroBalances");
+
+    const netWealth = await dataStore.getNetWealth();
 
     res.render("index", {
-      netWealth: await dataStore.getNetWealth(),
+      netWealth,
       performanceByPeriods,
       balanceHistoryChartData,
       latestBalances,
@@ -96,6 +104,8 @@ router.get("/", async (_req, res, next) => {
 function calculatePerformanceByPeriods(
   allBalances: IHistoricalAccountBalance[]
 ) {
+  console.time("web.routes.index.calculatePerformanceByPeriods");
+
   const dates = _(allBalances)
     .map((r) => r.date)
     .uniq()
@@ -181,7 +191,7 @@ function calculatePerformanceByPeriods(
     }))
     .value();
 
-  return {
+  const result = {
     years: _(periodsWithMovements)
       .groupBy((p) => p.year)
       .map((value, key) => {
@@ -208,6 +218,10 @@ function calculatePerformanceByPeriods(
       })
       .value(),
   };
+
+  console.timeEnd("web.routes.index.calculatePerformanceByPeriods");
+
+  return result;
 }
 
 export default router;
