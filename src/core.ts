@@ -72,9 +72,13 @@ export class Core {
     console.log(JSON.stringify(config, null, 2));
   }
 
-  public async fetch(executionContext: IBeanniExecutionContext): Promise<void> {
+  public async fetch(
+    executionContext: IBeanniExecutionContext,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    logCallback: (message?: any, ...optionalParams: any[]) => void
+  ): Promise<void> {
     const config = await this.loadConfig();
-    console.log("%s relationships to fetch from", config.relationships.length);
+    logCallback("%s relationships to fetch from", config.relationships.length);
 
     await fs.promises.mkdir(STATEMENT_PATH, { recursive: true });
 
@@ -84,7 +88,7 @@ export class Core {
       await this.dataStore.open();
 
       for (const relationship of config.relationships) {
-        console.log(
+        logCallback(
           "[%s] Fetching '%s'",
           relationship.provider,
           relationship.name
@@ -97,16 +101,16 @@ export class Core {
         ) as IBankDataProviderInterface;
 
         try {
-          console.log("[%s] Logging in", relationship.provider);
+          logCallback("[%s] Logging in", relationship.provider);
           await provider.login(async (key: string) => {
             return await this.secretStore.retrieveSecret(
               relationship.name + ":" + key
             );
           }, relationship);
 
-          console.log("[%s] Getting balances", relationship.provider);
+          logCallback("[%s] Getting balances", relationship.provider);
           const relationshipBalances = await provider.getBalances();
-          console.log(
+          logCallback(
             "[%s] Found %s balances",
             relationship.provider,
             relationshipBalances.length
@@ -119,7 +123,7 @@ export class Core {
           if (this.isHistoricalBalancesProvider(provider)) {
             const historicalBalanceProvider =
               provider as IBankDataHistoricalBalancesProviderInterface;
-            console.log(
+            logCallback(
               "[%s] Getting historical balances",
               relationship.provider
             );
@@ -131,7 +135,7 @@ export class Core {
               .value();
             const historicalBalances =
               await historicalBalanceProvider.getHistoricalBalances(knownDates);
-            console.log(
+            logCallback(
               "[%s] Found %s historical balances",
               relationship.provider,
               historicalBalances.length
@@ -144,10 +148,10 @@ export class Core {
           if (this.isDocumentProvider(provider)) {
             const documentProvider =
               provider as IBankDataDocumentProviderInterface;
-            console.log("[%s] Getting documents", relationship.provider);
+            logCallback("[%s] Getting documents", relationship.provider);
             await documentProvider.getDocuments(STATEMENT_PATH);
           } else {
-            console.log(
+            logCallback(
               "[%s] Doesn't support documents; skipping",
               relationship.provider
             );
@@ -155,10 +159,10 @@ export class Core {
 
           if (this.isCalculatedProvider(provider)) {
             const calculatedProvider = provider as ICalculatedProviderInterface;
-            console.log("[%s] Calculating balances", relationship.provider);
+            logCallback("[%s] Calculating balances", relationship.provider);
             const calculatedBalances =
               await calculatedProvider.getCalculatedBalances(balances);
-            console.log(
+            logCallback(
               "[%s] Calculated %s balances",
               relationship.provider,
               calculatedBalances.length
@@ -173,14 +177,14 @@ export class Core {
         }
 
         try {
-          console.log("[%s] Logging out", relationship.provider);
+          logCallback("[%s] Logging out", relationship.provider);
           await provider.logout();
         } catch (ex) {
           console.error(ex);
         }
       }
 
-      console.log(
+      logCallback(
         "Written %s balance entries to the data store",
         balances.length
       );

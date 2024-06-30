@@ -15,6 +15,11 @@ block content
             each balance in staleNonZeroBalances
                 li "#{balance.label}" was last updated #{balance.asAt}. It has a non-zero balance, which is now stale.
 
+    h2 🐶 Fetch
+    form(action='/fetch', method='post')
+      p
+        button(type='submit') Fetch Now
+
     h2 💰 Net Wealth
     p #{netWealth.toLocaleString('en', { style: 'currency', currency: 'AUD' })}
 

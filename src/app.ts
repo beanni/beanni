@@ -33,7 +33,7 @@ program.command("explore").action(async () => {
 
 program.command("fetch").action(async () => {
   const executionContext = parseExecutionContext();
-  await core.fetch(executionContext);
+  await core.fetch(executionContext, console.log);
 });
 
 program.command("init").action(async () => {
