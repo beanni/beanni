@@ -58,7 +58,7 @@ router.get("/", async (_req, res, next) => {
         const asAt = latestBalance?.date;
         const asAtDaysAgo =
           asAt === undefined
-            ? "∞"
+            ? Infinity
             : Math.floor(
                 ((new Date(asAt).getTime() - new Date().getTime()) /
                   (1000 * 3600 * 24)) *
